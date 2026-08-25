@@ -4,6 +4,7 @@
 .tmp/
 dist/
 node_modules/
+runtime/
 *.log
 *.pid
 *.user.json
@@ -11,4 +12,6 @@ node_modules/
 .dsh-home/
 .credentials.yaml
 settings.yaml
-
+current.json
+*.zip
+*.sha256

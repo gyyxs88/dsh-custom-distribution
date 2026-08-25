@@ -1,0 +1,5 @@
+--- a/packages/llm/pi-ai/src/index.ts
++++ b/packages/llm/pi-ai/src/index.ts
+@@
+-  if (/network/i.test(code)) return 'TRANSPORT'
++  if (/network(?:_error)?/i.test(code)) return 'TRANSPORT'
