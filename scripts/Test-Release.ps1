@@ -20,8 +20,25 @@ $expanded = Join-Path $testParent 'bundle'
 if (Test-Path -LiteralPath $testParent) { Remove-SafeTree -Parent $distributionRoot -Path $testParent }
 New-Item -ItemType Directory -Force -Path $testParent | Out-Null
 
-$productionPidPath = Join-Path (Split-Path -Parent $distributionRoot) '.run\web-ui.pid'
-$productionPidBefore = if (Test-Path -LiteralPath $productionPidPath) { (Get-Content -LiteralPath $productionPidPath -Raw -Encoding UTF8).Trim() } else { $null }
+function Get-ProductionSnapshot {
+    $productionRoot = Split-Path -Parent $distributionRoot
+    $pidPath = Join-Path $productionRoot '.run\web-ui.pid'
+    $statePath = Join-Path $productionRoot '.run\web-ui.json'
+    $recordedPid = if (Test-Path -LiteralPath $pidPath) { (Get-Content -LiteralPath $pidPath -Raw -Encoding UTF8).Trim() } else { $null }
+    $recordedState = if (Test-Path -LiteralPath $statePath) { Read-JsonFile -Path $statePath } else { $null }
+    $productionPort = if ($recordedState -and $recordedState.port) { [int]$recordedState.port } else { 3080 }
+    $listener = Get-NetTCPConnection -State Listen -LocalPort $productionPort -ErrorAction SilentlyContinue | Select-Object -First 1
+    $listenerProcess = if ($listener) { Get-CimInstance Win32_Process -Filter "ProcessId = $($listener.OwningProcess)" -ErrorAction SilentlyContinue } else { $null }
+    return [ordered]@{
+        recordedPid = $recordedPid
+        recordedUrl = if ($recordedState) { $recordedState.url } else { $null }
+        listenerPid = if ($listener) { [int]$listener.OwningProcess } else { $null }
+        listenerCommandLine = if ($listenerProcess) { $listenerProcess.CommandLine } else { $null }
+        listenerCreated = if ($listenerProcess) { [string]$listenerProcess.CreationDate } else { $null }
+    } | ConvertTo-Json -Compress
+}
+
+$productionBefore = Get-ProductionSnapshot
 
 try {
     Expand-Archive -LiteralPath $bundlePath -DestinationPath $expanded -Force
@@ -47,8 +64,8 @@ finally {
     }
 }
 
-$productionPidAfter = if (Test-Path -LiteralPath $productionPidPath) { (Get-Content -LiteralPath $productionPidPath -Raw -Encoding UTF8).Trim() } else { $null }
-if ($productionPidAfter -ne $productionPidBefore) { throw '隔离验收意外改变了现役 DSH 的 PID 记录。' }
+$productionAfter = Get-ProductionSnapshot
+if ($productionAfter -ne $productionBefore) { throw '隔离验收意外改变了现役 DSH 的 PID、监听者或进程身份。' }
 
 Write-Output 'ACCEPTANCE_STATUS=PASSED'
 Write-Output "INSTALL_ROOT=$installRoot"

@@ -7,6 +7,10 @@ import test from "node:test";
 
 const root = resolve(import.meta.dirname, "..");
 
+function normalizeText(text) {
+  return text.replaceAll("\r\n", "\n");
+}
+
 test("network_error package contains the reviewed transport classification", () => {
   const archive = join(root, "packages", "dsh-llm-pi-ai-0.1.1-rc.2-network-error-fix.1.tgz");
   const source = execFileSync("tar.exe", ["-xOf", archive, "package/lib/index.js"], { encoding: "utf8" });
@@ -44,8 +48,8 @@ test("source snapshots match their bundled artifacts", () => {
       assert.equal(artifactPackage.version, sourcePackage.version);
       assert.equal(artifactPackage.dshLocalPatch, sourcePackage.dshLocalPatch);
       assert.equal(
-        readFileSync(join(temp, "package", "lib", "client.js"), "utf8"),
-        readFileSync(join(root, "sources", sourceName, "lib", "client.js"), "utf8"),
+        normalizeText(readFileSync(join(temp, "package", "lib", "client.js"), "utf8")),
+        normalizeText(readFileSync(join(root, "sources", sourceName, "lib", "client.js"), "utf8")),
       );
     } finally {
       rmSync(temp, { recursive: true, force: true });
