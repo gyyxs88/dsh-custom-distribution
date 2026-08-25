@@ -1,0 +1,14 @@
+.artifacts/
+.cache/
+.install-test/
+.tmp/
+dist/
+node_modules/
+*.log
+*.pid
+*.user.json
+*.private.*
+.dsh-home/
+.credentials.yaml
+settings.yaml
+
