@@ -14,7 +14,7 @@
 4. 创建独立的数据目录，并启动 `127.0.0.1:3080`；
 5. 输出实际访问地址和验证结果。
 
-也可以下载 `dsh-custom-distribution-v0.1.0-win-x64.zip`，解压后运行：
+也可以下载 `dsh-custom-distribution-v0.2.0-win-x64.zip`，解压后运行：
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Install-Bundle.ps1
@@ -35,10 +35,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Install-Bundle.ps1
 - 非用户消息的来源标识；
 - 会话菜单复制会话 ID；
 - `@file` 文件引用；
-- 会话控制、审批与定时任务；
-- 多 Agent 的 Codex / Claude Code / Grok Build / ACP 渠道；
+- 会话控制、审批、定时任务，以及子会话终态/需关注时对来源会话的持久自动回报；
+- 多 Agent 的 Codex / Claude Code / Grok Build / ACP 渠道，以及后台 run 完成/失败/中断时对拥有者的持久自动回报；
 - SSH 远程项目、远端插件和 Runtime 管理；
-- 与插件一起安装的会话控制、远程项目 Skill。
+- 与插件一起安装的会话控制、多 Agent、远程项目 Skill。
 
 本机已安装的 Codex、Claude Code、Grok Build、OpenCode 只会在发现其明确的绝对入口时接线。发行版不会复制任何登录态、Cookie、OAuth token 或 API key；缺少的 Runtime 会明确显示为不可用，不会从 `PATH` 猜测。
 
