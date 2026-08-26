@@ -118,7 +118,10 @@ if ($LASTEXITCODE -ne 0) { throw 'DSH app ZIP 创建失败。' }
 & tar.exe -a -cf $profileArchive -C $profileRoot .
 if ($LASTEXITCODE -ne 0) { throw 'DSH profile ZIP 创建失败。' }
 $appArchiveList = & tar.exe -tf $appArchive
-if ($LASTEXITCODE -ne 0 -or $appArchiveList -notcontains './node_modules/@deepseek-ai/dsh/package.json' -or $appArchiveList -notcontains './.packages/dsh-session-control-0.6.9.tgz') {
+$sessionControlArtifact = @($release.artifacts | Where-Object { $_.package -eq 'dsh-session-control' })
+if ($sessionControlArtifact.Count -ne 1) { throw 'release lock 必须包含一个 dsh-session-control artifact。' }
+$sessionControlArchiveEntry = './.packages/' + [string]$sessionControlArtifact[0].file
+if ($LASTEXITCODE -ne 0 -or $appArchiveList -notcontains './node_modules/@deepseek-ai/dsh/package.json' -or $appArchiveList -notcontains $sessionControlArchiveEntry) {
     throw 'DSH app ZIP 缺少关键文件。'
 }
 $profileArchiveList = & tar.exe -tf $profileArchive

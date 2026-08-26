@@ -33,6 +33,38 @@ test("session menu copies the durable session ID", () => {
   assert.match(source, /"menu\.copySessionId": "复制会话 ID"/u);
 });
 
+test("pinned control artifacts include durable asynchronous reports and their Skills", () => {
+  const sessionArchive = join(root, "packages", "dsh-session-control-0.7.0.tgz");
+  const sessionNotifier = execFileSync(
+    "tar.exe",
+    ["-xOf", sessionArchive, "package/lib/operation-notifier.js"],
+    { encoding: "utf8" },
+  );
+  const sessionSkill = execFileSync(
+    "tar.exe",
+    ["-xOf", sessionArchive, "package/skills/dsh-session-control/SKILL.md"],
+    { encoding: "utf8" },
+  );
+  assert.match(sessionNotifier, /operation-terminal-report/u);
+  assert.match(sessionNotifier, /completionDelivery === 'followup'/u);
+  assert.match(sessionSkill, /completion_delivery=followup/u);
+
+  const subagentArchive = join(root, "packages", "dsh-subagent-code-agents-0.1.4.tgz");
+  const runNotifier = execFileSync(
+    "tar.exe",
+    ["-xOf", subagentArchive, "package/packages/plugin/lib/run-notifier.js"],
+    { encoding: "utf8" },
+  );
+  const subagentSkill = execFileSync(
+    "tar.exe",
+    ["-xOf", subagentArchive, "package/packages/plugin/skills/dsh-code-agents/SKILL.md"],
+    { encoding: "utf8" },
+  );
+  assert.match(runNotifier, /run-terminal-report/u);
+  assert.match(subagentSkill, /run_in_background=true/u);
+  assert.match(subagentSkill, /completion_delivery.*followup/u);
+});
+
 test("source snapshots match their bundled artifacts", () => {
   const cases = [
     ["dsh-client-ui-conversation-message-provenance", "dsh-client-ui-conversation-0.1.1-rc.2-message-provenance.2.tgz"],
