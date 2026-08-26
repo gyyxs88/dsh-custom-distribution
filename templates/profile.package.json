@@ -5,8 +5,8 @@
     "@omdsh-dev/dsh-genui": "github:omdsh-dev/dsh-genui#1ca5da4eb9394972cce2c1ccacfedc22eec3166b",
     "dsh-at-file": "file:__PACKAGES__/dsh-at-file-0.6.7.tgz",
     "dsh-remote-control": "file:__PACKAGES__/dsh-remote-control-0.2.5.tgz",
-    "dsh-session-control": "file:__PACKAGES__/dsh-session-control-0.7.0.tgz",
-    "dsh-subagent-code-agents": "file:__PACKAGES__/dsh-subagent-code-agents-0.1.4.tgz"
+    "dsh-session-control": "file:__PACKAGES__/dsh-session-control-0.7.1.tgz",
+    "dsh-subagent-code-agents": "file:__PACKAGES__/dsh-subagent-code-agents-0.1.7.tgz"
   },
   "dsh": {
     "profile": {
