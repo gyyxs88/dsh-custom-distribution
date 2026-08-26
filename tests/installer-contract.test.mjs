@@ -25,6 +25,9 @@ test("program versions and private state have separate durable roots", () => {
   assert.match(common, /controllerSessionIds: \[\]/u);
   assert.match(common, /authorizeAllOrdinarySessions: true/u);
   assert.match(common, /sameWorkspaceOnly: false/u);
+  assert.match(common, /id: action-advisor/u);
+  assert.match(common, /executionPermission: read-only/u);
+  assert.match(common, /backgroundOnly: true/u);
 });
 
 test("runtime channels use explicit existing executables and never PATH fallback", () => {
@@ -39,6 +42,9 @@ test("start and stop bind to loopback and validate the exact recorded process", 
   assert.match(start, /--no-open/u);
   assert.match(stop, /process\.CommandLine -notlike/u);
   assert.match(stop, /拒绝停止 PID/u);
+  assert.match(stop, /ParentProcessId -eq \$current\.ProcessId/u);
+  assert.match(stop, /Sort-Object Depth -Descending/u);
+  assert.match(stop, /DESCENDANTS_STOPPED/u);
 });
 
 test("scripts never persist or copy provider secrets", () => {

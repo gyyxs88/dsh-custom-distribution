@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "distribution": {
     "name": "dsh-custom-distribution",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "platform": "win32",
     "architecture": "x64",
     "repository": "https://github.com/gyyxs88/dsh-custom-distribution"
@@ -86,24 +86,24 @@
       "commit": "dff388dd8050c6bb395ebcdf8ff30f03772afc6e"
     },
     {
-      "file": "dsh-session-control-0.7.0.tgz",
+      "file": "dsh-session-control-0.7.1.tgz",
       "package": "dsh-session-control",
-      "version": "0.7.0",
+      "version": "0.7.1",
       "license": "MIT",
       "placement": "profile",
-      "sha256": "9b62a60a1bc978656321411d0f4f6ca15b3b71d39212f29ac5f38e3bfb71bd43",
+      "sha256": "1defd47831275a668ade7e94e2cc68bd1aa01da98efdd439d243005ab1b57396",
       "source": "https://github.com/gyyxs88/dsh-session-control",
-      "commit": "0437cad960498ae98d2a9ba412de13f8fac2736c"
+      "commit": "14c80dc228ba37d8e60e1106a3f1c07daf65b0ec"
     },
     {
-      "file": "dsh-subagent-code-agents-0.1.4.tgz",
+      "file": "dsh-subagent-code-agents-0.1.7.tgz",
       "package": "dsh-subagent-code-agents",
-      "version": "0.1.4",
+      "version": "0.1.7",
       "license": "MIT",
       "placement": "profile",
-      "sha256": "699ca62c427c26aecc5eb15dd9570ec403b1150de567248b7af4e5c2b0ef6f1d",
+      "sha256": "42dff7bddfb86c462fe2b65c070af8a270b95ca8fc7d1387f1d681d949ec906f",
       "source": "https://github.com/gyyxs88/dsh-subagent-code-agents",
-      "commit": "2f9a4a3fd4a33d446b0f9a32d7368aefe59ab463"
+      "commit": "0d62c8539746e89dc5dfc73bcea8efd944109882"
     }
   ],
   "privateState": [

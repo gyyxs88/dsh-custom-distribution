@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { readFileSync, statSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { extname, join, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
@@ -24,6 +24,7 @@ const forbidden = [
 
 for (const file of files) {
   const full = join(root, file);
+  if (!existsSync(full)) continue;
   if (!statSync(full).isFile() || !textExtensions.has(extname(file).toLowerCase())) continue;
   const source = readFileSync(full, "utf8");
   for (const pattern of forbidden) {

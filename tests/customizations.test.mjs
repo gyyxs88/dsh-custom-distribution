@@ -34,7 +34,7 @@ test("session menu copies the durable session ID", () => {
 });
 
 test("pinned control artifacts include durable asynchronous reports and their Skills", () => {
-  const sessionArchive = join(root, "packages", "dsh-session-control-0.7.0.tgz");
+  const sessionArchive = join(root, "packages", "dsh-session-control-0.7.1.tgz");
   const sessionNotifier = execFileSync(
     "tar.exe",
     ["-xOf", sessionArchive, "package/lib/operation-notifier.js"],
@@ -49,7 +49,7 @@ test("pinned control artifacts include durable asynchronous reports and their Sk
   assert.match(sessionNotifier, /completionDelivery === 'followup'/u);
   assert.match(sessionSkill, /completion_delivery=followup/u);
 
-  const subagentArchive = join(root, "packages", "dsh-subagent-code-agents-0.1.4.tgz");
+  const subagentArchive = join(root, "packages", "dsh-subagent-code-agents-0.1.7.tgz");
   const runNotifier = execFileSync(
     "tar.exe",
     ["-xOf", subagentArchive, "package/packages/plugin/lib/run-notifier.js"],
@@ -60,9 +60,24 @@ test("pinned control artifacts include durable asynchronous reports and their Sk
     ["-xOf", subagentArchive, "package/packages/plugin/skills/dsh-code-agents/SKILL.md"],
     { encoding: "utf8" },
   );
+  const subagentTool = execFileSync(
+    "tar.exe",
+    ["-xOf", subagentArchive, "package/packages/plugin/lib/tool.js"],
+    { encoding: "utf8" },
+  );
+  const codexChannel = execFileSync(
+    "tar.exe",
+    ["-xOf", subagentArchive, "package/node_modules/@dsh-subagent-code-agents/channel-codex/lib/index.js"],
+    { encoding: "utf8" },
+  );
   assert.match(runNotifier, /run-terminal-report/u);
-  assert.match(subagentSkill, /run_in_background=true/u);
-  assert.match(subagentSkill, /completion_delivery.*followup/u);
+  assert.match(subagentSkill, /默认后台运行/u);
+  assert.match(subagentSkill, /role=action-advisor/u);
+  assert.match(subagentSkill, /默认后台运行并使用 `followup`/u);
+  assert.match(subagentTool, /claimNativeJobNotice/u);
+  assert.match(subagentTool, /jobs\.wait/u);
+  assert.match(codexChannel, /sandbox_mode="read-only"/u);
+  assert.doesNotMatch(codexChannel, /exec', 'resume'.*--sandbox/su);
 });
 
 test("source snapshots match their bundled artifacts", () => {
