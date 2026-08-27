@@ -12,12 +12,14 @@ function normalizeText(text) {
 }
 
 test("pi-ai package contains reviewed retry and live discovery policies", () => {
-  const archive = join(root, "packages", "dsh-llm-pi-ai-0.1.1-rc.2-network-error-live-discovery-fix.2.tgz");
+  const archive = join(root, "packages", "dsh-llm-pi-ai-0.1.1-rc.2-network-error-live-discovery-fix.3.tgz");
   const source = execFileSync("tar.exe", ["-xOf", archive, "package/lib/index.js"], { encoding: "utf8" });
   assert.match(source, /network\(\?:_error\)\?/u);
   assert.match(source, /LIVE_CATALOG_DISCOVERY_POLICIES/u);
   assert.match(source, /\["openrouter", "configured-or-catalog"\]/u);
   assert.match(source, /top_provider\?\.max_completion_tokens/u);
+  assert.match(source, /architecture\?\.input_modalities/u);
+  assert.match(source, /input: \[\.\.\.model\.input\]/u);
 });
 
 test("conversation source labels are present in source snapshot and artifact", () => {
@@ -86,7 +88,7 @@ test("source snapshots match their bundled artifacts", () => {
   const cases = [
     ["dsh-client-ui-conversation-message-provenance", "dsh-client-ui-conversation-0.1.1-rc.2-message-provenance.2.tgz", "lib/client.js"],
     ["dsh-client-ui-workspace-copy-session-id", "dsh-client-ui-workspace-0.1.1-rc.2-copy-session-id.1.tgz", "lib/client.js"],
-    ["dsh-llm-pi-ai-live-discovery", "dsh-llm-pi-ai-0.1.1-rc.2-network-error-live-discovery-fix.2.tgz", "lib/index.js"],
+    ["dsh-llm-pi-ai-live-discovery", "dsh-llm-pi-ai-0.1.1-rc.2-network-error-live-discovery-fix.3.tgz", "lib/index.js"],
   ];
   for (const [sourceName, archiveName, mainFile] of cases) {
     const temp = mkdtempSync(join(tmpdir(), "dsh-distro-source-"));
