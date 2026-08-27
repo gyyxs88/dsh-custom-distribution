@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import { join } from "node:path";
 
@@ -9,6 +10,10 @@ const moduleUrl = pathToFileURL(
   join(appRoot, "node_modules", "@deepseek-ai", "dsh-llm-pi-ai", "lib", "index.js"),
 ).href;
 const { discoverModels } = await import(moduleUrl);
+const schemaUrl = pathToFileURL(
+  join(appRoot, "node_modules", "@deepseek-ai", "dsh-host-apiproxy", "lib", "types", "api", "llm.schema.js"),
+).href;
+const { discoveredModelViewSchema } = await import(schemaUrl);
 
 const originalFetch = globalThis.fetch;
 try {
@@ -28,6 +33,21 @@ try {
   globalThis.fetch = async () => new Response("temporary", { status: 503 });
   const fallback = await discoverModels({ provider: "openrouter" });
   assert.ok(fallback.some((model) => model.input?.includes("image")));
+
+  const candidate = { id: "acceptance/vision-model", input: ["text", "image"] };
+  assert.deepEqual(discoveredModelViewSchema.parse(candidate), candidate);
+
+  const connection = await readFile(
+    join(appRoot, "node_modules", "@deepseek-ai", "dsh-client-connection", "lib", "client.js"),
+    "utf8",
+  );
+  assert.match(connection, /input: array\(union\(\[literal\("text"\), literal\("image"\)\]\)\)\.min\(1\)\.optional\(\)/u);
+
+  const settingsModels = await readFile(
+    join(appRoot, "node_modules", "@deepseek-ai", "dsh-client-ui-settings-models", "lib", "client.js"),
+    "utf8",
+  );
+  assert.match(settingsModels, /candidate\.input === void 0 \? \{\} : \{ input: \[\.\.\.candidate\.input\] \}/u);
 } finally {
   globalThis.fetch = originalFetch;
 }

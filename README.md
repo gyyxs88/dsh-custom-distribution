@@ -14,7 +14,7 @@
 4. 创建独立的数据目录，并启动 `127.0.0.1:3080`；
 5. 输出实际访问地址和验证结果。
 
-也可以下载 `dsh-custom-distribution-v0.2.3-win-x64.zip`，解压后运行：
+也可以下载 `dsh-custom-distribution-v0.2.4-win-x64.zip`，解压后运行：
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Install-Bundle.ps1
@@ -31,7 +31,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Install-Bundle.ps1
 ## 包含的定制
 
 - DSH `0.1.1-rc.2` 与固定 Node.js `24.19.0`；
-- `network_error` 可重试分类修复，以及 OpenRouter/OpenCode 实时模型目录、安全静态回退和图片输入能力保留；
+- `network_error` 可重试分类修复，以及 OpenRouter/OpenCode 实时模型目录、安全静态回退、图片输入能力端到端保留与设置界面持久采纳；
 - Node 环境代理自动启用，回环 UI、Gateway、Runtime Manager 与 Session Control 保持直连；
 - 非用户消息的来源标识；
 - 会话菜单复制会话 ID；
