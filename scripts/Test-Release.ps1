@@ -47,13 +47,17 @@ try {
     & (Join-Path $installRoot 'bin\Verify-DSH.ps1') -InstallRoot $installRoot -RequireRunning
     if ($LASTEXITCODE -ne 0) { throw '隔离运行验证失败。' }
 
+    $current = Read-JsonFile -Path (Join-Path $installRoot 'current.json')
+    $node = Join-Path ([string]$current.runtimeRoot) 'node.exe'
+    & $node (Join-Path $PSScriptRoot 'Test-ModelDiscovery.mjs') ([string]$current.appRoot)
+    if ($LASTEXITCODE -ne 0) { throw '隔离模型能力发现验证失败。' }
+
     foreach ($privateFile in @('data\.credentials.yaml', 'data\settings.yaml')) {
         if (Test-Path -LiteralPath (Join-Path $installRoot $privateFile)) { throw "干净安装不应生成私有文件：$privateFile" }
     }
     $agents = Get-Content -LiteralPath (Join-Path $installRoot 'data\AGENTS.md') -Raw -Encoding UTF8
     if ($agents -notmatch '始终使用简体中文回复') { throw 'AGENTS 示例没有正确安装。' }
 
-    $current = Read-JsonFile -Path (Join-Path $installRoot 'current.json')
     if ($current.previousVersion) { throw '首次安装不应伪造 previousVersion。' }
     if ($current.version -ne $version) { throw '隔离安装版本不正确。' }
 }

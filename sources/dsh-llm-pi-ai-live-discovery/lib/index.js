@@ -2013,6 +2013,19 @@ function label(...candidates) {
 	for (const candidate of candidates) if (typeof candidate === "string" && candidate.length > 0) return candidate;
 }
 /**
+* Normalize a listing's declared input modalities to the subset DSH can
+* represent. OpenRouter publishes these under `architecture.input_modalities`;
+* generic OpenAI-compatible gateways may expose the same array at the top
+* level. Unknown values are ignored rather than over-claiming support.
+*/
+function listingInput(...candidates) {
+	for (const candidate of candidates) {
+		if (!Array.isArray(candidate)) continue;
+		const input = [...new Set(candidate.filter((value) => typeof value === "string" && MODALITIES.includes(value)))];
+		if (input.length > 0) return input;
+	}
+}
+/**
 * Join the endpoint base with the listing path. The base is treated as a
 * prefix rather than a URL to resolve against, so a deployment path such as
 * `https://gateway.example/openai/v1` keeps its segments instead of losing
@@ -2075,11 +2088,13 @@ function readListing(body) {
 		const name = label(entry?.name, entry?.display_name);
 		const contextWindow = capacity(entry?.context_window, entry?.context_length);
 		const maxTokens = capacity(entry?.max_output_tokens, entry?.max_tokens, entry?.top_provider?.max_completion_tokens);
+		const input = listingInput(entry?.architecture?.input_modalities, entry?.input_modalities);
 		models.push({
 			id,
 			...name === void 0 ? {} : { name },
 			...contextWindow === void 0 ? {} : { contextWindow },
-			...maxTokens === void 0 ? {} : { maxTokens }
+			...maxTokens === void 0 ? {} : { maxTokens },
+			...input === void 0 ? {} : { input }
 		});
 	}
 	return models;
@@ -2117,7 +2132,8 @@ function installedCatalogListing(provider) {
 		id: model.id,
 		name: model.name,
 		contextWindow: model.contextWindow,
-		maxTokens: model.maxTokens
+		maxTokens: model.maxTokens,
+		input: [...model.input]
 	}));
 }
 async function discoverModels(request, storedApiKey) {
