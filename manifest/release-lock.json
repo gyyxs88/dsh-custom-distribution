@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "distribution": {
     "name": "dsh-custom-distribution",
-    "version": "0.2.3",
+    "version": "0.2.4",
     "platform": "win32",
     "architecture": "x64",
     "repository": "https://github.com/gyyxs88/dsh-custom-distribution"
@@ -45,6 +45,33 @@
       "placement": "app",
       "sha256": "21c268d3b805df44f2dd80bd19f9ac94f221d5f1532a91cf6354e2ab8574bb80",
       "source": "sources/dsh-llm-pi-ai-live-discovery"
+    },
+    {
+      "file": "dsh-host-apiproxy-0.1.1-rc.2-discovered-input-modalities.1.tgz",
+      "package": "@deepseek-ai/dsh-host-apiproxy",
+      "version": "0.1.1-rc.2",
+      "license": "MIT",
+      "placement": "app",
+      "sha256": "148fc4adf64cad0a17a1ebc0a52753f2c7bfe65e3d8ddbf140b8bd3645afda29",
+      "source": "sources/dsh-host-apiproxy-image-modalities"
+    },
+    {
+      "file": "dsh-client-connection-0.1.1-rc.2-discovered-input-modalities.1.tgz",
+      "package": "@deepseek-ai/dsh-client-connection",
+      "version": "0.1.1-rc.2",
+      "license": "MIT",
+      "placement": "app",
+      "sha256": "a9a0ba66e827f789fd3c2226114b5382cca25106c68edf334ca017ebde9ded00",
+      "source": "sources/dsh-client-connection-image-modalities"
+    },
+    {
+      "file": "dsh-client-ui-settings-models-0.1.1-rc.2-discovered-input-modalities.1.tgz",
+      "package": "@deepseek-ai/dsh-client-ui-settings-models",
+      "version": "0.1.1-rc.2",
+      "license": "MIT",
+      "placement": "app",
+      "sha256": "1aa160f6253c2627a736cb7403c4d37d9226c3ccf2363d80498b53af0aedc80d",
+      "source": "sources/dsh-client-ui-settings-models-image-modalities"
     },
     {
       "file": "dsh-client-ui-conversation-0.1.1-rc.2-message-provenance.2.tgz",
