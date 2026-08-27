@@ -16,7 +16,7 @@
 
 三个 DeepSeek Harness 本地修订包均保留其包内 MIT LICENSE：
 
-- `@deepseek-ai/dsh-llm-pi-ai`：把供应商 `network_error` 归类为可重试的 `TRANSPORT`；
+- `@deepseek-ai/dsh-llm-pi-ai`：把供应商 `network_error` 归类为可重试的 `TRANSPORT`，并为明确登记的 OpenRouter/OpenCode 路由提供实时模型发现与安全静态回退；
 - `@deepseek-ai/dsh-client-ui-conversation`：显示非用户消息的可信来源；
 - `@deepseek-ai/dsh-client-ui-workspace`：会话菜单复制持久会话 ID。
 

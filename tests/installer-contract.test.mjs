@@ -40,6 +40,10 @@ test("runtime channels use explicit existing executables and never PATH fallback
 test("start and stop bind to loopback and validate the exact recorded process", () => {
   assert.match(start, /\$bindAddress = '127\.0\.0\.1'/u);
   assert.match(start, /--no-open/u);
+  assert.match(start, /\$env:NODE_USE_ENV_PROXY = '1'/u);
+  assert.match(start, /@\('127\.0\.0\.1', 'localhost', '::1'\)/u);
+  assert.match(start, /\$env:NODE_USE_ENV_PROXY = \$oldNodeUseEnvProxy/u);
+  assert.match(start, /\$env:NO_PROXY = \$oldNoProxy/u);
   assert.match(stop, /process\.CommandLine -notlike/u);
   assert.match(stop, /拒绝停止 PID/u);
   assert.match(stop, /ParentProcessId -eq \$current\.ProcessId/u);

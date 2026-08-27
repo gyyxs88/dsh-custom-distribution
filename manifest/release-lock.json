@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "distribution": {
     "name": "dsh-custom-distribution",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "platform": "win32",
     "architecture": "x64",
     "repository": "https://github.com/gyyxs88/dsh-custom-distribution"
@@ -38,14 +38,13 @@
   },
   "artifacts": [
     {
-      "file": "dsh-llm-pi-ai-0.1.1-rc.2-network-error-fix.1.tgz",
+      "file": "dsh-llm-pi-ai-0.1.1-rc.2-network-error-live-discovery-fix.2.tgz",
       "package": "@deepseek-ai/dsh-llm-pi-ai",
       "version": "0.1.1-rc.2",
       "license": "MIT",
       "placement": "app",
-      "sha256": "166dab4d41741a3fd60c6786042f534aec022f91aa1a13844b42584cfa01083d",
-      "source": "https://github.com/deepseek-ai/deepseek-harness",
-      "patch": "patches/dsh-llm-pi-ai-network-error.patch"
+      "sha256": "5297e0df5e72c61e444e39bdf6ebea954f1fc392912d2226261d4fe457f1e077",
+      "source": "sources/dsh-llm-pi-ai-live-discovery"
     },
     {
       "file": "dsh-client-ui-conversation-0.1.1-rc.2-message-provenance.2.tgz",
