@@ -11,11 +11,13 @@ function normalizeText(text) {
   return text.replaceAll("\r\n", "\n");
 }
 
-test("network_error package contains the reviewed transport classification", () => {
-  const archive = join(root, "packages", "dsh-llm-pi-ai-0.1.1-rc.2-network-error-fix.1.tgz");
+test("pi-ai package contains reviewed retry and live discovery policies", () => {
+  const archive = join(root, "packages", "dsh-llm-pi-ai-0.1.1-rc.2-network-error-live-discovery-fix.2.tgz");
   const source = execFileSync("tar.exe", ["-xOf", archive, "package/lib/index.js"], { encoding: "utf8" });
   assert.match(source, /network\(\?:_error\)\?/u);
-  assert.match(readFileSync(join(root, "patches", "dsh-llm-pi-ai-network-error.patch"), "utf8"), /network\(\?:_error\)\?/u);
+  assert.match(source, /LIVE_CATALOG_DISCOVERY_POLICIES/u);
+  assert.match(source, /\["openrouter", "configured-or-catalog"\]/u);
+  assert.match(source, /top_provider\?\.max_completion_tokens/u);
 });
 
 test("conversation source labels are present in source snapshot and artifact", () => {
@@ -82,10 +84,11 @@ test("pinned control artifacts include durable asynchronous reports and their Sk
 
 test("source snapshots match their bundled artifacts", () => {
   const cases = [
-    ["dsh-client-ui-conversation-message-provenance", "dsh-client-ui-conversation-0.1.1-rc.2-message-provenance.2.tgz"],
-    ["dsh-client-ui-workspace-copy-session-id", "dsh-client-ui-workspace-0.1.1-rc.2-copy-session-id.1.tgz"],
+    ["dsh-client-ui-conversation-message-provenance", "dsh-client-ui-conversation-0.1.1-rc.2-message-provenance.2.tgz", "lib/client.js"],
+    ["dsh-client-ui-workspace-copy-session-id", "dsh-client-ui-workspace-0.1.1-rc.2-copy-session-id.1.tgz", "lib/client.js"],
+    ["dsh-llm-pi-ai-live-discovery", "dsh-llm-pi-ai-0.1.1-rc.2-network-error-live-discovery-fix.2.tgz", "lib/index.js"],
   ];
-  for (const [sourceName, archiveName] of cases) {
+  for (const [sourceName, archiveName, mainFile] of cases) {
     const temp = mkdtempSync(join(tmpdir(), "dsh-distro-source-"));
     try {
       execFileSync("tar.exe", ["-xf", join(root, "packages", archiveName), "-C", temp]);
@@ -93,10 +96,10 @@ test("source snapshots match their bundled artifacts", () => {
       const artifactPackage = JSON.parse(readFileSync(join(temp, "package", "package.json"), "utf8"));
       assert.equal(artifactPackage.name, sourcePackage.name);
       assert.equal(artifactPackage.version, sourcePackage.version);
-      assert.equal(artifactPackage.dshLocalPatch, sourcePackage.dshLocalPatch);
+      assert.deepEqual(artifactPackage.dshLocalPatch, sourcePackage.dshLocalPatch);
       assert.equal(
-        normalizeText(readFileSync(join(temp, "package", "lib", "client.js"), "utf8")),
-        normalizeText(readFileSync(join(root, "sources", sourceName, "lib", "client.js"), "utf8")),
+        normalizeText(readFileSync(join(temp, "package", mainFile), "utf8")),
+        normalizeText(readFileSync(join(root, "sources", sourceName, mainFile), "utf8")),
       );
     } finally {
       rmSync(temp, { recursive: true, force: true });

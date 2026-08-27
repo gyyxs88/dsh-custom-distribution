@@ -16,6 +16,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\Install-DSH.ps1 `
 
 如果端口已占用，启动器会选择一个空闲的 loopback 端口，并在输出和 `data\run\web-ui.json` 中记录实际地址。
 
+启动器只为 DSH 子进程启用 Node 环境代理，使外部 provider 遵循当前用户已有的 `HTTP(S)_PROXY` / `ALL_PROXY`；`127.0.0.1`、`localhost` 和 `::1` 会被合并进 `NO_PROXY`，不会改写用户级或系统级环境变量。
+
 ## 完全离线安装
 
 下载 Release zip 和同名 `.sha256` 到同一目录，解压 zip 后运行：

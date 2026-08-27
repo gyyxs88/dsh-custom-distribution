@@ -1,6 +1,6 @@
 {
   "name": "dsh-custom-distribution",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "description": "Reproducible Windows distribution for the customized DeepSeek Harness stack",
   "type": "module",

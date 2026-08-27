@@ -25,7 +25,7 @@
     "@deepseek-ai/dsh-compaction": "0.1.1-rc.2",
     "@deepseek-ai/dsh-fs": "0.1.1-rc.2",
     "@deepseek-ai/dsh-invariants": "0.1.1-rc.2",
-    "@deepseek-ai/dsh-llm-pi-ai": "file:.packages/dsh-llm-pi-ai-0.1.1-rc.2-network-error-fix.1.tgz",
+    "@deepseek-ai/dsh-llm-pi-ai": "file:.packages/dsh-llm-pi-ai-0.1.1-rc.2-network-error-live-discovery-fix.2.tgz",
     "@deepseek-ai/dsh-output-retention": "0.1.1-rc.2",
     "@deepseek-ai/dsh-sandbox": "0.1.1-rc.2",
     "@deepseek-ai/dsh-scope": "0.1.1-rc.2",

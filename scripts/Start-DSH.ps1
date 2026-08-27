@@ -52,11 +52,22 @@ $stdoutLog = Join-Path $logRoot 'web-ui.stdout.log'
 $stderrLog = Join-Path $logRoot 'web-ui.stderr.log'
 $oldDshHome = $env:DSH_HOME
 $oldPath = $env:PATH
+$hadNodeUseEnvProxy = Test-Path -LiteralPath 'Env:\NODE_USE_ENV_PROXY'
+$oldNodeUseEnvProxy = $env:NODE_USE_ENV_PROXY
+$hadNoProxy = Test-Path -LiteralPath 'Env:\NO_PROXY'
+$oldNoProxy = $env:NO_PROXY
 $hadDeepSeekApiKey = Test-Path -LiteralPath 'Env:\DEEPSEEK_API_KEY'
 $oldDeepSeekApiKey = $env:DEEPSEEK_API_KEY
 try {
     $env:DSH_HOME = $dataRoot
     $env:PATH = "$($state.runtimeRoot);$oldPath"
+    $env:NODE_USE_ENV_PROXY = '1'
+    $noProxyEntries = @()
+    if (-not [string]::IsNullOrWhiteSpace($env:NO_PROXY)) {
+        $noProxyEntries += $env:NO_PROXY -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ }
+    }
+    $noProxyEntries += @('127.0.0.1', 'localhost', '::1')
+    $env:NO_PROXY = ($noProxyEntries | Select-Object -Unique) -join ','
     Remove-Item -LiteralPath 'Env:\DEEPSEEK_API_KEY' -ErrorAction SilentlyContinue
     $argumentString = '"' + $entrypoint + '" web --host ' + $bindAddress + ' --port ' + $selectedPort + ' --no-open'
     $process = Start-Process -FilePath $nodeExe -ArgumentList $argumentString -WorkingDirectory $state.appRoot -WindowStyle Hidden -RedirectStandardOutput $stdoutLog -RedirectStandardError $stderrLog -PassThru
@@ -64,6 +75,10 @@ try {
 finally {
     $env:DSH_HOME = $oldDshHome
     $env:PATH = $oldPath
+    if ($hadNodeUseEnvProxy) { $env:NODE_USE_ENV_PROXY = $oldNodeUseEnvProxy }
+    else { Remove-Item -LiteralPath 'Env:\NODE_USE_ENV_PROXY' -ErrorAction SilentlyContinue }
+    if ($hadNoProxy) { $env:NO_PROXY = $oldNoProxy }
+    else { Remove-Item -LiteralPath 'Env:\NO_PROXY' -ErrorAction SilentlyContinue }
     if ($hadDeepSeekApiKey) { $env:DEEPSEEK_API_KEY = $oldDeepSeekApiKey }
     else { Remove-Item -LiteralPath 'Env:\DEEPSEEK_API_KEY' -ErrorAction SilentlyContinue }
 }
