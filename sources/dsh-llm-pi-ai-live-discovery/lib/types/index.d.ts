@@ -60,6 +60,7 @@ export { PiAiAdapter } from './adapter.ts';
 export type { PiAiAdapterOptions } from './adapter.ts';
 export { Config } from './config.ts';
 export type { PiAiCompatProfile, PiAiModality, PiAiModelOverride, PiAiModelProfile, PiAiProviderProfile, PiAiReasoningEfforts, PiAiThinkingFormat, ResolvedPiAiProviderProfile, } from './config.ts';
+export { resolveRouteModels } from './catalog.ts';
 export { recordKeyFor } from './auth.ts';
 export { discoverModels } from './discovery.ts';
 export { supportedProtocols } from './provider.ts';

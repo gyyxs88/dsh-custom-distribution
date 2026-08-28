@@ -4477,12 +4477,30 @@ const llmModelsValueSchema = z$1.object({
 	failures: z$1.array(modelCatalogFailureSchema)
 });
 /** DiscoveredModelView row of llm.discoverModels. */
+const discoveredReasoningWireSchema = z$1.union([z$1.string().min(1), z$1.literal(null)]);
+const discoveredReasoningEffortsSchema = z$1.union([
+	z$1.literal(false),
+	z$1.object({
+		off: discoveredReasoningWireSchema.optional(),
+		minimal: discoveredReasoningWireSchema.optional(),
+		low: discoveredReasoningWireSchema.optional(),
+		medium: discoveredReasoningWireSchema.optional(),
+		high: discoveredReasoningWireSchema.optional(),
+		xhigh: discoveredReasoningWireSchema.optional(),
+		max: discoveredReasoningWireSchema.optional()
+	})
+]);
 const discoveredModelViewSchema = z$1.object({
 	id: z$1.string().min(1),
 	name: z$1.string().min(1).optional(),
 	contextWindow: z$1.number().int().positive().optional(),
 	maxTokens: z$1.number().int().positive().optional(),
-	input: z$1.array(z$1.union([z$1.literal("text"), z$1.literal("image")])).min(1).optional()
+	input: z$1.array(z$1.union([z$1.literal("text"), z$1.literal("image")])).min(1).optional(),
+	reasoningEfforts: discoveredReasoningEffortsSchema.optional(),
+	defaultReasoningEffort: z$1.union([
+		z$1.literal("off"), z$1.literal("minimal"), z$1.literal("low"), z$1.literal("medium"),
+		z$1.literal("high"), z$1.literal("xhigh"), z$1.literal("max")
+	]).optional()
 });
 /** llm.discoverModels request payload. */
 const llmDiscoverModelsRequestSchema = z$1.object({

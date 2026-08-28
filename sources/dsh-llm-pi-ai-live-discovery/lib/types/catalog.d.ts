@@ -82,7 +82,7 @@ declare const COMPLETIONS_COMPAT_GATE: {
     readonly supportsStrictMode: "offer";
     readonly cacheControlFormat: "offer";
     readonly supportsLongCacheRetention: "offer";
-    readonly openRouterRouting: "withhold";
+    readonly openRouterRouting: "offer";
     readonly vercelGatewayRouting: "withhold";
     readonly zaiToolStream: "withhold";
     readonly supportsOpenAIGrammarTools: "withhold";
@@ -185,6 +185,8 @@ export interface PiAiCompatProfile {
      * `openai-completions`, the three Responses protocols, `anthropic-messages`.
      */
     supportsLongCacheRetention?: boolean;
+    /** OpenRouter upstream routing policy sent in the request's `provider` field; `openai-completions`. */
+    openRouterRouting?: NonNullable<OpenAICompletionsCompat['openRouterRouting']>;
     /** Whether the endpoint accepts per-tool `eager_input_streaming`; `anthropic-messages`. */
     supportsEagerToolInputStreaming?: boolean;
     /** Whether the endpoint accepts `cache_control` on tool definitions; `anthropic-messages`. */
@@ -260,6 +262,10 @@ export interface PiAiModelProfile {
      * declares the offered levels and their wire spellings.
      */
     reasoningEfforts?: false | PiAiReasoningEfforts;
+    /** Default effort for this exact model; must be one of its configured or inherited efforts. */
+    defaultReasoningEffort?: ModelThinkingLevel;
+    /** Configuration provenance shown by the Models UI; ignored by request dispatch. */
+    source?: 'manual' | 'discovered';
     /** pi-ai wire-compatibility switches for this model, winning over the route's per field; one its protocol does not declare is refused. */
     compat?: PiAiCompatProfile;
 }
@@ -295,7 +301,9 @@ export interface RouteCatalogRequest {
 /** One route's materialized catalog, plus the request caps its profile chose. */
 export interface RouteCatalog {
     /** The materialized models in configuration order. */
-    models: readonly Model<Api>[];
+    models: readonly (Model<Api> & {
+        defaultReasoningEffort?: ModelThinkingLevel;
+    })[];
     /**
      * Per-request output caps this profile explicitly configured, by model id.
      *

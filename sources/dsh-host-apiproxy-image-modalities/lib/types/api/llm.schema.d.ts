@@ -59,6 +59,8 @@ export declare const discoveredModelViewSchema: z.ZodObject<{
     contextWindow: z.ZodOptional<z.ZodNumber>;
     maxTokens: z.ZodOptional<z.ZodNumber>;
     input: z.ZodOptional<z.ZodArray<z.ZodUnion<readonly [z.ZodLiteral<"text">, z.ZodLiteral<"image">]>>>;
+    reasoningEfforts: z.ZodOptional<z.ZodType<false | Partial<Record<'off' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh' | 'max', string | null>>>>;
+    defaultReasoningEffort: z.ZodOptional<z.ZodType<'off' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh' | 'max'>>;
 }, z.core.$strip>;
 /** llm.discoverModels request payload. */
 export declare const llmDiscoverModelsRequestSchema: z.ZodObject<{
@@ -76,6 +78,8 @@ export declare const llmDiscoverModelsValueSchema: z.ZodObject<{
         contextWindow: z.ZodOptional<z.ZodNumber>;
         maxTokens: z.ZodOptional<z.ZodNumber>;
         input: z.ZodOptional<z.ZodArray<z.ZodUnion<readonly [z.ZodLiteral<"text">, z.ZodLiteral<"image">]>>>;
+        reasoningEfforts: z.ZodOptional<z.ZodType<false | Partial<Record<'off' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh' | 'max', string | null>>>>;
+        defaultReasoningEffort: z.ZodOptional<z.ZodType<'off' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh' | 'max'>>;
     }, z.core.$strip>>;
 }, z.core.$strip>;
 //# sourceMappingURL=llm.schema.d.ts.map

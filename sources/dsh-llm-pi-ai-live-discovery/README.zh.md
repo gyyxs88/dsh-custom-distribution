@@ -75,19 +75,22 @@
               off:
               high: high
               max: ultra
+            defaultReasoningEffort: high
 ```
 
 字典形状使重复路由无法表示，发布前的数组形状（每个 profile 携带 `provider` 字段）会加载失败并给出迁移指引。`providers` 也可以为空或整体省略：适配器将以**休眠**姿态挂载——零路由、模型选择器不多一条——一旦 `llm-pi-ai:` settings 分节提供了 profile 就即时注册路由，分节清空时随之撤销。无论是否休眠，插件都会在可配置提供方目录（`ctx.llm.listConfigurableProviders()`，settings 路径 `providers.<provider>`）中声明每个已安装 catalog 提供方，并与当前 profile 声明的每条路由取并集，因此配置界面既能在任何路由存在之前就提供完整 catalog，也能寻址一条手工声明的路由。每个条目都带上 `declared`：pi-ai 在这个键下是否什么都没有。它跟随已安装 catalog 而非设置文档，因为收窄一个内置提供方的模型同样会存下 profile，而那条路由仍然是 pi-ai 认识的——只有适配器分得清两者，所以由目录直接给出答案，而不是留给界面去猜。哪些适配器存在归组合面；哪些提供方在运行可以完全交给用户的设置文档。向 `ctx.llm` 注册具有原子性：如果与另一适配器已拥有的任何提供方路由冲突，插件会加载失败，不注册剩余路由。模型 id 不是生命周期配置；路由未配置的模型会在发起任何提供方请求前以 `LlmError('UNKNOWN_MODEL')` 失败。
 
 ## Catalog 解析
 
-profile 的 `models` 列表是*替换*该路由已安装 catalog，而不是扩充它；省略它（或留空）则原样服务该 catalog。每个条目都会从同 `id` 的已安装模型继承自身未设置的字段，因此把 catalog 路由收窄到两个模型、更正某个容量，或加入一个比已安装 catalog 更新的模型，都是一行编辑——但一旦声明了 `models` 列表，该路由要继续服务的每个模型就都必须出现在其中，条目哪怕只写一个 `id` 也足够。可配置的条目字段是 `id`、`name`、`contextWindow`、`maxTokens`、`reasoningEfforts` 与 `compat`。定价与输入模态没有 harness 消费方，因此沿用已安装条目或直接缺席。
+profile 的 `models` 列表是*替换*该路由已安装 catalog，而不是扩充它；省略它（或留空）则原样服务该 catalog。每个条目都会从同 `id` 的已安装模型继承自身未设置的字段，因此把 catalog 路由收窄到两个模型、更正某个容量，或加入一个比已安装 catalog 更新的模型，都是一行编辑——但一旦声明了 `models` 列表，该路由要继续服务的每个模型就都必须出现在其中，条目哪怕只写一个 `id` 也足够。可配置的条目字段是 `id`、`name`、`contextWindow`、`maxTokens`、`input`、`reasoningEfforts`、`defaultReasoningEffort`、`source` 与 `compat`。定价仍属于已安装 catalog 元数据，不会复制进 Harness 模型目录。
 
 `modelOverrides` 无需这份代价就能就地重塑单个已安装 catalog 模型：每个键是一个 catalog 模型 id，每个值可写 `models` 条目接受的同一批字段，只是 id 落在键上，而 catalog 的其余部分原样继续服务——「改一个模型、其余三十七个原样保留」只是一次三行编辑。一条覆盖会成为该 catalog 条目的配置，因此容量、档位与 compat 沿与 `models` 条目相同的路径解析，携带相同的诊断与相同的请求默认值语义。覆盖只在正服务自身 catalog 的 catalog 路由上才有意义：与 `models` 列表并存的一份（该列表本就替换了 catalog）、落在手工声明路由上的一份（其模型已在 `models` 中完整写出），或点名了 catalog 未描述模型的一份，都会被拒绝而非跳过，因为一个静默保持原样的模型，就是一个否则要有人费力追查的笔误。
 
 ### 按模型的推理（reasoning）档位
 
 `reasoningEfforts` 声明模型可选的思考级别：每个键是选择器提供的一个档位，其值是分派在协议中发送的拼写，因此 `high: high` 原样透传规范名称，而 `max: ultra` 则为使用自有词汇的网关改名。键取自 pi-ai 的档位集合（`off`、`minimal`、`low`、`medium`、`high`、`xhigh`、`max`）；未声明的档位不会被提供。省略该字段会保留已安装 catalog 条目的能力（手工声明的模型没有这份能力，也不推理）；`false` 声明一个不具备推理能力的模型，profile 正是以此从其网关无法服务的 catalog 模型上剥除推理；空声明会被拒绝，而不是在这两种含义之间去猜。
+
+`defaultReasoningEffort` 属于单个模型，且必须点名该模型已经启用的档位。请求没有指定档位时，它先于提供方级 `reasoning` 回退值生效；无效默认值会在 settings 解析阶段、发起任何提供方 I/O 前被拒绝。
 
 该声明会转换为 pi-ai 的 `Model.reasoning` + `thinkingLevelMap`，其中每个档位都被显式决定——未声明的档位一律固定为不支持，而不是留给 pi-ai 自己的默认规则：那套规则并不对称（键缺席对五个基础档位意味着「支持」，对 `xhigh`/`max` 却意味着「不支持」），也本不该要求 profile 作者了解。`off` 是唯一的三态键：不写它，选择器不提供 Off，显式请求 Off 会被拒绝——不点名任何档位的请求仍会在不带该参数的情况下发出，提供方随后做什么是它自己的默认行为；声明而不给值（`off:`），则会提供 Off，选中它时什么也不发送——对 `deepseek` 方言则是一个显式的 `thinking: {type: "disabled"}`——这同时覆盖完全不点名任何档位的请求；声明并给值（`off: none`），该值就会作为档位参数在协议中发送。没有任何写法能把 catalog 映射中的键恢复为「未设置」：这份声明就是对外提供的全部，因此把你要保留的 catalog 档位重述出来。
 
@@ -97,7 +100,7 @@ pi-ai 依据提供方 id 与 baseURL 决定每个请求的形状：系统提示�
 
 每个开关归属于其 pi-ai compat 类型声明了它的那些协议，且归组依据是 compat **类型**而非协议名：三个 Responses 协议（`openai-responses`、`azure-openai-responses`、`openai-codex-responses`）共用同一个 compat 类型，因此可设在其中之一的开关，三者皆可设。`supportsDeveloperRole` 可设在 `openai-completions` 与这三者上；`thinkingFormat` 只能设在 `openai-completions`；`supportsTemperature` 只能设在 `anthropic-messages`；`supportsStrictMode` 还可达 `bedrock-converse-stream`。模型级开关若其协议并不接受，解析失败并点名该协议实际提供哪些开关；路由级开关则落在读取它的模型上、跳过其余模型，只有当路由上没有任何模型能读取它时才被拒绝。
 
-三类键会被拒绝而非丢弃：没有任何协议声明的键（笔误）；pi-ai 已安装 catalog 为具名厂商掌管的键（`openRouterRouting`、`zaiToolStream`、`deferredToolsMode`、`sessionAffinityFormat`、`supportsOpenAIGrammarTools`、`supportsToolSearch`、`supportsExplicitPromptCacheMode`、`supportsToolReferences`、`vercelGatewayRouting`、`sendSessionAffinityHeaders`）——需要某厂商专属开关的路由，本就是一条应当以该厂商命名的 catalog 路由；以及完全没有写值的键（`supportsDeveloperRole:`），schemastery 会把它放行为 null，若照单收下就会用空值替换已安装 catalog 的值。开放集由漂移门禁钉在 pi-ai 的四个 compat 类型上，承载它们的协议集派生自 `Model.compat` 本身，每个字段的类型也派生自上游而非重述，因此上游新增字段、给别的协议加上 compat 类型、或拓宽某个值并集，都会使构建失败，直到有人为它做出分类。
+三类键会被拒绝而非丢弃：没有任何协议声明的键（笔误）；除显式支持的 OpenRouter 策略外、pi-ai 已安装 catalog 为具名厂商掌管的键（`zaiToolStream`、`deferredToolsMode`、`sessionAffinityFormat`、`supportsOpenAIGrammarTools`、`supportsToolSearch`、`supportsExplicitPromptCacheMode`、`supportsToolReferences`、`vercelGatewayRouting`、`sendSessionAffinityHeaders`）；以及完全没有写值的键（`supportsDeveloperRole:`），schemastery 会把它放行为 null，若照单收下就会用空值替换已安装 catalog 的值。`compat.openRouterRouting` 可用于 `openrouter` 路由，承载上游供应商选择、回退、隐私、价格和延迟约束；分派前会移除空数组与空的嵌套对象，因此未触碰的表单绝不会意外变成“一个供应商都不允许”。其余开放集由漂移门禁钉在 pi-ai 的四个 compat 类型上，承载它们的协议集派生自 `Model.compat` 本身，每个字段的类型也派生自上游而非重述，因此上游新增字段、给别的协议加上 compat 类型、或拓宽某个值并集，都会使构建失败，直到有人为它做出分类。
 
 条目与已安装 catalog 都没有给出尺寸的模型，会采用该路由的 `defaultContextWindow`（262,144）与 `defaultMaxTokens`（32,768），因此一份只公布 id 的列表同样能产出可服务的路由。两个回退值本质上都是猜测，这正是它们作为路由字段、供网关服务更小模型的部署一次性更正的原因，而不是埋在适配器里的常量；回退值只用于给模型定尺寸，绝不会变成单次请求上限。
 

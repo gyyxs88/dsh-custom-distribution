@@ -3,10 +3,11 @@
   "description": "API gateway: the ApiProxy contract (api/), the fetch carrier pair (fetch/), and the host-side gateway plugin providing ctx.apiProxy",
   "version": "0.1.1-rc.2",
   "dshLocalPatch": {
-    "id": "discovered-input-modalities.1",
+    "id": "discovered-model-capabilities.1",
     "baseVersion": "0.1.1-rc.2",
     "changes": [
-      "carry discovered text and image input modalities through the Host RPC schema"
+      "carry discovered text and image input modalities through the Host RPC schema",
+      "carry explicit reasoning levels and model defaults through the Host RPC schema"
     ]
   },
   "publishConfig": {

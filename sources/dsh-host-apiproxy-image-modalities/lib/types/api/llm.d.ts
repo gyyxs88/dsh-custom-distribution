@@ -86,5 +86,9 @@ export interface DiscoveredModelView {
     maxTokens?: number;
     /** Input modalities the endpoint declares and DSH can represent. */
     input?: Array<'text' | 'image'>;
+    /** Explicitly advertised reasoning levels and their wire values; false means non-reasoning. */
+    reasoningEfforts?: false | Partial<Record<'off' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh' | 'max', string | null>>;
+    /** Advertised default reasoning level, only when it is one of the advertised efforts. */
+    defaultReasoningEffort?: 'off' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh' | 'max';
 }
 //# sourceMappingURL=llm.d.ts.map
