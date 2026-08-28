@@ -3,10 +3,13 @@
   "description": "Models settings and shared product-onboarding dialogs over existing settings and credential joins",
   "version": "0.1.1-rc.2",
   "dshLocalPatch": {
-    "id": "discovered-input-modalities.1",
+    "id": "model-capability-editor.1",
     "baseVersion": "0.1.1-rc.2",
     "changes": [
-      "persist discovered text and image input modalities when adopting models"
+      "persist discovered text and image input modalities when adopting models",
+      "edit per-model reasoning levels, defaults, provenance, and compatibility",
+      "edit OpenRouter upstream routing policy",
+      "edit the default model and reasoning level for new sessions"
     ]
   },
   "publishConfig": {

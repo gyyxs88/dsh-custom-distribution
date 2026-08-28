@@ -27,12 +27,30 @@ export const llmModelsValueSchema = z.object({
     failures: z.array(modelCatalogFailureSchema),
 });
 /** DiscoveredModelView row of llm.discoverModels. */
+const discoveredReasoningWireSchema = z.union([z.string().min(1), z.literal(null)]);
+const discoveredReasoningEffortsSchema = z.union([
+    z.literal(false),
+    z.object({
+        off: discoveredReasoningWireSchema.optional(),
+        minimal: discoveredReasoningWireSchema.optional(),
+        low: discoveredReasoningWireSchema.optional(),
+        medium: discoveredReasoningWireSchema.optional(),
+        high: discoveredReasoningWireSchema.optional(),
+        xhigh: discoveredReasoningWireSchema.optional(),
+        max: discoveredReasoningWireSchema.optional(),
+    }),
+]);
 export const discoveredModelViewSchema = z.object({
     id: z.string().min(1),
     name: z.string().min(1).optional(),
     contextWindow: z.number().int().positive().optional(),
     maxTokens: z.number().int().positive().optional(),
     input: z.array(z.union([z.literal("text"), z.literal("image")])).min(1).optional(),
+    reasoningEfforts: discoveredReasoningEffortsSchema.optional(),
+    defaultReasoningEffort: z.union([
+        z.literal("off"), z.literal("minimal"), z.literal("low"), z.literal("medium"),
+        z.literal("high"), z.literal("xhigh"), z.literal("max"),
+    ]).optional(),
 });
 /** llm.discoverModels request payload. */
 export const llmDiscoverModelsRequestSchema = z.object({

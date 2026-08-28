@@ -11,8 +11,8 @@ function normalizeText(text) {
   return text.replaceAll("\r\n", "\n");
 }
 
-test("pi-ai package contains reviewed retry and live discovery policies", () => {
-  const archive = join(root, "packages", "dsh-llm-pi-ai-0.1.1-rc.2-network-error-live-discovery-fix.3.tgz");
+test("pi-ai package contains reviewed transport, discovery, capability, and routing policies", () => {
+  const archive = join(root, "packages", "dsh-llm-pi-ai-0.1.1-rc.2-model-capability-routing.1.tgz");
   const source = execFileSync("tar.exe", ["-xOf", archive, "package/lib/index.js"], { encoding: "utf8" });
   assert.match(source, /network\(\?:_error\)\?/u);
   assert.match(source, /LIVE_CATALOG_DISCOVERY_POLICIES/u);
@@ -20,29 +20,39 @@ test("pi-ai package contains reviewed retry and live discovery policies", () => 
   assert.match(source, /top_provider\?\.max_completion_tokens/u);
   assert.match(source, /architecture\?\.input_modalities/u);
   assert.match(source, /input: \[\.\.\.model\.input\]/u);
+  assert.match(source, /defaultReasoningEffort/u);
+  assert.match(source, /openRouterRouting/u);
+  assert.match(source, /function configuredCompatEntries/u);
 });
 
-test("discovered image modalities survive RPC, browser parsing, and settings adoption", () => {
+test("discovered model capabilities survive RPC, browser parsing, and settings adoption", () => {
   const host = execFileSync("tar.exe", [
     "-xOf",
-    join(root, "packages", "dsh-host-apiproxy-0.1.1-rc.2-discovered-input-modalities.1.tgz"),
+    join(root, "packages", "dsh-host-apiproxy-0.1.1-rc.2-discovered-model-capabilities.1.tgz"),
     "package/lib/index.js",
   ], { encoding: "utf8" });
   assert.match(host, /input: z\$1\.array\(z\$1\.union\(\[z\$1\.literal\("text"\), z\$1\.literal\("image"\)\]\)\)\.min\(1\)\.optional\(\)/u);
+  assert.match(host, /reasoningEfforts: discoveredReasoningEffortsSchema\.optional\(\)/u);
+  assert.match(host, /defaultReasoningEffort:/u);
 
   const connection = execFileSync("tar.exe", [
     "-xOf",
-    join(root, "packages", "dsh-client-connection-0.1.1-rc.2-discovered-input-modalities.1.tgz"),
+    join(root, "packages", "dsh-client-connection-0.1.1-rc.2-discovered-model-capabilities.1.tgz"),
     "package/lib/client.js",
   ], { encoding: "utf8" });
   assert.match(connection, /input: array\(union\(\[literal\("text"\), literal\("image"\)\]\)\)\.min\(1\)\.optional\(\)/u);
+  assert.match(connection, /reasoningEfforts: discoveredReasoningEffortsSchema\.optional\(\)/u);
 
   const settingsModels = execFileSync("tar.exe", [
     "-xOf",
-    join(root, "packages", "dsh-client-ui-settings-models-0.1.1-rc.2-discovered-input-modalities.1.tgz"),
+    join(root, "packages", "dsh-client-ui-settings-models-0.1.1-rc.2-model-capability-editor.1.tgz"),
     "package/lib/client.js",
   ], { encoding: "utf8" });
   assert.match(settingsModels, /candidate\.input === void 0 \? \{\} : \{ input: \[\.\.\.candidate\.input\] \}/u);
+  assert.match(settingsModels, /function OpenRouterRoutingEditor/u);
+  assert.match(settingsModels, /function DefaultModelEditor/u);
+  assert.match(settingsModels, /reasoningSelectionUnavailable/u);
+  assert.match(settingsModels, /"aria-label": t\("reasoningCapability"\)/u);
 });
 
 test("conversation source labels are present in source snapshot and artifact", () => {
@@ -111,10 +121,10 @@ test("source snapshots match their bundled artifacts", () => {
   const cases = [
     ["dsh-client-ui-conversation-message-provenance", "dsh-client-ui-conversation-0.1.1-rc.2-message-provenance.2.tgz", "lib/client.js"],
     ["dsh-client-ui-workspace-copy-session-id", "dsh-client-ui-workspace-0.1.1-rc.2-copy-session-id.1.tgz", "lib/client.js"],
-    ["dsh-llm-pi-ai-live-discovery", "dsh-llm-pi-ai-0.1.1-rc.2-network-error-live-discovery-fix.3.tgz", "lib/index.js"],
-    ["dsh-host-apiproxy-image-modalities", "dsh-host-apiproxy-0.1.1-rc.2-discovered-input-modalities.1.tgz", "lib/index.js"],
-    ["dsh-client-connection-image-modalities", "dsh-client-connection-0.1.1-rc.2-discovered-input-modalities.1.tgz", "lib/client.js"],
-    ["dsh-client-ui-settings-models-image-modalities", "dsh-client-ui-settings-models-0.1.1-rc.2-discovered-input-modalities.1.tgz", "lib/client.js"],
+    ["dsh-llm-pi-ai-live-discovery", "dsh-llm-pi-ai-0.1.1-rc.2-model-capability-routing.1.tgz", "lib/index.js"],
+    ["dsh-host-apiproxy-image-modalities", "dsh-host-apiproxy-0.1.1-rc.2-discovered-model-capabilities.1.tgz", "lib/index.js"],
+    ["dsh-client-connection-image-modalities", "dsh-client-connection-0.1.1-rc.2-discovered-model-capabilities.1.tgz", "lib/client.js"],
+    ["dsh-client-ui-settings-models-image-modalities", "dsh-client-ui-settings-models-0.1.1-rc.2-model-capability-editor.1.tgz", "lib/client.js"],
   ];
   for (const [sourceName, archiveName, mainFile] of cases) {
     const temp = mkdtempSync(join(tmpdir(), "dsh-distro-source-"));

@@ -5975,12 +5975,30 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			failures: array(modelCatalogFailureSchema)
 		});
 		/** DiscoveredModelView row of llm.discoverModels. */
+		const discoveredReasoningWireSchema = union([string().min(1), literal(null)]);
+		const discoveredReasoningEffortsSchema = union([
+			literal(false),
+			object({
+				off: discoveredReasoningWireSchema.optional(),
+				minimal: discoveredReasoningWireSchema.optional(),
+				low: discoveredReasoningWireSchema.optional(),
+				medium: discoveredReasoningWireSchema.optional(),
+				high: discoveredReasoningWireSchema.optional(),
+				xhigh: discoveredReasoningWireSchema.optional(),
+				max: discoveredReasoningWireSchema.optional()
+			})
+		]);
 		const discoveredModelViewSchema = object({
 			id: string().min(1),
 			name: string().min(1).optional(),
 			contextWindow: number().int().positive().optional(),
 			maxTokens: number().int().positive().optional(),
-			input: array(union([literal("text"), literal("image")])).min(1).optional()
+			input: array(union([literal("text"), literal("image")])).min(1).optional(),
+			reasoningEfforts: discoveredReasoningEffortsSchema.optional(),
+			defaultReasoningEffort: union([
+				literal("off"), literal("minimal"), literal("low"), literal("medium"),
+				literal("high"), literal("xhigh"), literal("max")
+			]).optional()
 		});
 		object({
 			settingsNs: string().min(1),

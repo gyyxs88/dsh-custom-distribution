@@ -3,14 +3,17 @@
   "description": "pi-ai-backed DeepSeek adapter for the DeepSeek Harness LLM seam (design-verification twin of dsh-llm-deepseek)",
   "version": "0.1.1-rc.2",
   "dshLocalPatch": {
-    "id": "network-error-live-model-discovery-fix.3",
+    "id": "model-capability-routing.1",
     "baseVersion": "0.1.1-rc.2",
     "changes": [
       "classify provider network_error as retryable TRANSPORT",
       "prefer registered live catalogs for opencode-go and openrouter",
       "fall back to installed catalogs on transient discovery failure",
       "map OpenRouter top_provider.max_completion_tokens",
-      "preserve live and fallback catalog input modalities"
+      "preserve live and fallback catalog input modalities",
+      "materialize per-model reasoning levels and defaults",
+      "expose OpenRouter upstream routing preferences",
+      "preserve explicit reasoning metadata during model discovery"
     ]
   },
   "publishConfig": {

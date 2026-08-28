@@ -5,7 +5,7 @@
  * single fact source — every mutation writes through the wire and the page
  * re-renders from the next describe, pushed or refetched.
  */
-import type { ConfigurableProviderView, CredentialView, IApiClient, SettingsNamespaceView } from '@deepseek-ai/dsh-api-remotes/client';
+import type { ConfigurableProviderView, CredentialView, IApiClient, ModelCatalogFailure, ModelProviderGroup, SettingsNamespaceView } from '@deepseek-ai/dsh-api-remotes/client';
 import type { SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client';
 import type { SettingsDescribeFace } from '@deepseek-ai/dsh-client-ui-settings/client';
 import type { SettingsSchemaOperations } from './schema-operations.ts';
@@ -35,6 +35,10 @@ export interface ModelsSettingsState {
     rows: readonly ProviderRow[];
     /** Namespace views by ns, for the editor's schema/layers/secrets. */
     namespaces: ReadonlyMap<string, SettingsNamespaceView>;
+    /** Host-resolved model directory used by the new-session default editor. */
+    groups: readonly ModelProviderGroup[];
+    /** Provider-local catalog failures; successful groups remain editable. */
+    modelFailures: readonly ModelCatalogFailure[];
 }
 /**
  * Human text for a rejected wire call. A transport failure rejects with an

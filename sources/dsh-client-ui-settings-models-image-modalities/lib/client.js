@@ -245,6 +245,19 @@ window.__ModuleLoader__.load({
 					index,
 					key: "modelMaxTokensInvalid"
 				};
+				const input = model["input"];
+				if (input !== void 0 && (!Array.isArray(input) || input.length === 0 || input.some((value) => value !== "text" && value !== "image"))) return {
+					index,
+					key: "modelInputInvalid"
+				};
+				const efforts = model["reasoningEfforts"];
+				if (efforts !== void 0 && efforts !== false) {
+					if (typeof efforts !== "object" || efforts === null || Array.isArray(efforts)) return { index, key: "modelReasoningInvalid" };
+					const entries = Object.entries(efforts);
+					if (!entries.some(([level]) => level !== "off") || entries.some(([level, wire]) => !REASONING_LEVELS.includes(level) || (level === "off" ? wire !== null : typeof wire !== "string" || wire.length === 0))) return { index, key: "modelReasoningInvalid" };
+					const defaultEffort = model["defaultReasoningEffort"];
+					if (defaultEffort !== void 0 && !Object.prototype.hasOwnProperty.call(efforts, defaultEffort)) return { index, key: "modelReasoningDefaultInvalid" };
+				} else if (efforts === false && model["defaultReasoningEffort"] !== void 0) return { index, key: "modelReasoningDefaultInvalid" };
 			}
 		}
 		/**
@@ -514,7 +527,9 @@ window.__ModuleLoader__.load({
 				credentialError: null,
 				writable: false,
 				rows: [],
-				namespaces: /* @__PURE__ */ new Map()
+				namespaces: /* @__PURE__ */ new Map(),
+				groups: [],
+				modelFailures: []
 			});
 			/** Latest load wins; an older response never overwrites a newer one. */
 			generation = 0;
@@ -544,9 +559,15 @@ window.__ModuleLoader__.load({
 				let providers;
 				let writable;
 				let views;
+				let groups = [];
+				let modelFailures = [];
 				try {
-					const [providersResponse] = await Promise.all([this.api.llm.providers({}), this.describeFace.ensure()]);
+					const [providersResponse, modelsResponse] = await Promise.all([this.api.llm.providers({}), this.api.llm.models({}), this.describeFace.ensure()]);
 					if (!providersResponse.result.ok) throw new Error(providersResponse.result.error.message);
+					if (modelsResponse.result.ok) {
+						groups = modelsResponse.result.value.groups;
+						modelFailures = modelsResponse.result.value.failures;
+					} else modelFailures = [{ provider: "", name: "", message: modelsResponse.result.error.message }];
 					const mirrored = this.describeFace.getSnapshot();
 					if (mirrored.view === void 0) throw new Error(mirrored.error ?? "settings are unavailable in this browser");
 					providers = providersResponse.result.value.providers;
@@ -592,6 +613,8 @@ window.__ModuleLoader__.load({
 						...row.apiKeyEnv !== void 0 && credentials[row.apiKeyEnv] !== void 0 ? { credential: credentials[row.apiKeyEnv] } : {}
 					}));
 					s.namespaces = namespaces;
+					s.groups = groups;
+					s.modelFailures = modelFailures;
 				});
 			}
 		};
@@ -727,6 +750,14 @@ window.__ModuleLoader__.load({
 			contextWindow: "256K",
 			maxTokens: "32K"
 		};
+		/** Model capability vocabulary shared by the settings form and adapter. */
+		const REASONING_LEVELS = ["off", "minimal", "low", "medium", "high", "xhigh", "max"];
+		const THINKING_FORMATS = ["openai", "openrouter", "deepseek", "together", "zai", "qwen", "chat-template", "qwen-chat-template", "string-thinking", "ant-ling"];
+		const MAX_TOKEN_FIELDS = ["max_completion_tokens", "max_tokens"];
+		const objectValue = (value) => typeof value === "object" && value !== null && !Array.isArray(value) ? value : {};
+		const listValue = (value) => Array.isArray(value) ? value.filter((entry) => typeof entry === "string" && entry.length > 0) : [];
+		const parseList = (value) => [...new Set(value.split(/[\n,]/u).map((entry) => entry.trim()).filter((entry) => entry.length > 0))];
+		const listText = (value) => listValue(value).join(", ");
 		/**
 		* Spell a stored count for a field that may be unset. The spelling itself is
 		* {@link formatCapacity}, shared with the DeepSeek catalog editor so both
@@ -737,15 +768,25 @@ window.__ModuleLoader__.load({
 		function capacitySpelling(value) {
 			return value === void 0 ? "" : formatCapacity(value);
 		}
-		/** Adopt a candidate, keeping whatever capacities the provider disclosed. */
+		/** Adopt a candidate, keeping every capability the provider disclosed. */
 		function adopt(candidate) {
 			return {
 				id: candidate.id,
 				...candidate.name === void 0 ? {} : { name: candidate.name },
 				...candidate.contextWindow === void 0 ? {} : { contextWindow: candidate.contextWindow },
 				...candidate.maxTokens === void 0 ? {} : { maxTokens: candidate.maxTokens },
-				...candidate.input === void 0 ? {} : { input: [...candidate.input] }
+				...candidate.input === void 0 ? {} : { input: [...candidate.input] },
+				...candidate.reasoningEfforts === void 0 ? {} : { reasoningEfforts: candidate.reasoningEfforts === false ? false : { ...candidate.reasoningEfforts } },
+				...candidate.defaultReasoningEffort === void 0 ? {} : { defaultReasoningEffort: candidate.defaultReasoningEffort },
+				source: "discovered"
 			};
+		}
+		/** Fill only facts an existing row has not overridden; refresh never destroys user choices. */
+		function mergeCandidate(existing, candidate) {
+			const found = adopt(candidate);
+			const next = { ...existing };
+			for (const field of ["name", "contextWindow", "maxTokens", "input", "reasoningEfforts", "defaultReasoningEffort"]) if (next[field] === void 0 && found[field] !== void 0) next[field] = found[field];
+			return next;
 		}
 		/**
 		* Render the model list with its fetch action.
@@ -834,7 +875,8 @@ window.__ModuleLoader__.load({
 				const byId = new Map(models.map((model) => [textOf(model, "id"), model]));
 				for (const candidate of candidates) {
 					if (!picked.has(candidate.id)) continue;
-					byId.set(candidate.id, byId.get(candidate.id) ?? adopt(candidate));
+					const existing = byId.get(candidate.id);
+					byId.set(candidate.id, existing === void 0 ? adopt(candidate) : mergeCandidate(existing, candidate));
 				}
 				onChange([...byId.values()]);
 				closePicker();
@@ -854,6 +896,81 @@ window.__ModuleLoader__.load({
 				});
 			};
 			const askable = probe.provider !== void 0 || probe.baseURL !== void 0 && probe.baseURL.length > 0;
+			const protocol = probe.api ?? (probe.provider === "openrouter" ? "openai-completions" : void 0);
+			const modalitiesOf = (model) => {
+				const configured = listValue(model.input);
+				return configured.length === 0 ? ["text"] : configured;
+			};
+			const setModality = (model, index, modality, enabled) => {
+				const next = new Set(modalitiesOf(model));
+				if (enabled) next.add(modality);
+				else next.delete(modality);
+				if (next.size > 0) patch(index, { input: [...next] });
+			};
+			const reasoningMode = (model) => model.reasoningEfforts === false ? "none" : typeof model.reasoningEfforts === "object" && model.reasoningEfforts !== null ? "custom" : "auto";
+			const setReasoningMode = (index, mode) => {
+				if (mode === "auto") patch(index, { reasoningEfforts: void 0, defaultReasoningEffort: void 0 });
+				else if (mode === "none") patch(index, { reasoningEfforts: false, defaultReasoningEffort: void 0 });
+				else patch(index, { reasoningEfforts: { off: null, low: "low", medium: "medium", high: "high" } });
+			};
+			const setReasoningLevel = (model, index, level, enabled) => {
+				const efforts = { ...objectValue(model.reasoningEfforts) };
+				if (enabled) efforts[level] = level === "off" ? null : level;
+				else delete efforts[level];
+				patch(index, {
+					reasoningEfforts: efforts,
+					...!enabled && model.defaultReasoningEffort === level ? { defaultReasoningEffort: void 0 } : {}
+				});
+			};
+			const setCompat = (model, index, field, value) => {
+				const compat = { ...objectValue(model.compat) };
+				if (value === void 0 || value === "") delete compat[field];
+				else compat[field] = value;
+				patch(index, { compat: Object.keys(compat).length === 0 ? void 0 : compat });
+			};
+			const renderTriStateCompat = (model, index, field, labelKey) => (0, react_jsx_runtime.jsxs)("label", {
+				className: ModelsSection_module_css_default["modelField"],
+				children: [(0, react_jsx_runtime.jsx)("span", {
+					className: ModelsSection_module_css_default["modelFieldLabel"],
+					children: t(labelKey)
+				}), (0, react_jsx_runtime.jsxs)("select", {
+					className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`,
+					"aria-label": t(labelKey),
+					value: typeof objectValue(model.compat)[field] === "boolean" ? String(objectValue(model.compat)[field]) : "",
+					disabled,
+					onChange: (event) => setCompat(model, index, field, event.target.value === "" ? void 0 : event.target.value === "true"),
+					children: [(0, react_jsx_runtime.jsx)("option", { value: "", children: t("automatic") }), (0, react_jsx_runtime.jsx)("option", { value: "true", children: t("enabled") }), (0, react_jsx_runtime.jsx)("option", { value: "false", children: t("disabled") })]
+				})]
+			});
+			const renderCapabilities = (model, index) => {
+				const modalities = modalitiesOf(model);
+				const mode = reasoningMode(model);
+				const efforts = objectValue(model.reasoningEfforts);
+				return (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [
+					(0, react_jsx_runtime.jsxs)("div", {
+						className: ModelsSection_module_css_default["modelField"],
+						style: { gridColumn: "1 / -1" },
+						children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("inputCapabilities") }), (0, react_jsx_runtime.jsxs)("span", { children: [
+							(0, react_jsx_runtime.jsxs)("label", { style: { marginRight: "16px" }, children: [(0, react_jsx_runtime.jsx)("input", { type: "checkbox", checked: modalities.includes("text"), disabled, onChange: (event) => setModality(model, index, "text", event.target.checked) }), ` ${t("inputText")}`] }),
+							(0, react_jsx_runtime.jsxs)("label", { children: [(0, react_jsx_runtime.jsx)("input", { type: "checkbox", checked: modalities.includes("image"), disabled, onChange: (event) => setModality(model, index, "image", event.target.checked) }), ` ${t("inputImage")}`] })
+						] })]
+					}),
+					(0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("reasoningCapability") }), (0, react_jsx_runtime.jsxs)("select", { className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`, "aria-label": t("reasoningCapability"), value: mode, disabled, onChange: (event) => setReasoningMode(index, event.target.value), children: [(0, react_jsx_runtime.jsx)("option", { value: "auto", children: t("reasoningAuto") }), (0, react_jsx_runtime.jsx)("option", { value: "none", children: t("reasoningNone") }), (0, react_jsx_runtime.jsx)("option", { value: "custom", children: t("reasoningCustom") })] })] }),
+					mode !== "custom" ? null : (0, react_jsx_runtime.jsxs)("div", { className: ModelsSection_module_css_default["modelField"], style: { gridColumn: "1 / -1" }, children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("reasoningLevels") }), ...REASONING_LEVELS.map((level) => (0, react_jsx_runtime.jsxs)("label", { style: { display: "grid", gridTemplateColumns: "100px minmax(160px, 1fr)", alignItems: "center", gap: "8px", marginTop: "4px" }, children: [(0, react_jsx_runtime.jsxs)("span", { children: [(0, react_jsx_runtime.jsx)("input", { type: "checkbox", "aria-label": `${t("reasoningLevels")} ${level}`, checked: Object.prototype.hasOwnProperty.call(efforts, level), disabled, onChange: (event) => setReasoningLevel(model, index, level, event.target.checked) }), ` ${level}`] }), level === "off" ? (0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["advancedHint"], children: t("reasoningOffWire") }) : (0, react_jsx_runtime.jsx)("input", { className: ModelsSection_module_css_default["input"], type: "text", value: typeof efforts[level] === "string" ? efforts[level] : level, disabled: disabled || !Object.prototype.hasOwnProperty.call(efforts, level), "aria-label": `${t("reasoningWireValue")} ${level}`, onChange: (event) => { const next = { ...efforts, [level]: event.target.value }; patch(index, { reasoningEfforts: next }); } })] }, level)), (0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], style: { marginTop: "8px" }, children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("reasoningDefault") }), (0, react_jsx_runtime.jsxs)("select", { className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`, "aria-label": t("reasoningDefault"), value: typeof model.defaultReasoningEffort === "string" ? model.defaultReasoningEffort : "", disabled, onChange: (event) => patch(index, { defaultReasoningEffort: event.target.value === "" ? void 0 : event.target.value }), children: [(0, react_jsx_runtime.jsx)("option", { value: "", children: t("providerDefault") }), ...REASONING_LEVELS.filter((level) => Object.prototype.hasOwnProperty.call(efforts, level)).map((level) => (0, react_jsx_runtime.jsx)("option", { value: level, children: level }, level))] })] })] })
+				] });
+			};
+			const renderModelCompat = (model, index) => {
+				if (protocol === void 0) return (0, react_jsx_runtime.jsx)("p", { className: ModelsSection_module_css_default["advancedHint"], style: { gridColumn: "1 / -1" }, children: t("compatNeedsProtocol") });
+				const compat = objectValue(model.compat);
+				const children = [];
+				if (protocol === "openai-completions") {
+					children.push((0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("thinkingFormat") }), (0, react_jsx_runtime.jsxs)("select", { className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`, "aria-label": t("thinkingFormat"), value: typeof compat.thinkingFormat === "string" ? compat.thinkingFormat : "", disabled, onChange: (event) => setCompat(model, index, "thinkingFormat", event.target.value || void 0), children: [(0, react_jsx_runtime.jsx)("option", { value: "", children: t("automatic") }), ...THINKING_FORMATS.map((value) => (0, react_jsx_runtime.jsx)("option", { value, children: value }, value))] })] }, "thinkingFormat"));
+					children.push((0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("maxTokensField") }), (0, react_jsx_runtime.jsxs)("select", { className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`, "aria-label": t("maxTokensField"), value: typeof compat.maxTokensField === "string" ? compat.maxTokensField : "", disabled, onChange: (event) => setCompat(model, index, "maxTokensField", event.target.value || void 0), children: [(0, react_jsx_runtime.jsx)("option", { value: "", children: t("automatic") }), ...MAX_TOKEN_FIELDS.map((value) => (0, react_jsx_runtime.jsx)("option", { value, children: value }, value))] })] }, "maxTokensField"));
+					children.push(renderTriStateCompat(model, index, "supportsReasoningEffort", "supportsReasoningEffort"), renderTriStateCompat(model, index, "supportsDeveloperRole", "supportsDeveloperRole"), renderTriStateCompat(model, index, "supportsStrictMode", "supportsStrictTools"));
+				} else if (protocol === "anthropic-messages") children.push(renderTriStateCompat(model, index, "supportsTemperature", "supportsTemperature"), renderTriStateCompat(model, index, "forceAdaptiveThinking", "forceAdaptiveThinking"), renderTriStateCompat(model, index, "supportsStrictTools", "supportsStrictTools"));
+				else if (protocol.includes("responses")) children.push(renderTriStateCompat(model, index, "supportsDeveloperRole", "supportsDeveloperRole"), renderTriStateCompat(model, index, "supportsStrictMode", "supportsStrictTools"));
+				return children.length === 0 ? null : (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [(0, react_jsx_runtime.jsx)("h4", { style: { gridColumn: "1 / -1", margin: "8px 0 0", fontSize: "12px" }, children: t("compatibility") }), ...children] });
+			};
 			return (0, react_jsx_runtime.jsxs)("section", {
 				className: ModelsSection_module_css_default["modelCatalog"],
 				"aria-label": t("models"),
@@ -898,6 +1015,7 @@ window.__ModuleLoader__.load({
 						className: ModelsSection_module_css_default["modelEntry"],
 						children: [(0, react_jsx_runtime.jsxs)("div", {
 							className: ModelsSection_module_css_default["modelRow"],
+							style: { gridTemplateColumns: "minmax(0,1.4fr) minmax(0,1fr) auto auto auto" },
 							children: [
 								(0, react_jsx_runtime.jsx)("input", {
 									className: ModelsSection_module_css_default["input"],
@@ -920,6 +1038,10 @@ window.__ModuleLoader__.load({
 									onChange: (event) => {
 										patch(index, { name: event.target.value === "" ? void 0 : event.target.value });
 									}
+								}),
+								(0, react_jsx_runtime.jsx)("span", {
+									className: ModelsSection_module_css_default["rowTag"],
+									children: t(model.source === "discovered" ? "modelSourceDiscovered" : "modelSourceManual")
 								}),
 								(0, react_jsx_runtime.jsx)("button", {
 									type: "button",
@@ -987,7 +1109,7 @@ window.__ModuleLoader__.load({
 										editCapacity(index, "maxTokens", event.target.value);
 									}
 								})]
-							})]
+							}), renderCapabilities(model, index), renderModelCompat(model, index)]
 						}) : null]
 					}, index)),
 					(0, react_jsx_runtime.jsx)("button", {
@@ -995,7 +1117,7 @@ window.__ModuleLoader__.load({
 						className: ModelsSection_module_css_default["addModelButton"],
 						disabled,
 						onClick: () => {
-							onChange([...models, { id: "" }]);
+							onChange([...models, { id: "", source: "manual" }]);
 						},
 						children: t("addModel")
 					}),
@@ -1386,6 +1508,51 @@ window.__ModuleLoader__.load({
 			const named = typeof profile === "object" && profile !== null ? profile.apiKeyEnv : void 0;
 			return typeof named === "string" && named.length > 0 ? named : deriveKeyRef(provider);
 		}
+		/** Keep comma-separated routing input stable while its parsed list updates. */
+		function RoutingListInput({ value, onChange, label, placeholder, disabled }) {
+			const [draft, setDraft] = (0, react.useState)(() => listText(value));
+			return (0, react_jsx_runtime.jsx)("input", {
+				className: ModelsSection_module_css_default["input"],
+				type: "text",
+				"aria-label": label,
+				value: draft,
+				placeholder,
+				disabled,
+				onChange: (event) => {
+					setDraft(event.target.value);
+					onChange(parseList(event.target.value));
+				}
+			});
+		}
+		/** Friendly editor for the OpenRouter routing policy pi-ai sends upstream. */
+		function OpenRouterRoutingEditor({ value, onChange, t, disabled }) {
+			const routing = objectValue(value);
+			const set = (field, next) => {
+				const updated = { ...routing };
+				if (next === void 0 || next === "" || Array.isArray(next) && next.length === 0) delete updated[field];
+				else updated[field] = next;
+				onChange(Object.keys(updated).length === 0 ? void 0 : updated);
+			};
+			const booleanField = (field, labelKey) => (0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t(labelKey) }), (0, react_jsx_runtime.jsxs)("select", { className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`, "aria-label": t(labelKey), value: typeof routing[field] === "boolean" ? String(routing[field]) : "", disabled, onChange: (event) => set(field, event.target.value === "" ? void 0 : event.target.value === "true"), children: [(0, react_jsx_runtime.jsx)("option", { value: "", children: t("automatic") }), (0, react_jsx_runtime.jsx)("option", { value: "true", children: t("enabled") }), (0, react_jsx_runtime.jsx)("option", { value: "false", children: t("disabled") })] })] });
+			const listField = (field, labelKey, placeholder) => (0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t(labelKey) }), (0, react_jsx_runtime.jsx)(RoutingListInput, { value: routing[field], label: t(labelKey), placeholder, disabled, onChange: (next) => set(field, next) })] });
+			const price = objectValue(routing.max_price);
+			const setPrice = (field, next) => {
+				const updated = { ...price };
+				if (next.trim().length === 0) delete updated[field];
+				else updated[field] = next.trim();
+				set("max_price", Object.keys(updated).length === 0 ? void 0 : updated);
+			};
+			return (0, react_jsx_runtime.jsxs)("details", { className: ModelsSection_module_css_default["customized"], children: [(0, react_jsx_runtime.jsx)("summary", { className: ModelsSection_module_css_default["customizedSummary"], children: t("openRouterRouting") }), (0, react_jsx_runtime.jsxs)("div", { className: ModelsSection_module_css_default["modelAdvanced"], style: { paddingTop: "12px" }, children: [
+				listField("only", "routingOnly", "DeepSeek, Google"), listField("order", "routingOrder", "DeepSeek, Google"), listField("ignore", "routingIgnore", "Provider slug"), listField("quantizations", "routingQuantizations", "fp16, bf16"),
+				booleanField("allow_fallbacks", "routingFallbacks"), booleanField("require_parameters", "routingRequireParameters"), booleanField("zdr", "routingZdr"), booleanField("enforce_distillable_text", "routingDistillable"),
+				(0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("routingDataCollection") }), (0, react_jsx_runtime.jsxs)("select", { className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`, "aria-label": t("routingDataCollection"), value: typeof routing.data_collection === "string" ? routing.data_collection : "", disabled, onChange: (event) => set("data_collection", event.target.value || void 0), children: [(0, react_jsx_runtime.jsx)("option", { value: "", children: t("automatic") }), (0, react_jsx_runtime.jsx)("option", { value: "deny", children: t("routingDataDeny") }), (0, react_jsx_runtime.jsx)("option", { value: "allow", children: t("routingDataAllow") })] })] }),
+				(0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("routingSort") }), (0, react_jsx_runtime.jsxs)("select", { className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`, "aria-label": t("routingSort"), value: typeof routing.sort === "string" ? routing.sort : "", disabled, onChange: (event) => set("sort", event.target.value || void 0), children: [(0, react_jsx_runtime.jsx)("option", { value: "", children: t("automatic") }), (0, react_jsx_runtime.jsx)("option", { value: "price", children: t("routingSortPrice") }), (0, react_jsx_runtime.jsx)("option", { value: "throughput", children: t("routingSortThroughput") }), (0, react_jsx_runtime.jsx)("option", { value: "latency", children: t("routingSortLatency") })] })] }),
+				(0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("routingMaxPromptPrice") }), (0, react_jsx_runtime.jsx)("input", { className: ModelsSection_module_css_default["input"], type: "text", inputMode: "decimal", "aria-label": t("routingMaxPromptPrice"), value: price.prompt ?? "", disabled, onChange: (event) => setPrice("prompt", event.target.value) })] }),
+				(0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("routingMaxCompletionPrice") }), (0, react_jsx_runtime.jsx)("input", { className: ModelsSection_module_css_default["input"], type: "text", inputMode: "decimal", "aria-label": t("routingMaxCompletionPrice"), value: price.completion ?? "", disabled, onChange: (event) => setPrice("completion", event.target.value) })] }),
+				(0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("routingMinThroughput") }), (0, react_jsx_runtime.jsx)("input", { className: ModelsSection_module_css_default["input"], type: "number", min: "0", "aria-label": t("routingMinThroughput"), value: typeof routing.preferred_min_throughput === "number" ? routing.preferred_min_throughput : "", disabled, onChange: (event) => set("preferred_min_throughput", event.target.value === "" ? void 0 : Number(event.target.value)) })] }),
+				(0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("routingMaxLatency") }), (0, react_jsx_runtime.jsx)("input", { className: ModelsSection_module_css_default["input"], type: "number", min: "0", step: "0.1", "aria-label": t("routingMaxLatency"), value: typeof routing.preferred_max_latency === "number" ? routing.preferred_max_latency : "", disabled, onChange: (event) => set("preferred_max_latency", event.target.value === "" ? void 0 : Number(event.target.value)) })] })
+			] })] });
+		}
 		/**
 		* Render one provider's editing card.
 		* @param props - the addressed profile plus wire faces and copy.
@@ -1535,6 +1702,13 @@ window.__ModuleLoader__.load({
 				const models = modelDrafts(modelsOverridden ? customModels : inheritedModels());
 				const defaultContextWindow = schema.getPath(fallback, ["defaultContextWindow"]);
 				const defaultMaxTokens = schema.getPath(fallback, ["maxTokens"]);
+				const routeCompat = objectValue(schema.getPath(draft, ["compat"]));
+				const setOpenRouterRouting = (routing) => {
+					const compat = { ...routeCompat };
+					if (routing === void 0) delete compat.openRouterRouting;
+					else compat.openRouterRouting = routing;
+					setDraft((current) => Object.keys(compat).length === 0 ? schema.deletePath(current, ["compat"]) : schema.setPath(current, ["compat"], compat));
+				};
 				const keyPlaceholder = keyLocked ? t("keyEnvLocked") : keyState?.configured === true && props.credentialRequired !== true ? t("keyStored") : family === "pi-ai" ? t("keyPlaceholderNative") : t("keyPlaceholder");
 				/** What both family editors take: the rows, whose layer owns them, and the two writes. */
 				const catalogProps = {
@@ -1649,7 +1823,12 @@ window.__ModuleLoader__.load({
 								probe,
 								probeBlocked: keyFailure,
 								api
-							})
+							}), family === "pi-ai" && props.provider === "openrouter" ? (0, react_jsx_runtime.jsx)(OpenRouterRoutingEditor, {
+								value: routeCompat.openRouterRouting,
+								onChange: setOpenRouterRouting,
+								t,
+								disabled
+							}) : null
 						]
 					})]
 				})] });
@@ -1785,6 +1964,67 @@ window.__ModuleLoader__.load({
 		function providerCopy(template, target) {
 			return template.replace("{provider}", () => providerTargetLabel(target));
 		}
+		/** Edit the durable provider/model/reasoning defaults applied to new sessions. */
+		function DefaultModelEditor({ namespace, groups, api, controller, t, readOnly }) {
+			const current = objectValue(namespace.value);
+			const [provider, setProvider] = (0, react.useState)(typeof current.provider === "string" ? current.provider : groups[0]?.id ?? "");
+			const [model, setModel] = (0, react.useState)(typeof current.model === "string" ? current.model : groups.find((group) => group.id === provider)?.models[0]?.id ?? "");
+			const [reasoningEffort, setReasoningEffort] = (0, react.useState)(typeof current.reasoningEffort === "string" ? current.reasoningEffort : "");
+			const [busy, setBusy] = (0, react.useState)(false);
+			const [failure, setFailure] = (0, react.useState)(void 0);
+			const group = groups.find((entry) => entry.id === provider);
+			const selected = group?.models.find((entry) => entry.id === model);
+			const unavailableProvider = provider.length > 0 && group === void 0;
+			const unavailableModel = model.length > 0 && selected === void 0;
+			const availableReasoningEfforts = selected?.reasoning?.efforts ?? [];
+			const unavailableReasoning = reasoningEffort.length > 0 && !availableReasoningEfforts.some((effort) => effort.id === reasoningEffort);
+			const changeProvider = (next) => {
+				setProvider(next);
+				const nextModel = groups.find((entry) => entry.id === next)?.models[0];
+				setModel(nextModel?.id ?? "");
+				setReasoningEffort(nextModel?.reasoning?.defaultEffort ?? "");
+			};
+			const changeModel = (next) => {
+				setModel(next);
+				const nextModel = group?.models.find((entry) => entry.id === next);
+				setReasoningEffort(nextModel?.reasoning?.defaultEffort ?? "");
+			};
+			const save = async () => {
+				if (provider.length === 0 || model.length === 0 || unavailableProvider || unavailableModel || unavailableReasoning) return;
+				setBusy(true);
+				setFailure(void 0);
+				try {
+					const response = await api.settings.mutate({
+						ns: "agent-default-model",
+						expectedRevision: namespace.revision,
+						ops: [
+							{ op: "set", path: ["provider"], value: provider },
+							{ op: "set", path: ["model"], value: model },
+							reasoningEffort.length === 0 ? { op: "unset", path: ["reasoningEffort"] } : { op: "set", path: ["reasoningEffort"], value: reasoningEffort }
+						]
+					});
+					if (!response.result.ok) {
+						setFailure(response.result.error.code === "settings-conflict" ? t("conflict") : response.result.error.message);
+						return;
+					}
+					await controller.load();
+				} catch (error) {
+					setFailure(messageOf(error));
+				} finally {
+					setBusy(false);
+				}
+			};
+			return (0, react_jsx_runtime.jsxs)("section", { className: ModelsSection_module_css_default["editor"], children: [
+				(0, react_jsx_runtime.jsx)("h3", { className: ModelsSection_module_css_default["editorTitle"], children: t("defaultModelTitle") }),
+				(0, react_jsx_runtime.jsx)("p", { className: ModelsSection_module_css_default["advancedHint"], children: t("defaultModelDescription") }),
+				(0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("provider") }), (0, react_jsx_runtime.jsxs)("select", { className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`, "aria-label": t("provider"), value: provider, disabled: readOnly || busy, onChange: (event) => changeProvider(event.target.value), children: [unavailableProvider ? (0, react_jsx_runtime.jsx)("option", { value: provider, disabled: true, children: `${provider} (${t("unavailable")})` }) : null, ...groups.map((entry) => (0, react_jsx_runtime.jsx)("option", { value: entry.id, children: entry.name }, entry.id))] })] }),
+				(0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("model") }), (0, react_jsx_runtime.jsxs)("select", { className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`, "aria-label": t("model"), value: model, disabled: readOnly || busy || group === void 0, onChange: (event) => changeModel(event.target.value), children: [unavailableModel ? (0, react_jsx_runtime.jsx)("option", { value: model, disabled: true, children: `${model} (${t("unavailable")})` }) : null, ...(group?.models ?? []).map((entry) => (0, react_jsx_runtime.jsx)("option", { value: entry.id, children: entry.name }, entry.id))] })] }),
+				(0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("reasoningDefault") }), (0, react_jsx_runtime.jsxs)("select", { className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`, "aria-label": t("reasoningDefault"), value: reasoningEffort, disabled: readOnly || busy || selected?.reasoning === void 0, onChange: (event) => setReasoningEffort(event.target.value), children: [(0, react_jsx_runtime.jsx)("option", { value: "", children: selected?.reasoning === void 0 ? t("reasoningUnavailable") : t("providerDefault") }), unavailableReasoning ? (0, react_jsx_runtime.jsx)("option", { value: reasoningEffort, disabled: true, children: `${reasoningEffort} (${t("unavailable")})` }) : null, ...availableReasoningEfforts.map((effort) => (0, react_jsx_runtime.jsx)("option", { value: effort.id, children: effort.name }, effort.id))] })] }),
+				unavailableReasoning ? (0, react_jsx_runtime.jsx)("p", { className: ModelsSection_module_css_default["notice"], children: t("reasoningSelectionUnavailable") }) : null,
+				failure === void 0 ? null : (0, react_jsx_runtime.jsx)("p", { className: ModelsSection_module_css_default["error"], children: failure }),
+				(0, react_jsx_runtime.jsx)("button", { type: "button", className: ModelsSection_module_css_default["primaryButton"], disabled: readOnly || busy || provider.length === 0 || model.length === 0 || unavailableProvider || unavailableModel || unavailableReasoning, onClick: save, children: busy ? t("applying") : t("saveDefault") })
+			] });
+		}
 		/**
 		* Render the Models section content column.
 		* @param props - slot-delivered injected dependencies.
@@ -1883,6 +2123,7 @@ window.__ModuleLoader__.load({
 			const addable = state.rows.filter((row) => !row.configured && row.entry.settingsNs !== "");
 			const addTarget = adding ? editing : void 0;
 			const addNamespace = addTarget === void 0 ? void 0 : state.namespaces.get(addTarget.settingsNs);
+			const defaultModelNamespace = state.namespaces.get("agent-default-model");
 			const protocols = protocolChoices(state.namespaces.get("llm-pi-ai"), schema);
 			return (0, react_jsx_runtime.jsxs)("div", {
 				className: ModelsSection_module_css_default["section"],
@@ -1894,6 +2135,18 @@ window.__ModuleLoader__.load({
 					(0, react_jsx_runtime.jsx)("p", {
 						className: ModelsSection_module_css_default["intro"],
 						children: t("intro")
+					}),
+					defaultModelNamespace === void 0 ? null : (0, react_jsx_runtime.jsx)(DefaultModelEditor, {
+						namespace: defaultModelNamespace,
+						groups: state.groups,
+						api,
+						controller,
+						t,
+						readOnly: !state.writable
+					}, defaultModelNamespace.revision),
+					state.modelFailures.length === 0 ? null : (0, react_jsx_runtime.jsx)("p", {
+						className: ModelsSection_module_css_default["notice"],
+						children: t("modelCatalogPartial")
 					}),
 					!state.writable && state.status === "ready" ? (0, react_jsx_runtime.jsx)("p", {
 						className: ModelsSection_module_css_default["notice"],
@@ -2552,7 +2805,7 @@ window.__ModuleLoader__.load({
 			contextWindowPlaceholder: "Uses the provider default",
 			maxTokens: "Max output tokens",
 			maxTokensPlaceholder: "Uses the provider default",
-			modelAdvanced: "Capacities",
+			modelAdvanced: "Capabilities and compatibility",
 			addModel: "Add model",
 			removeModel: "Delete model",
 			modelsEmpty: "No models will be shown in the selector. Unlisted IDs can still be sent directly.",
@@ -2564,11 +2817,67 @@ window.__ModuleLoader__.load({
 			modelNameInvalid: "Display name cannot be empty.",
 			modelContextInvalid: "Context window must be a positive count, like 131072, 256K, or 1M.",
 			modelMaxTokensInvalid: "Max output tokens must be a positive count, like 8192, 64K, or 1M.",
-			advancedHint: "Other fields live in settings.yaml; edit that section directly.",
+			advancedHint: "Less common transport and cache fields remain available in settings.yaml.",
 			modelCapacityInvalid: "A capacity must be a number, optionally suffixed K or M.",
 			modelDuplicate: "Each model ID may appear once.",
 			modelContextWindow: "Context window",
 			modelMaxTokens: "Max output tokens",
+			modelSourceDiscovered: "Discovered",
+			modelSourceManual: "Manual",
+			inputCapabilities: "Input capabilities",
+			inputText: "Text",
+			inputImage: "Images",
+			reasoningCapability: "Reasoning capability",
+			reasoningAuto: "Auto / unknown",
+			reasoningNone: "No reasoning",
+			reasoningCustom: "Configure levels",
+			reasoningLevels: "Selectable reasoning levels and wire values",
+			reasoningOffWire: "Omit the reasoning parameter",
+			reasoningWireValue: "Wire value",
+			reasoningDefault: "Default reasoning level",
+			providerDefault: "Provider default",
+			reasoningUnavailable: "This model exposes no reasoning levels",
+			reasoningSelectionUnavailable: "The saved reasoning level is not offered by the selected model. Choose an available level or the provider default before saving.",
+			automatic: "Auto",
+			enabled: "Enabled",
+			disabled: "Disabled",
+			compatibility: "Protocol compatibility",
+			compatNeedsProtocol: "Select the provider protocol before configuring compatibility.",
+			thinkingFormat: "Reasoning request format",
+			maxTokensField: "Output-token field",
+			supportsReasoningEffort: "Accepts reasoning effort",
+			supportsDeveloperRole: "Accepts developer role",
+			supportsStrictTools: "Strict tool schemas",
+			supportsTemperature: "Accepts temperature",
+			forceAdaptiveThinking: "Force adaptive thinking",
+			openRouterRouting: "OpenRouter upstream routing",
+			routingOnly: "Allowed providers only",
+			routingOrder: "Provider priority",
+			routingIgnore: "Excluded providers",
+			routingQuantizations: "Allowed quantizations",
+			routingFallbacks: "Allow provider fallback",
+			routingRequireParameters: "Require every request parameter",
+			routingZdr: "Zero Data Retention only",
+			routingDistillable: "Require distillable text",
+			routingDataCollection: "Data collection policy",
+			routingDataDeny: "Deny data collection",
+			routingDataAllow: "Allow data collection",
+			routingSort: "Routing sort",
+			routingSortPrice: "Lowest price",
+			routingSortThroughput: "Highest throughput",
+			routingSortLatency: "Lowest latency",
+			routingMaxPromptPrice: "Max prompt price / 1M tokens",
+			routingMaxCompletionPrice: "Max completion price / 1M tokens",
+			routingMinThroughput: "Preferred minimum throughput",
+			routingMaxLatency: "Preferred maximum latency (seconds)",
+			defaultModelTitle: "New-session default model",
+			defaultModelDescription: "Applies to newly created sessions. Each conversation can still override its model and reasoning level.",
+			unavailable: "Unavailable",
+			saveDefault: "Save default",
+			modelCatalogPartial: "Some provider catalogs could not be loaded. Existing unavailable defaults remain visible and are not silently replaced.",
+			modelInputInvalid: "Select at least one supported input capability.",
+			modelReasoningInvalid: "Configure at least one reasoning level beyond off, and give every enabled level a non-empty wire value.",
+			modelReasoningDefaultInvalid: "The default reasoning level must be one of this model's enabled levels.",
 			fetchModels: "Fetch available models",
 			fetching: "Asking the provider…",
 			fetchNeedsBaseUrl: "Enter the base URL first, then fetch.",
@@ -2650,7 +2959,7 @@ window.__ModuleLoader__.load({
 			contextWindowPlaceholder: "使用提供方默认值",
 			maxTokens: "最大输出 token 数",
 			maxTokensPlaceholder: "使用提供方默认值",
-			modelAdvanced: "容量",
+			modelAdvanced: "能力与兼容性",
 			addModel: "添加模型",
 			removeModel: "删除模型",
 			modelsEmpty: "模型选择器中将不显示任何模型；目录外 ID 仍可直接发送。",
@@ -2662,11 +2971,67 @@ window.__ModuleLoader__.load({
 			modelNameInvalid: "显示名称不能为空。",
 			modelContextInvalid: "上下文窗口必须是正数，例如 131072、256K 或 1M。",
 			modelMaxTokensInvalid: "最大输出 token 数必须是正数，例如 8192、64K 或 1M。",
-			advancedHint: "其余字段在 settings.yaml 中，请直接编辑对应段。",
+			advancedHint: "少用的传输与缓存字段仍可在 settings.yaml 中配置。",
 			modelCapacityInvalid: "容量需为数字，可加 K 或 M 后缀。",
 			modelDuplicate: "每个模型 ID 只能出现一次。",
 			modelContextWindow: "上下文窗口",
 			modelMaxTokens: "最大输出 token",
+			modelSourceDiscovered: "自动发现",
+			modelSourceManual: "手工添加",
+			inputCapabilities: "输入能力",
+			inputText: "文本",
+			inputImage: "图片",
+			reasoningCapability: "思维能力",
+			reasoningAuto: "自动判断 / 未知",
+			reasoningNone: "不支持思维",
+			reasoningCustom: "配置思维档位",
+			reasoningLevels: "可选思维档位及请求值",
+			reasoningOffWire: "不发送思维参数",
+			reasoningWireValue: "请求值",
+			reasoningDefault: "默认思维强度",
+			providerDefault: "供应商默认",
+			reasoningUnavailable: "该模型未提供思维档位",
+			reasoningSelectionUnavailable: "已保存的思维档位不属于当前模型。保存前请选择可用档位，或改为供应商默认。",
+			automatic: "自动",
+			enabled: "启用",
+			disabled: "禁用",
+			compatibility: "协议兼容性",
+			compatNeedsProtocol: "请先选择供应商协议，再配置兼容性。",
+			thinkingFormat: "思维参数格式",
+			maxTokensField: "输出 token 字段",
+			supportsReasoningEffort: "接受思维强度参数",
+			supportsDeveloperRole: "接受 developer 角色",
+			supportsStrictTools: "严格工具 Schema",
+			supportsTemperature: "接受 temperature",
+			forceAdaptiveThinking: "强制自适应思维",
+			openRouterRouting: "OpenRouter 上游供应商路由",
+			routingOnly: "仅允许这些供应商",
+			routingOrder: "供应商优先顺序",
+			routingIgnore: "排除供应商",
+			routingQuantizations: "允许的量化格式",
+			routingFallbacks: "允许供应商回退",
+			routingRequireParameters: "要求支持全部请求参数",
+			routingZdr: "仅使用零数据保留端点",
+			routingDistillable: "要求允许文本蒸馏",
+			routingDataCollection: "数据收集策略",
+			routingDataDeny: "禁止数据收集",
+			routingDataAllow: "允许数据收集",
+			routingSort: "路由排序",
+			routingSortPrice: "价格最低",
+			routingSortThroughput: "吞吐最高",
+			routingSortLatency: "延迟最低",
+			routingMaxPromptPrice: "输入最高价 / 百万 token",
+			routingMaxCompletionPrice: "输出最高价 / 百万 token",
+			routingMinThroughput: "期望最低吞吐",
+			routingMaxLatency: "期望最高延迟（秒）",
+			defaultModelTitle: "新会话默认模型",
+			defaultModelDescription: "用于之后创建的新会话；每个会话仍可单独覆盖模型和思维强度。",
+			unavailable: "当前不可用",
+			saveDefault: "保存默认值",
+			modelCatalogPartial: "部分供应商目录加载失败；当前不可用的默认模型会保留显示，不会被静默替换。",
+			modelInputInvalid: "至少选择一种受支持的输入能力。",
+			modelReasoningInvalid: "至少配置一个非关闭档位，并为每个启用档位填写非空请求值。",
+			modelReasoningDefaultInvalid: "默认思维强度必须属于该模型已启用的档位。",
 			fetchModels: "获取可用模型",
 			fetching: "正在询问提供方…",
 			fetchNeedsBaseUrl: "请先填写 API 地址，再获取。",

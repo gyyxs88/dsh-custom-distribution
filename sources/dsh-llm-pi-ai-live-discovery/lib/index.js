@@ -400,7 +400,7 @@ const COMPLETIONS_COMPAT_GATE = {
 	supportsStrictMode: "offer",
 	cacheControlFormat: "offer",
 	supportsLongCacheRetention: "offer",
-	openRouterRouting: "withhold",
+	openRouterRouting: "offer",
 	vercelGatewayRouting: "withhold",
 	zaiToolStream: "withhold",
 	supportsOpenAIGrammarTools: "withhold",
@@ -471,6 +471,20 @@ function compatGate(api) {
 */
 function configuredCompatEntries(compat) {
 	return Object.entries(compat ?? {}).flatMap(([field, value]) => {
+		if (field === "openRouterRouting" && typeof value === "object" && value !== null && !Array.isArray(value)) {
+			const normalized = {};
+			for (const [key, nested] of Object.entries(value)) {
+				if (Array.isArray(nested) && nested.length === 0) continue;
+				if (typeof nested === "object" && nested !== null && !Array.isArray(nested)) {
+					const compact = Object.fromEntries(Object.entries(nested).filter(([, item]) => item !== void 0 && item !== ""));
+					if (Object.keys(compact).length === 0) continue;
+					normalized[key] = compact;
+					continue;
+				}
+				if (nested !== void 0 && nested !== "") normalized[key] = nested;
+			}
+			return Object.keys(normalized).length === 0 ? [] : [[field, normalized]];
+		}
 		return typeof value === "object" && value !== null && !Array.isArray(value) && Object.keys(value).length === 0 ? [] : [[field, value]];
 	});
 }
@@ -664,7 +678,7 @@ function resolveRouteModels(request) {
 		const maxTokens = entry.maxTokens ?? base?.maxTokens ?? request.defaultMaxTokens;
 		if (!Number.isInteger(maxTokens) || maxTokens <= 0) invalid(provider, `model "${entry.id}" maxTokens must be a positive integer`);
 		if (entry.maxTokens !== void 0) configuredMaxTokens.set(entry.id, entry.maxTokens);
-		return {
+		const resolved = {
 			...base,
 			id: entry.id,
 			name: entry.name ?? base?.name ?? entry.id,
@@ -678,6 +692,12 @@ function resolveRouteModels(request) {
 			...resolveModelReasoning(provider, entry, base),
 			...resolveModelCompat(provider, entry, request.compat, base, api)
 		};
+		if (entry.defaultReasoningEffort !== void 0) {
+			const supported = getSupportedThinkingLevels(resolved);
+			if (!resolved.reasoning || !supported.includes(entry.defaultReasoningEffort)) invalid(provider, `model "${entry.id}" defaultReasoningEffort "${entry.defaultReasoningEffort}" is not one of its configured efforts (${supported.join(", ") || "none"})`);
+			resolved.defaultReasoningEffort = entry.defaultReasoningEffort;
+		}
+		return resolved;
 	});
 	for (const [field] of configuredCompatEntries(request.compat)) {
 		const takers = compatProtocols(field);
@@ -904,6 +924,50 @@ const chatTemplateKwarg = z.union([
 		omitWhenOff: z.boolean()
 	})
 ]);
+/** OpenRouter upstream-routing preferences supported by pi-ai. */
+const openRouterRouting = z.object({
+	allow_fallbacks: z.boolean(),
+	require_parameters: z.boolean(),
+	data_collection: z.union(["deny", "allow"]),
+	zdr: z.boolean(),
+	enforce_distillable_text: z.boolean(),
+	order: z.array(z.string()),
+	only: z.array(z.string()),
+	ignore: z.array(z.string()),
+	quantizations: z.array(z.string()),
+	sort: z.union([
+		z.string(),
+		z.object({
+			by: z.string(),
+			partition: z.union([z.string(), z.const(null)])
+		})
+	]),
+	max_price: z.object({
+		prompt: z.union([z.number(), z.string()]),
+		completion: z.union([z.number(), z.string()]),
+		image: z.union([z.number(), z.string()]),
+		audio: z.union([z.number(), z.string()]),
+		request: z.union([z.number(), z.string()])
+	}),
+	preferred_min_throughput: z.union([
+		z.number(),
+		z.object({
+			p50: z.number(),
+			p75: z.number(),
+			p90: z.number(),
+			p99: z.number()
+		})
+	]),
+	preferred_max_latency: z.union([
+		z.number(),
+		z.object({
+			p50: z.number(),
+			p75: z.number(),
+			p90: z.number(),
+			p99: z.number()
+		})
+	])
+});
 const compatProfile = z.object({
 	supportsStore: z.boolean(),
 	supportsDeveloperRole: z.boolean(),
@@ -919,6 +983,7 @@ const compatProfile = z.object({
 	supportsStrictMode: z.boolean(),
 	cacheControlFormat: z.union(CACHE_CONTROL_FORMATS),
 	supportsLongCacheRetention: z.boolean(),
+	openRouterRouting,
 	supportsEagerToolInputStreaming: z.boolean(),
 	supportsCacheControlOnTools: z.boolean(),
 	supportsTemperature: z.boolean(),
@@ -944,6 +1009,8 @@ const modelFields = {
 	maxTokens: z.number().step(1).min(1),
 	input: z.array(z.union(MODALITIES)),
 	reasoningEfforts: z.union([z.const(false), reasoningEfforts]),
+	defaultReasoningEffort: z.union(THINKING_LEVELS),
+	source: z.union(["manual", "discovered"]),
 	compat: compatProfile
 };
 const modelProfile = z.object({
@@ -1701,7 +1768,7 @@ var PiAiAdapter = class extends LlmAdapter {
 	modelInfo(snapshot, provider, model) {
 		const profile = this.profileOf(snapshot, provider);
 		const resolvedModel = this.modelOf(snapshot, provider, model);
-		const defaultLevel = describableReasoningLevel(resolvedModel, profile.reasoning);
+		const defaultLevel = describableReasoningLevel(resolvedModel, resolvedModel.defaultReasoningEffort ?? profile.reasoning);
 		const configuredMaxTokens = profile.configuredMaxTokens.get(model);
 		return {
 			provider,
@@ -1733,7 +1800,7 @@ var PiAiAdapter = class extends LlmAdapter {
 			if (options.stop !== void 0) throw new LlmError("llm-pi-ai does not support GenerateOptions.stop", "UNSUPPORTED_OPTION");
 			const profile = this.profileOf(snapshot, options.provider);
 			const model = this.modelOf(snapshot, options.provider, options.model);
-			const reasoning = resolveReasoningLevel(model, options.reasoningEffort ?? profile.reasoning);
+			const reasoning = resolveReasoningLevel(model, options.reasoningEffort ?? model.defaultReasoningEffort ?? profile.reasoning);
 			const apiKey = await this.config.resolveApiKey(options.provider, profile);
 			const consumer = new AbortController();
 			const upstream = options.signal === void 0 ? consumer.signal : AbortSignal.any([options.signal, consumer.signal]);
@@ -2025,6 +2092,40 @@ function listingInput(...candidates) {
 		if (input.length > 0) return input;
 	}
 }
+/** Normalize explicitly advertised reasoning levels without guessing unsupported efforts. */
+function listingReasoningEfforts(...candidates) {
+	for (const candidate of candidates) {
+		if (candidate === false) return false;
+		const pairs = [];
+		if (Array.isArray(candidate)) {
+			for (const value of candidate) if (typeof value === "string") pairs.push([value, value]);
+		} else if (typeof candidate === "object" && candidate !== null) {
+			for (const [level, wire] of Object.entries(candidate)) if (typeof wire === "string" || wire === null) pairs.push([level, wire]);
+		} else continue;
+		const efforts = {};
+		for (const [rawLevel, rawWire] of pairs) {
+			const level = rawLevel === "none" || rawLevel === "disabled" ? "off" : rawLevel;
+			if (!THINKING_LEVELS.includes(level)) continue;
+			efforts[level] = level === "off" ? null : rawWire;
+		}
+		if (Object.keys(efforts).some((level) => level !== "off")) return efforts;
+	}
+}
+/** One explicitly advertised default effort, normalized to DSH's vocabulary. */
+function listingDefaultReasoningEffort(...candidates) {
+	for (const candidate of candidates) {
+		if (typeof candidate !== "string") continue;
+		const level = candidate === "none" || candidate === "disabled" ? "off" : candidate;
+		if (THINKING_LEVELS.includes(level)) return level;
+	}
+}
+/** Convert an installed pi-ai model's exact reasoning metadata to editable settings form. */
+function installedReasoningEfforts(model) {
+	if (!model.reasoning) return false;
+	const efforts = {};
+	for (const level of getSupportedThinkingLevels(model)) efforts[level] = level === "off" ? null : model.thinkingLevelMap?.[level] ?? level;
+	return efforts;
+}
 /**
 * Join the endpoint base with the listing path. The base is treated as a
 * prefix rather than a URL to resolve against, so a deployment path such as
@@ -2089,12 +2190,17 @@ function readListing(body) {
 		const contextWindow = capacity(entry?.context_window, entry?.context_length);
 		const maxTokens = capacity(entry?.max_output_tokens, entry?.max_tokens, entry?.top_provider?.max_completion_tokens);
 		const input = listingInput(entry?.architecture?.input_modalities, entry?.input_modalities);
+		const reasoningEfforts = listingReasoningEfforts(entry?.reasoning_efforts, entry?.supported_reasoning_efforts, entry?.architecture?.reasoning_efforts, entry?.reasoning === false ? false : void 0);
+		const advertisedDefaultReasoningEffort = listingDefaultReasoningEffort(entry?.default_reasoning_effort, entry?.reasoning?.default_effort);
+		const defaultReasoningEffort = typeof reasoningEfforts === "object" && advertisedDefaultReasoningEffort !== void 0 && advertisedDefaultReasoningEffort in reasoningEfforts ? advertisedDefaultReasoningEffort : void 0;
 		models.push({
 			id,
 			...name === void 0 ? {} : { name },
 			...contextWindow === void 0 ? {} : { contextWindow },
 			...maxTokens === void 0 ? {} : { maxTokens },
-			...input === void 0 ? {} : { input }
+			...input === void 0 ? {} : { input },
+			...reasoningEfforts === void 0 ? {} : { reasoningEfforts },
+			...defaultReasoningEffort === void 0 ? {} : { defaultReasoningEffort }
 		});
 	}
 	return models;
@@ -2133,7 +2239,8 @@ function installedCatalogListing(provider) {
 		name: model.name,
 		contextWindow: model.contextWindow,
 		maxTokens: model.maxTokens,
-		input: [...model.input]
+		input: [...model.input],
+		reasoningEfforts: installedReasoningEfforts(model)
 	}));
 }
 async function discoverModels(request, storedApiKey) {
@@ -2555,4 +2662,4 @@ function apply(ctx, config) {
 	});
 }
 //#endregion
-export { Config, PiAiAdapter, apply, discoverModels, inject, name, recordKeyFor, supportedProtocols };
+export { Config, PiAiAdapter, apply, discoverModels, inject, name, recordKeyFor, resolveRouteModels, supportedProtocols };
