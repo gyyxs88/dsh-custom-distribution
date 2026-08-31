@@ -7,8 +7,8 @@
 | DeepSeek Harness | 0.1.1-rc.2 | MIT | https://github.com/deepseek-ai/deepseek-harness |
 | Node.js | 24.19.0 | Node.js 许可证集合 | https://nodejs.org/dist/v24.19.0/ |
 | dsh-genui | 1ca5da4eb9394972cce2c1ccacfedc22eec3166b | 以组件仓库为准 | https://github.com/omdsh-dev/dsh-genui |
-| dsh-session-control | 0.7.1 / 14c80dc | MIT | https://github.com/gyyxs88/dsh-session-control |
-| dsh-remote-control | 0.2.5 / dff388d | MIT | https://github.com/gyyxs88/dsh-remote-control |
+| dsh-session-control | 0.7.2 / 37aa94f | MIT | https://github.com/gyyxs88/dsh-session-control |
+| dsh-remote-control | 0.2.6 / ccaee1c | MIT | https://github.com/gyyxs88/dsh-remote-control |
 | dsh-subagent-code-agents | 0.1.7 / 0d62c85 | MIT | https://github.com/gyyxs88/dsh-subagent-code-agents |
 | dsh-at-file | 0.6.7 | MIT | 精确制品随本仓库保留 |
 
