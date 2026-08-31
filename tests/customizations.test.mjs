@@ -71,7 +71,7 @@ test("session menu copies the durable session ID", () => {
 });
 
 test("pinned control artifacts include durable asynchronous reports and their Skills", () => {
-  const sessionArchive = join(root, "packages", "dsh-session-control-0.7.1.tgz");
+  const sessionArchive = join(root, "packages", "dsh-session-control-0.7.2.tgz");
   const sessionNotifier = execFileSync(
     "tar.exe",
     ["-xOf", sessionArchive, "package/lib/operation-notifier.js"],
@@ -82,9 +82,25 @@ test("pinned control artifacts include durable asynchronous reports and their Sk
     ["-xOf", sessionArchive, "package/skills/dsh-session-control/SKILL.md"],
     { encoding: "utf8" },
   );
+  const sessionSecurity = execFileSync(
+    "tar.exe",
+    ["-xOf", sessionArchive, "package/lib/security.js"],
+    { encoding: "utf8" },
+  );
   assert.match(sessionNotifier, /operation-terminal-report/u);
   assert.match(sessionNotifier, /completionDelivery === 'followup'/u);
   assert.match(sessionSkill, /completion_delivery=followup/u);
+  assert.match(sessionSkill, /不能剥离 `session-` 前缀/u);
+  assert.match(sessionSecurity, /data\?\.message\?\.source\?\.callId/u);
+  assert.match(sessionSecurity, /includeToolResults/u);
+
+  const remoteArchive = join(root, "packages", "dsh-remote-control-0.2.6.tgz");
+  const remotePackage = JSON.parse(execFileSync(
+    "tar.exe",
+    ["-xOf", remoteArchive, "package/package.json"],
+    { encoding: "utf8" },
+  ));
+  assert.equal(remotePackage.peerDependencies["dsh-session-control"], ">=0.6.8 <0.8.0");
 
   const subagentArchive = join(root, "packages", "dsh-subagent-code-agents-0.1.7.tgz");
   const runNotifier = execFileSync(
