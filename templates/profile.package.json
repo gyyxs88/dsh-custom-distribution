@@ -6,7 +6,7 @@
     "dsh-at-file": "file:__PACKAGES__/dsh-at-file-0.6.7.tgz",
     "dsh-remote-control": "file:__PACKAGES__/dsh-remote-control-0.2.6.tgz",
     "dsh-session-control": "file:__PACKAGES__/dsh-session-control-0.7.2.tgz",
-    "dsh-subagent-code-agents": "file:__PACKAGES__/dsh-subagent-code-agents-0.1.7.tgz"
+    "dsh-subagent-code-agents": "file:__PACKAGES__/dsh-subagent-code-agents-0.1.8.tgz"
   },
   "dsh": {
     "profile": {

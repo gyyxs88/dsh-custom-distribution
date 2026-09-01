@@ -102,7 +102,7 @@ test("pinned control artifacts include durable asynchronous reports and their Sk
   ));
   assert.equal(remotePackage.peerDependencies["dsh-session-control"], ">=0.6.8 <0.8.0");
 
-  const subagentArchive = join(root, "packages", "dsh-subagent-code-agents-0.1.7.tgz");
+  const subagentArchive = join(root, "packages", "dsh-subagent-code-agents-0.1.8.tgz");
   const runNotifier = execFileSync(
     "tar.exe",
     ["-xOf", subagentArchive, "package/packages/plugin/lib/run-notifier.js"],
@@ -118,6 +118,11 @@ test("pinned control artifacts include durable asynchronous reports and their Sk
     ["-xOf", subagentArchive, "package/packages/plugin/lib/tool.js"],
     { encoding: "utf8" },
   );
+  const ownedRuns = execFileSync(
+    "tar.exe",
+    ["-xOf", subagentArchive, "package/packages/plugin/lib/owned-runs.js"],
+    { encoding: "utf8" },
+  );
   const codexChannel = execFileSync(
     "tar.exe",
     ["-xOf", subagentArchive, "package/node_modules/@dsh-subagent-code-agents/channel-codex/lib/index.js"],
@@ -129,6 +134,12 @@ test("pinned control artifacts include durable asynchronous reports and their Sk
   assert.match(subagentSkill, /默认后台运行并使用 `followup`/u);
   assert.match(subagentTool, /claimNativeJobNotice/u);
   assert.match(subagentTool, /jobs\.wait/u);
+  assert.match(subagentTool, /readOutput: \(\) => progressOutput\.read\(\)/u);
+  assert.match(subagentTool, /Use this first when the user asks for a coding-agent or advisor progress update/u);
+  assert.match(subagentSkill, /先用 `coding_run_read`/u);
+  assert.match(ownedRuns, /const VERSION = 2/u);
+  assert.match(ownedRuns, /readInternal\(id\)/u);
+  assert.doesNotMatch(ownedRuns, /return \{\s*\.\.\.record,\s*active:/u);
   assert.match(codexChannel, /sandbox_mode="read-only"/u);
   assert.doesNotMatch(codexChannel, /exec', 'resume'.*--sandbox/su);
 });

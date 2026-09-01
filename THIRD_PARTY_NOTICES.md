@@ -9,7 +9,7 @@
 | dsh-genui | 1ca5da4eb9394972cce2c1ccacfedc22eec3166b | 以组件仓库为准 | https://github.com/omdsh-dev/dsh-genui |
 | dsh-session-control | 0.7.2 / 37aa94f | MIT | https://github.com/gyyxs88/dsh-session-control |
 | dsh-remote-control | 0.2.6 / ccaee1c | MIT | https://github.com/gyyxs88/dsh-remote-control |
-| dsh-subagent-code-agents | 0.1.7 / 0d62c85 | MIT | https://github.com/gyyxs88/dsh-subagent-code-agents |
+| dsh-subagent-code-agents | 0.1.8 / 771e5c1 | MIT | https://github.com/gyyxs88/dsh-subagent-code-agents |
 | dsh-at-file | 0.6.7 | MIT | 精确制品随本仓库保留 |
 
 `dsh-at-file@0.6.7` 的包元数据没有声明源码仓库，且该版本不在公开 npm registry 中。为保证当前发行可重现，本仓库只保留原包内标为 MIT 的精确 tgz，不声称拥有缺失的上游源码来源。若后续找到正式源码仓库，应在新的发行版本中补齐来源并重新固定摘要。
