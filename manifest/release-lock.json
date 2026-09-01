@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "distribution": {
     "name": "dsh-custom-distribution",
-    "version": "0.2.6",
+    "version": "0.2.7",
     "platform": "win32",
     "architecture": "x64",
     "repository": "https://github.com/gyyxs88/dsh-custom-distribution"
@@ -122,14 +122,14 @@
       "commit": "37aa94faa133b2fce484ed8fc8ff29a58f1888f2"
     },
     {
-      "file": "dsh-subagent-code-agents-0.1.7.tgz",
+      "file": "dsh-subagent-code-agents-0.1.8.tgz",
       "package": "dsh-subagent-code-agents",
-      "version": "0.1.7",
+      "version": "0.1.8",
       "license": "MIT",
       "placement": "profile",
-      "sha256": "42dff7bddfb86c462fe2b65c070af8a270b95ca8fc7d1387f1d681d949ec906f",
+      "sha256": "30f0d9318484b8cbde8f3e3fb9725c8a809fff8471f0d30e162ff11faa6967da",
       "source": "https://github.com/gyyxs88/dsh-subagent-code-agents",
-      "commit": "0d62c8539746e89dc5dfc73bcea8efd944109882"
+      "commit": "771e5c1998e765bb185163fcbe1ebab0a6c2f223"
     }
   ],
   "privateState": [

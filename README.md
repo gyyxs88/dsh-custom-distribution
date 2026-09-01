@@ -14,7 +14,7 @@
 4. 创建独立的数据目录，并启动 `127.0.0.1:3080`；
 5. 输出实际访问地址和验证结果。
 
-也可以下载 `dsh-custom-distribution-v0.2.6-win-x64.zip`，解压后运行：
+也可以下载 `dsh-custom-distribution-v0.2.7-win-x64.zip`，解压后运行：
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Install-Bundle.ps1
