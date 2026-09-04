@@ -42,6 +42,9 @@ export declare const zh: {
     'delete.workspace': string;
     'delete.desc': string;
     'delete.pending': string;
+    'menu.copySessionId': string;
+    'menu.copySessionId.copied': string;
+    'menu.copySessionId.failed': string;
     'menu.fork': string;
     'menu.archiveSession': string;
     'sessions.count.one': string;
@@ -57,6 +60,7 @@ export declare const zh: {
     'status.planReview': string;
     'status.waitingAnswer': string;
     'status.completed': string;
+    'schedule.active': string;
     'hover.created': string;
     'hover.copied': string;
     'date.ymd': string;
@@ -109,6 +113,9 @@ export declare const en: {
     'delete.workspace': string;
     'delete.desc': string;
     'delete.pending': string;
+    'menu.copySessionId': string;
+    'menu.copySessionId.copied': string;
+    'menu.copySessionId.failed': string;
     'menu.fork': string;
     'menu.archiveSession': string;
     'sessions.count.one': string;
@@ -124,6 +131,7 @@ export declare const en: {
     'status.planReview': string;
     'status.waitingAnswer': string;
     'status.completed': string;
+    'schedule.active': string;
     'hover.created': string;
     'hover.copied': string;
     'date.ymd': string;

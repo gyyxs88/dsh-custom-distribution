@@ -29,6 +29,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Install-Bundle.ps1
 
 离线包已经包含 Node、DSH 的 `node_modules` 和 profile 的 `node_modules`。目标电脑不需要 npm 安装，也不会执行第三方 lifecycle script。
 
+发行版启动器会设置受控的 `DSH_MODULE_FALLBACK_MODE=proxy`，让 rc1 使用自身的 ESM module proxy 管理 profile 到安装依赖的解析；这避免依赖 Windows 安装卷的 Junction 遍历能力。该变量只接受 `proxy`，其他显式值会让 DSH 拒绝启动。
+
 ## 首次配置
 
 首次打开 DSH 后，由用户自己在界面中配置 provider 与模型。不要把旧电脑的 API key 粘进安装脚本，也不要把 `.credentials.yaml` 上传到 GitHub。

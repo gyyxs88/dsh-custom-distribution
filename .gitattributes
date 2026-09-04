@@ -10,3 +10,4 @@
 *.yaml text eol=lf
 *.patch text eol=lf
 *.tgz binary
+sources/** -whitespace

@@ -1,8 +1,9 @@
 import { launchEnvironmentOf } from "@deepseek-ai/dsh-launch-environment";
-import { CONTEXT_WINDOW_EXCEEDED_CODE, CallId, EMPTY_RESPONSE_CODE, INVALID_CREDENTIAL_CODE, LlmAdapter, LlmError, QUOTA_EXCEEDED_CODE, ReasoningEffortId, RetryPolicySchema, assertUsableApiKey, attributionHeaders, contentHasImage, isContextWindowExceededError, isQuotaExceededError, normalizeApiKey, offloadRequestImagesWithPolicy, requestImageHandleText, resolveRetryPolicy } from "@deepseek-ai/dsh-llm";
-import { deepEqualJson, installSettingsSection, settingsNamespace } from "@deepseek-ai/dsh-settings";
+import { CONTEXT_WINDOW_EXCEEDED_CODE, EMPTY_RESPONSE_CODE, INVALID_CREDENTIAL_CODE, LlmAdapter, LlmError, QUOTA_EXCEEDED_CODE, ReasoningEffortId, RetryPolicySchema, assertUsableApiKey, attributionHeaders, contentHasImage, isContextWindowExceededError, isQuotaExceededError, normalizeApiKey, offloadRequestImagesWithPolicy, offloadedImageText, requestImageHandleText, resolveImageAttachmentAccess, resolveRetryPolicy } from "@deepseek-ai/dsh-llm";
+import { deepEqualJson } from "@deepseek-ai/dsh-util-values";
 import { createModels, createProvider, getSupportedThinkingLevels, isContextOverflow } from "@earendil-works/pi-ai";
 import { MAX_TIMER_DELAY_MS, idleWatchdog, timeoutOf } from "@deepseek-ai/dsh-timeout";
+import { brandString } from "@deepseek-ai/dsh-brand";
 import z from "@deepseek-ai/schemastery";
 import { credentialKey, credentialKeyId, credentialKeyScope, credentialRef, isCredentialKeySegment, isCredentialRefName } from "@deepseek-ai/dsh-credentials";
 import { builtinProviders, getBuiltinModels, getBuiltinProviders } from "@earendil-works/pi-ai/providers/all";
@@ -236,7 +237,7 @@ function toPiAssistant(message, onDegrade) {
 	try {
 		return replayedAssistant(message, source, source.replayState);
 	} catch (error) {
-		/* v8 ignore next -- replayedAssistant throws only INVALID_REPLAY_STATE LlmErrors today; the
+		/* v8 ignore next -- replayedAssistant throws only INVALID_REPLAY_STATE LlmErrors; the
 		guard keeps a future non-replay failure loud instead of silently degrading it */
 		if (!(error instanceof LlmError) || error.code !== "INVALID_REPLAY_STATE") throw error;
 		onDegrade?.(error.message);
@@ -302,6 +303,7 @@ const SUPPORTED_THINKING_FORMATS = Object.keys({
 	"deepseek": true,
 	"openrouter": true,
 	"together": true,
+	"baseten": true,
 	"zai": true,
 	"qwen": true,
 	"chat-template": true,
@@ -358,29 +360,6 @@ function catalogModels(provider) {
 	return new Map(models.map((model) => [model.id, model]));
 }
 /**
-* Catalog providers whose own model directories are authoritative enough to
-* prefer over the installed pi-ai snapshot. Keeping this explicit prevents a
-* configured URL on an unrelated catalog provider from causing surprise
-* network access.
-*
-* `configured` requires the settings draft to provide a base URL. The
-* `configured-or-catalog` policy may also use the provider URL shipped by
-* pi-ai, which is appropriate for stable first-party directories such as
-* OpenRouter's `/api/v1/models` endpoint.
-*/
-const LIVE_CATALOG_DISCOVERY_POLICIES = /* @__PURE__ */ new Map([
-	["opencode-go", "configured"],
-	["openrouter", "configured-or-catalog"]
-]);
-/** Resolve the live listing base for one explicitly registered catalog route. */
-function liveCatalogBaseURL(request) {
-	if (request.provider === void 0) return void 0;
-	const policy = LIVE_CATALOG_DISCOVERY_POLICIES.get(request.provider);
-	if (policy === void 0) return void 0;
-	if (request.baseURL !== void 0 && request.baseURL.length > 0) return request.baseURL;
-	if (policy === "configured-or-catalog") return catalogProvider(request.provider)?.baseUrl;
-}
-/**
 * Disposition of every `OpenAICompletionsCompat` field. The `Record` key type
 * is a drift gate: a pi-ai upgrade that adds a field fails compilation here
 * until it is classified, so the offer never silently lags the upstream set.
@@ -390,6 +369,7 @@ const COMPLETIONS_COMPAT_GATE = {
 	supportsDeveloperRole: "offer",
 	supportsReasoningEffort: "offer",
 	supportsUsageInStreaming: "offer",
+	supportsFinishReason: "offer",
 	maxTokensField: "offer",
 	requiresToolResultName: "offer",
 	requiresAssistantAfterToolResult: "offer",
@@ -397,6 +377,8 @@ const COMPLETIONS_COMPAT_GATE = {
 	requiresReasoningContentOnAssistantMessages: "offer",
 	thinkingFormat: "offer",
 	chatTemplateKwargs: "offer",
+	chatTemplateArgs: "offer",
+	supportsThinkingTokenBudget: "offer",
 	supportsStrictMode: "offer",
 	cacheControlFormat: "offer",
 	supportsLongCacheRetention: "offer",
@@ -415,6 +397,7 @@ const RESPONSES_COMPAT_GATE = {
 	supportsLongCacheRetention: "offer",
 	sessionAffinityFormat: "withhold",
 	supportsOpenAIGrammarTools: "withhold",
+	supportsAdditionalTools: "withhold",
 	supportsToolSearch: "withhold",
 	supportsExplicitPromptCacheMode: "withhold"
 };
@@ -460,10 +443,10 @@ function compatGate(api) {
 *
 * schemastery materializes an absent dict as `{}` — the behavior
 * `reasoningEfforts` works around with a union — so every parsed profile
-* carries a `chatTemplateKwargs` key whether or not anyone wrote one. An empty
-* one states nothing here: it would send no kwargs, which is exactly what
-* leaving the field out does, so absent and empty are the same request and
-* neither may make a route look like it configured a switch. A valueless
+* carries both template-argument keys whether or not anyone wrote them. An
+* empty one states nothing here: it would send no arguments, which is exactly
+* what leaving the field out does, so absent and empty are the same request
+* and neither may make a route look like it configured a switch. A valueless
 * scalar is the other thing schemastery lets through, and it is refused by
 * {@link assertOfferedCompatFields} before this runs rather than filtered.
 * @param compat - the configured switches, when any.
@@ -738,7 +721,7 @@ function resolveRouteModels(request) {
 * catalog route would.
 *
 * The table is deliberately narrow: the protocols a hand-declared route
-* actually reaches for today, each completely describable with a key, an
+* actually reads, each completely describable with a key, an
 * endpoint, and headers. Bedrock signs with SigV4 over AWS credentials and a
 * region, Vertex needs a project, a location, and application-default
 * credentials, Azure needs provider environment plus an api-version, and Codex
@@ -886,7 +869,7 @@ const DEFAULT_STREAM_IDLE_TIMEOUT_MS = 3e5;
 const DEFAULT_MAX_REQUEST_IMAGE_BYTES = 20 * 1024 * 1024;
 /** Default total-pixel budget preserves the complete 2048px normalized attachment. */
 const DEFAULT_REQUEST_IMAGE_PIXEL_BUDGET = 2048 * 2048;
-/** Default raw encoded-byte cap before inline base64 expansion. */
+/** Default raw encoded-byte target before inline base64 expansion; the smallest quality-ladder output is used when no quality fits. */
 const DEFAULT_REQUEST_IMAGE_MAX_BYTES = 1024 * 1024;
 /** Context capacity assumed for a model neither configuration nor the catalog sizes. */
 const DEFAULT_CONTEXT_WINDOW = 262144;
@@ -910,9 +893,10 @@ const thinkingBudgets = z.object({
 	high: z.number()
 });
 /**
-* One `chat_template_kwargs` value. The `$var` member is pi-ai's placeholder
-* for a value dispatch fills from the request's thinking state, which is what
-* makes a chat-template gateway configurable without restating its template.
+* One `chat_template_kwargs` or `chat_template_args` value. The `$var` member
+* is pi-ai's placeholder for a value dispatch fills from the request's
+* thinking state, which makes a template-driven gateway configurable without
+* restating its template.
 */
 const chatTemplateKwarg = z.union([
 	z.string(),
@@ -924,6 +908,16 @@ const chatTemplateKwarg = z.union([
 		omitWhenOff: z.boolean()
 	})
 ]);
+const openRouterSortObject = z.object({
+	by: z.string(),
+	partition: z.union([z.string(), z.const(null)])
+});
+const openRouterPercentiles = z.object({
+	p50: z.number(),
+	p75: z.number(),
+	p90: z.number(),
+	p99: z.number()
+});
 /** OpenRouter upstream-routing preferences supported by pi-ai. */
 const openRouterRouting = z.object({
 	allow_fallbacks: z.boolean(),
@@ -935,13 +929,7 @@ const openRouterRouting = z.object({
 	only: z.array(z.string()),
 	ignore: z.array(z.string()),
 	quantizations: z.array(z.string()),
-	sort: z.union([
-		z.string(),
-		z.object({
-			by: z.string(),
-			partition: z.union([z.string(), z.const(null)])
-		})
-	]),
+	sort: z.union([z.string(), openRouterSortObject]),
 	max_price: z.object({
 		prompt: z.union([z.number(), z.string()]),
 		completion: z.union([z.number(), z.string()]),
@@ -949,30 +937,15 @@ const openRouterRouting = z.object({
 		audio: z.union([z.number(), z.string()]),
 		request: z.union([z.number(), z.string()])
 	}),
-	preferred_min_throughput: z.union([
-		z.number(),
-		z.object({
-			p50: z.number(),
-			p75: z.number(),
-			p90: z.number(),
-			p99: z.number()
-		})
-	]),
-	preferred_max_latency: z.union([
-		z.number(),
-		z.object({
-			p50: z.number(),
-			p75: z.number(),
-			p90: z.number(),
-			p99: z.number()
-		})
-	])
+	preferred_min_throughput: z.union([z.number(), openRouterPercentiles]),
+	preferred_max_latency: z.union([z.number(), openRouterPercentiles])
 });
 const compatProfile = z.object({
 	supportsStore: z.boolean(),
 	supportsDeveloperRole: z.boolean(),
 	supportsReasoningEffort: z.boolean(),
 	supportsUsageInStreaming: z.boolean(),
+	supportsFinishReason: z.boolean(),
 	maxTokensField: z.union(MAX_TOKENS_FIELDS),
 	requiresToolResultName: z.boolean(),
 	requiresAssistantAfterToolResult: z.boolean(),
@@ -980,6 +953,8 @@ const compatProfile = z.object({
 	requiresReasoningContentOnAssistantMessages: z.boolean(),
 	thinkingFormat: z.union(SUPPORTED_THINKING_FORMATS),
 	chatTemplateKwargs: z.dict(chatTemplateKwarg),
+	chatTemplateArgs: z.dict(chatTemplateKwarg),
+	supportsThinkingTokenBudget: z.boolean(),
 	supportsStrictMode: z.boolean(),
 	cacheControlFormat: z.union(CACHE_CONTROL_FORMATS),
 	supportsLongCacheRetention: z.boolean(),
@@ -1064,7 +1039,7 @@ const Config = z.object({ providers: z.dict(profile).default({}) });
 * renders and the value an absent section resolves to; wrapping it would break
 * both.
 * @param config - the resolved section to check.
-* @throws Error naming the route and model that cannot be served.
+* @throws Error naming the route and configuration entry that cannot be served.
 */
 function assertServiceable(config) {
 	resolveProfiles(config.providers);
@@ -1074,6 +1049,14 @@ function rejectRemovedFields(provider, source) {
 	const legacy = source;
 	if ("provider" in legacy) throw new Error(`llm-pi-ai: provider "${provider}" sets "provider", which moved to the providers dict key`);
 	if ("maxRetries" in legacy || "maxRetryDelayMs" in legacy) throw new Error(`llm-pi-ai: provider "${provider}" sets maxRetries or maxRetryDelayMs, which were removed; compose agent recovery with dsh-llm-retry`);
+}
+/** Reject a profile header that Fetch cannot put on a provider request. */
+function assertValidHeaders(provider, headers) {
+	for (const [name, value] of Object.entries(headers ?? {})) try {
+		new Headers([[name, value]]);
+	} catch {
+		throw new Error(`llm-pi-ai: provider "${provider}" header "${name}" is not valid for Fetch; use a valid HTTP field name and a single-line value representable as bytes`);
+	}
 }
 /**
 * Validate profiles and return a detached route-keyed map suitable for
@@ -1092,6 +1075,7 @@ function resolveProfiles(providers) {
 		if (provider.length === 0) throw new Error("llm-pi-ai: provider names must be non-empty");
 		if (source.baseURL !== void 0 && source.baseURL.length === 0) throw new Error(`llm-pi-ai: provider "${provider}" has an empty baseURL`);
 		if (source.displayName !== void 0 && source.displayName.length === 0) throw new Error(`llm-pi-ai: provider "${provider}" has an empty displayName`);
+		assertValidHeaders(provider, source.headers);
 		const streamIdleTimeoutMs = source.streamIdleTimeoutMs ?? 3e5;
 		if (!Number.isFinite(streamIdleTimeoutMs) || streamIdleTimeoutMs <= 0 || streamIdleTimeoutMs > MAX_TIMER_DELAY_MS) throw new Error(`llm-pi-ai: provider "${provider}" streamIdleTimeoutMs must be a positive finite number no greater than ${MAX_TIMER_DELAY_MS}`);
 		const maxRequestImageBytes = source.maxRequestImageBytes ?? 20971520;
@@ -1159,7 +1143,7 @@ function toolResultText(blocks) {
 function assertSupportedImageRoles(messages) {
 	for (const message of messages) if (message.role !== "user" && contentHasImage(message.content)) throw new LlmError(`pi-ai cannot represent an image in an in-history ${message.role} message`, "UNSUPPORTED_CONTENT");
 }
-async function userContent(blocks, requestImages) {
+async function userContent(blocks, requestImages, resolveImageAccess) {
 	const content = [];
 	for (const block of blocks) switch (block.type) {
 		case "text":
@@ -1172,7 +1156,7 @@ async function userContent(blocks, requestImages) {
 			const version = requestImages.get(block.attachment.attachmentId);
 			content.push({
 				type: "text",
-				text: requestImageHandleText(version)
+				text: requestImageHandleText(block.attachment, version, resolveImageAccess(block.attachment))
 			});
 			content.push({
 				type: "image",
@@ -1183,7 +1167,7 @@ async function userContent(blocks, requestImages) {
 		}
 		case "tool-result":
 			{
-				const nested = await userContent(block.content, requestImages);
+				const nested = await userContent(block.content, requestImages, resolveImageAccess);
 				if (typeof nested === "string") {
 					if (nested.length > 0) content.push({
 						type: "text",
@@ -1226,6 +1210,11 @@ function piContext(options, messages) {
 		...tools !== void 0 && tools.length > 0 ? { tools } : {}
 	};
 }
+function appendAssistant(message, messages, toolNames, onReplayDegrade) {
+	const assistant = toPiAssistant(message, onReplayDegrade);
+	for (const block of assistant.content) if (block.type === "toolCall") toolNames.set(brandString(block.id), block.name);
+	messages.push(assistant);
+}
 function textOnlyContext(options, onReplayDegrade) {
 	const toolNames = /* @__PURE__ */ new Map();
 	const messages = [];
@@ -1240,9 +1229,7 @@ function textOnlyContext(options, onReplayDegrade) {
 			continue;
 		}
 		if (message.role === "assistant") {
-			const assistant = toPiAssistant(message, onReplayDegrade);
-			for (const block of assistant.content) if (block.type === "toolCall") toolNames.set(CallId(block.id), block.name);
-			messages.push(assistant);
+			appendAssistant(message, messages, toolNames, onReplayDegrade);
 			continue;
 		}
 		const text = flattenText(message);
@@ -1266,26 +1253,30 @@ function textOnlyContext(options, onReplayDegrade) {
 	}
 	return piContext(options, messages);
 }
-function toPiContext(options, attachments, onReplayDegrade, maxRequestImageBytes, requestImagePolicy) {
-	return attachments === void 0 ? textOnlyContext(options, onReplayDegrade) : toPiContextWithImages(options, attachments, onReplayDegrade, maxRequestImageBytes, requestImagePolicy);
+function toPiContext(options, images, onReplayDegrade) {
+	return images === void 0 ? textOnlyContext(options, onReplayDegrade) : toPiContextWithImages(options, images, onReplayDegrade);
 }
-async function toPiContextWithImages(options, attachments, onReplayDegrade, maxRequestImageBytes, requestImagePolicy = {
-	maxPixels: DEFAULT_REQUEST_IMAGE_PIXEL_BUDGET,
-	maxBytes: DEFAULT_REQUEST_IMAGE_MAX_BYTES
-}) {
+async function toPiContextWithImages(options, images, onReplayDegrade) {
+	const { attachments, resolveImageAccess, maxRequestImageBytes } = images;
+	const requestImagePolicy = images.requestImagePolicy ?? {
+		maxPixels: 4194304,
+		maxBytes: 1048576
+	};
 	assertSupportedImageRoles(options.messages);
 	const requestMessages = offloadRequestImagesWithPolicy(options.messages, {
 		representation: "base64",
 		...maxRequestImageBytes === void 0 ? {} : { maxBytes: maxRequestImageBytes },
 		byteQuantum: 1,
-		byteLength: (ref) => Math.min(ref.bytes, requestImagePolicy.maxBytes)
+		byteLength: (ref) => Math.min(ref.bytes, requestImagePolicy.maxBytes),
+		placeholder: (ref) => offloadedImageText(ref, resolveImageAccess(ref))
 	});
 	const requestImages = await prepareRequestImages(requestMessages, attachments, requestImagePolicy, options.signal);
 	const exactMessages = offloadRequestImagesWithPolicy(requestMessages, {
 		representation: "base64",
 		...maxRequestImageBytes === void 0 ? {} : { maxBytes: maxRequestImageBytes },
 		byteQuantum: 1,
-		byteLength: (ref) => requestImages.get(ref.attachmentId).bytes
+		byteLength: (ref) => requestImages.get(ref.attachmentId).bytes,
+		placeholder: (ref) => offloadedImageText(ref, resolveImageAccess(ref))
 	});
 	const toolNames = /* @__PURE__ */ new Map();
 	const messages = [];
@@ -1299,12 +1290,10 @@ async function toPiContextWithImages(options, attachments, onReplayDegrade, maxR
 			continue;
 		}
 		if (message.role === "assistant") {
-			const assistant = toPiAssistant(message, onReplayDegrade);
-			for (const block of assistant.content) if (block.type === "toolCall") toolNames.set(CallId(block.id), block.name);
-			messages.push(assistant);
+			appendAssistant(message, messages, toolNames, onReplayDegrade);
 			continue;
 		}
-		const content = await userContent(message.content.filter((block) => block.type !== "tool-result"), requestImages);
+		const content = await userContent(message.content.filter((block) => block.type !== "tool-result"), requestImages, resolveImageAccess);
 		const results = message.content.filter((block) => block.type === "tool-result");
 		if (content.length > 0 || results.length === 0) messages.push({
 			role: "user",
@@ -1312,7 +1301,7 @@ async function toPiContextWithImages(options, attachments, onReplayDegrade, maxR
 			timestamp: 0
 		});
 		for (const result of results) {
-			const resultContent = await userContent(result.content, requestImages);
+			const resultContent = await userContent(result.content, requestImages, resolveImageAccess);
 			messages.push({
 				role: "toolResult",
 				toolCallId: result.toolCallId,
@@ -1342,12 +1331,14 @@ async function toPiContextWithImages(options, attachments, onReplayDegrade, maxR
 /**
 * Map pi-ai usage (reasoning folded into output by pi-ai).
 * @param usage - cumulative usage from the terminal pi-ai event.
-* @returns harness counts; cache fields appear only when non-zero (pi-ai reports zeros, not absence).
+* @returns harness counts with pi-ai's exact total; cache fields appear only
+*   when non-zero (pi-ai reports zeros, not absence).
 */
 function mapUsage(usage) {
 	return {
 		inputTokens: usage.input,
 		outputTokens: usage.output,
+		totalTokens: usage.totalTokens,
 		...usage.cacheRead > 0 ? { cacheReadTokens: usage.cacheRead } : {},
 		...usage.cacheWrite > 0 ? { cacheWriteTokens: usage.cacheWrite } : {}
 	};
@@ -1371,7 +1362,8 @@ function classifyPiAiError(message) {
 * @returns the mapped harness reason. Recognized error text, `stop` usage above
 *   `contextWindow`, and zero-output `length` usage that fills the window map
 *   to `CONTEXT_WINDOW_EXCEEDED`; a `stop` with no content blocks maps to an
-*   `EMPTY_RESPONSE` error.
+*   `EMPTY_RESPONSE` error, while terminal `pending` and `deferred` states map
+*   to non-retryable `PI_AI_ERROR` failures.
 */
 function mapStopReason(message, contextWindow) {
 	const piAiOverflow = isContextOverflow(message, contextWindow);
@@ -1395,6 +1387,20 @@ function mapStopReason(message, contextWindow) {
 			return { kind: "stop" };
 		case "length": return { kind: "max-tokens" };
 		case "toolUse": return { kind: "tool-calls" };
+		case "pending": return {
+			kind: "error",
+			failure: {
+				message: `pi-ai stream for model "${message.model}" ended pending`,
+				code: "PI_AI_ERROR"
+			}
+		};
+		case "deferred": return {
+			kind: "error",
+			failure: {
+				message: `pi-ai deferred response for model "${message.model}" is not supported`,
+				code: "PI_AI_ERROR"
+			}
+		};
 		case "aborted": return {
 			kind: "aborted",
 			failure: {
@@ -1420,10 +1426,12 @@ function mapStopReason(message, contextWindow) {
 * `finish` chunks (the harness protocol's other error-delivery style).
 * @param events - one assistant turn's pi-ai event stream.
 * @param contextWindow - resolved catalog capacity for usage-based overflow detection.
+* @param callerSignal - caller cancellation state; an aborted caller makes any
+*   in-band terminal error an aborted finish.
 * @returns the harness chunks, ending with `usage` then `finish`; throws
 *   `LlmError` (`STREAM_CLOSED`) if the source ends without a terminal event.
 */
-async function* toStreamChunks(events, contextWindow) {
+async function* toStreamChunks(events, contextWindow, callerSignal) {
 	const toolIds = /* @__PURE__ */ new Map();
 	for await (const event of events) switch (event.type) {
 		case "start": break;
@@ -1495,7 +1503,7 @@ async function* toStreamChunks(events, contextWindow) {
 			yield {
 				type: "tool-call-delta",
 				index: event.contentIndex,
-				id: CallId(known?.id ?? ""),
+				id: brandString(known?.id ?? ""),
 				...known?.name !== void 0 && known.name.length > 0 ? { name: known.name } : {},
 				argumentsDelta: event.delta
 			};
@@ -1507,7 +1515,7 @@ async function* toStreamChunks(events, contextWindow) {
 				index: event.contentIndex,
 				block: {
 					type: "tool-call",
-					id: CallId(event.toolCall.id),
+					id: brandString(event.toolCall.id),
 					name: event.toolCall.name,
 					arguments: JSON.stringify(event.toolCall.arguments)
 				}
@@ -1531,7 +1539,10 @@ async function* toStreamChunks(events, contextWindow) {
 			};
 			yield {
 				type: "finish",
-				reason: mapStopReason(event.error, contextWindow)
+				reason: mapStopReason(callerSignal?.aborted ? {
+					...event.error,
+					stopReason: "aborted"
+				} : event.error, contextWindow)
 			};
 			return;
 	}
@@ -1821,10 +1832,15 @@ var PiAiAdapter = class extends LlmAdapter {
 				const context = attachments === void 0 ? toPiContext(options, void 0, onReplayDegrade) : await toPiContext({
 					...options,
 					signal: watchdog.signal
-				}, attachments, onReplayDegrade, profile.maxRequestImageBytes, {
-					maxPixels: profile.requestImagePixelBudget,
-					maxBytes: profile.requestImageMaxBytes
-				});
+				}, {
+					attachments,
+					resolveImageAccess: (ref) => this.config.resolveImageAccess?.(attachments, ref),
+					maxRequestImageBytes: profile.maxRequestImageBytes,
+					requestImagePolicy: {
+						maxPixels: profile.requestImagePixelBudget,
+						maxBytes: profile.requestImageMaxBytes
+					}
+				}, onReplayDegrade);
 				const iterator = toStreamChunks(snapshot.models.streamSimple(model, context, {
 					...profileOptions(profile, reasoning, apiKey),
 					...options.temperature === void 0 ? {} : { temperature: options.temperature },
@@ -1832,7 +1848,7 @@ var PiAiAdapter = class extends LlmAdapter {
 					...options.sessionId === void 0 ? {} : { sessionId: String(options.sessionId) },
 					signal: watchdog.signal,
 					headers: requestHeaders(profile.headers)
-				}), model.contextWindow)[Symbol.asyncIterator]();
+				}), model.contextWindow, options.signal)[Symbol.asyncIterator]();
 				let exhausted = false;
 				try {
 					while (true) {
@@ -1895,6 +1911,27 @@ function recordKeyFor(providerId) {
 	return credentialKey(RECORD_SCOPE, providerId);
 }
 /**
+* The JSON image of one grant payload: plain objects lose their
+* explicitly-undefined members and array entries JSON cannot hold become
+* null, exactly as `JSON.stringify` would render them. pi-ai credentials
+* idiomatically carry optional members as explicit `undefined` (a github.com
+* Copilot grant holds `enterpriseUrl: undefined`), which the credential
+* store's strict validator refuses as unrepresentable. Everything else —
+* non-finite numbers and foreign prototypes included — passes through
+* untouched, so a genuinely unstorable value still fails loud at the store.
+* @param value - the value to render.
+* @returns the value's JSON image.
+*/
+function jsonImage(value) {
+	if (Array.isArray(value)) return value.map((entry) => entry === void 0 ? null : jsonImage(entry));
+	if (typeof value === "object" && value !== null && Object.getPrototypeOf(value) === Object.prototype) {
+		const image = {};
+		for (const [key, member] of Object.entries(value)) if (member !== void 0) image[key] = jsonImage(member);
+		return image;
+	}
+	return value;
+}
+/**
 * Translate a stored record into the credential pi-ai expects.
 *
 * An `api-key` record is structural on both sides, so it is rebuilt field by
@@ -1926,7 +1963,7 @@ function toRecord(credential) {
 	};
 	return {
 		kind: "grant",
-		payload: credential
+		payload: jsonImage(credential)
 	};
 }
 /**
@@ -2079,12 +2116,7 @@ function capacity(...candidates) {
 function label(...candidates) {
 	for (const candidate of candidates) if (typeof candidate === "string" && candidate.length > 0) return candidate;
 }
-/**
-* Normalize a listing's declared input modalities to the subset DSH can
-* represent. OpenRouter publishes these under `architecture.input_modalities`;
-* generic OpenAI-compatible gateways may expose the same array at the top
-* level. Unknown values are ignored rather than over-claiming support.
-*/
+/** Normalize a listing's explicitly advertised input modalities. */
 function listingInput(...candidates) {
 	for (const candidate of candidates) {
 		if (!Array.isArray(candidate)) continue;
@@ -2092,7 +2124,7 @@ function listingInput(...candidates) {
 		if (input.length > 0) return input;
 	}
 }
-/** Normalize explicitly advertised reasoning levels without guessing unsupported efforts. */
+/** Normalize explicitly advertised reasoning levels without guessing missing ones. */
 function listingReasoningEfforts(...candidates) {
 	for (const candidate of candidates) {
 		if (candidate === false) return false;
@@ -2111,7 +2143,7 @@ function listingReasoningEfforts(...candidates) {
 		if (Object.keys(efforts).some((level) => level !== "off")) return efforts;
 	}
 }
-/** One explicitly advertised default effort, normalized to DSH's vocabulary. */
+/** Normalize one advertised default effort to DSH's vocabulary. */
 function listingDefaultReasoningEffort(...candidates) {
 	for (const candidate of candidates) {
 		if (typeof candidate !== "string") continue;
@@ -2119,12 +2151,36 @@ function listingDefaultReasoningEffort(...candidates) {
 		if (THINKING_LEVELS.includes(level)) return level;
 	}
 }
-/** Convert an installed pi-ai model's exact reasoning metadata to editable settings form. */
+/** Convert an installed pi-ai model's reasoning metadata to editable settings form. */
 function installedReasoningEfforts(model) {
 	if (!model.reasoning) return false;
 	const efforts = {};
 	for (const level of getSupportedThinkingLevels(model)) efforts[level] = level === "off" ? null : model.thinkingLevelMap?.[level] ?? level;
 	return efforts;
+}
+/** Catalog routes whose live model directory should refresh the bundled snapshot. */
+const LIVE_CATALOG_DISCOVERY_POLICIES = new Map([["opencode-go", "configured"], ["openrouter", "configured-or-catalog"]]);
+/** Resolve the live listing base for one explicitly registered catalog route. */
+function liveCatalogBaseURL(request) {
+	if (request.provider === void 0) return void 0;
+	const policy = LIVE_CATALOG_DISCOVERY_POLICIES.get(request.provider);
+	if (policy === void 0) return void 0;
+	if (request.baseURL !== void 0 && request.baseURL.length > 0) return request.baseURL;
+	if (policy === "configured-or-catalog") return catalogProvider(request.provider)?.baseUrl;
+}
+/** Return one installed catalog in the same editable shape as a live listing. */
+function installedCatalogListing(provider) {
+	if (provider === void 0) return void 0;
+	const installed = catalogModels(provider);
+	if (installed.size === 0) return void 0;
+	return [...installed.values()].map((model) => ({
+		id: model.id,
+		name: model.name,
+		contextWindow: model.contextWindow,
+		maxTokens: model.maxTokens,
+		input: [...model.input],
+		reasoningEfforts: installedReasoningEfforts(model)
+	}));
 }
 /**
 * Join the endpoint base with the listing path. The base is treated as a
@@ -2191,8 +2247,9 @@ function readListing(body) {
 		const maxTokens = capacity(entry?.max_output_tokens, entry?.max_tokens, entry?.top_provider?.max_completion_tokens);
 		const input = listingInput(entry?.architecture?.input_modalities, entry?.input_modalities);
 		const reasoningEfforts = listingReasoningEfforts(entry?.reasoning_efforts, entry?.supported_reasoning_efforts, entry?.architecture?.reasoning_efforts, entry?.reasoning === false ? false : void 0);
-		const advertisedDefaultReasoningEffort = listingDefaultReasoningEffort(entry?.default_reasoning_effort, entry?.reasoning?.default_effort);
-		const defaultReasoningEffort = typeof reasoningEfforts === "object" && advertisedDefaultReasoningEffort !== void 0 && advertisedDefaultReasoningEffort in reasoningEfforts ? advertisedDefaultReasoningEffort : void 0;
+		const reasoningRecord = typeof entry?.reasoning === "object" && entry.reasoning !== null ? entry.reasoning : void 0;
+		const advertisedDefault = listingDefaultReasoningEffort(entry?.default_reasoning_effort, reasoningRecord?.default_effort);
+		const defaultReasoningEffort = typeof reasoningEfforts === "object" && advertisedDefault !== void 0 && advertisedDefault in reasoningEfforts ? advertisedDefault : void 0;
 		models.push({
 			id,
 			...name === void 0 ? {} : { name },
@@ -2221,29 +2278,14 @@ function usableProbeKey(raw) {
 /**
 * Interrogate one draft provider endpoint for the models it advertises.
 * @param request - the endpoint, protocol, and one-shot credential to use.
-* @param storedApiKey - the credential the named route already stored, asked
-*   for only when the draft carries none and only on the path that reaches the
-*   network. A configuration surface never holds a stored secret — it edits a
-*   redacted descriptor — so without this an already-configured route would be
-*   interrogated unauthenticated and answer 401.
+* @param storedProfile - Host-owned headers and lazy credential resolution for
+*   the named route. It is read only on the path that reaches the network; the
+*   credential is resolved only when the draft carries none.
 * @returns the advertised models in endpoint order.
 * @throws LlmError when the protocol has no readable listing, the endpoint
 *   refuses or fails the request, or the reply is not a model listing.
 */
-function installedCatalogListing(provider) {
-	if (provider === void 0) return void 0;
-	const installed = catalogModels(provider);
-	if (installed.size === 0) return void 0;
-	return [...installed.values()].map((model) => ({
-		id: model.id,
-		name: model.name,
-		contextWindow: model.contextWindow,
-		maxTokens: model.maxTokens,
-		input: [...model.input],
-		reasoningEfforts: installedReasoningEfforts(model)
-	}));
-}
-async function discoverModels(request, storedApiKey) {
+async function discoverModels(request, storedProfile) {
 	const installed = installedCatalogListing(request.provider);
 	const liveCatalogBase = installed === void 0 ? void 0 : liveCatalogBaseURL(request);
 	const endpointBaseURL = installed === void 0 ? request.baseURL : liveCatalogBase;
@@ -2251,35 +2293,40 @@ async function discoverModels(request, storedApiKey) {
 	const fallback = () => preferLiveCatalog ? installed : void 0;
 	if (!preferLiveCatalog && installed !== void 0) return installed;
 	if (endpointBaseURL === void 0 || endpointBaseURL.length === 0) {
-		if (fallback() !== void 0) return fallback();
+		const catalogFallback = fallback();
+		if (catalogFallback !== void 0) return catalogFallback;
 		throw new LlmError(`pi-ai ships no catalog for provider "${request.provider ?? ""}", so its models can only come from its endpoint; set a baseURL, or enter this provider's models by hand`, "DISCOVERY_FAILED");
 	}
 	const api = request.api ?? "openai-completions";
 	if (!LISTABLE_PROTOCOLS.has(api)) {
-		if (fallback() !== void 0) return fallback();
+		const catalogFallback = fallback();
+		if (catalogFallback !== void 0) return catalogFallback;
 		throw new LlmError(`pi-ai protocol "${api}" has no model listing this build can read; enter this provider's models by hand`, "DISCOVERY_UNSUPPORTED");
 	}
 	const url = listingUrl(endpointBaseURL);
-	const supplied = request.apiKey ?? await storedApiKey?.();
+	const stored = storedProfile?.();
+	const supplied = request.apiKey ?? await stored?.resolveApiKey();
 	const apiKey = supplied === void 0 ? void 0 : usableProbeKey(supplied);
 	let response;
 	try {
+		const headers = new Headers(stored?.headers === void 0 ? void 0 : Object.entries(stored.headers));
+		headers.set("accept", "application/json");
+		if (apiKey !== void 0) headers.set("authorization", `Bearer ${apiKey}`);
+		for (const [name, value] of Object.entries(attributionHeaders())) headers.set(name, value);
 		response = await fetch(url, {
 			method: "GET",
-			headers: {
-				accept: "application/json",
-				...apiKey === void 0 ? {} : { authorization: `Bearer ${apiKey}` },
-				...attributionHeaders()
-			},
+			headers,
 			...request.signal === void 0 ? {} : { signal: request.signal }
 		});
 	} catch (error) {
 		if (request.signal?.aborted) throw new LlmError("model discovery aborted by caller", "ABORTED", { cause: error });
-		if (fallback() !== void 0) return fallback();
+		const catalogFallback = fallback();
+		if (catalogFallback !== void 0) return catalogFallback;
 		throw new LlmError(`could not reach ${url}`, "DISCOVERY_FAILED", { cause: error });
 	}
 	if (!response.ok) {
-		if (response.status !== 401 && response.status !== 403 && fallback() !== void 0) return fallback();
+		const catalogFallback = fallback();
+		if (response.status !== 401 && response.status !== 403 && catalogFallback !== void 0) return catalogFallback;
 		throw new LlmError(`${url} answered ${response.status}${response.status === 401 || response.status === 403 ? "; check the API key" : ""}`, "DISCOVERY_FAILED");
 	}
 	let text;
@@ -2287,20 +2334,23 @@ async function discoverModels(request, storedApiKey) {
 		text = await readBounded(response, url);
 	} catch (error) {
 		if (request.signal?.aborted) throw new LlmError("model discovery aborted by caller", "ABORTED", { cause: error });
-		if (fallback() !== void 0) return fallback();
+		const catalogFallback = fallback();
+		if (catalogFallback !== void 0) return catalogFallback;
 		throw error;
 	}
 	let body;
 	try {
 		body = JSON.parse(text);
 	} catch (error) {
-		if (fallback() !== void 0) return fallback();
+		const catalogFallback = fallback();
+		if (catalogFallback !== void 0) return catalogFallback;
 		throw new LlmError(`${url} did not answer with JSON`, "DISCOVERY_FAILED", { cause: error });
 	}
 	try {
 		return readListing(body);
 	} catch (error) {
-		if (fallback() !== void 0) return fallback();
+		const catalogFallback = fallback();
+		if (catalogFallback !== void 0) return catalogFallback;
 		throw error;
 	}
 }
@@ -2424,10 +2474,10 @@ function registerPiAiFlows(ctx, auth) {
 		const provider = catalogProvider(providerId);
 		const [first, ...rest] = loginMethods(provider);
 		/* v8 ignore next 3 -- every id here names an installed provider and every
-		installed provider ships a login, so nothing is skipped today; the guard
+		installed provider ships a login, so no entry is skipped; the guard
 		is what keeps that from becoming a crash if either stops being true. */
 		if (provider === void 0 || first === void 0) continue;
-		/* v8 ignore next 7 -- every installed catalog id today is a lowercase
+		/* v8 ignore next 7 -- every installed catalog id is a lowercase
 		hyphenated identifier; the guard keeps a future upstream id outside the
 		record grammar (dotted or uppercase, as vendor ids elsewhere already
 		are) from throwing in `recordKeyFor` and failing the whole mount. */
@@ -2514,7 +2564,7 @@ function registerPiAiFlows(ctx, auth) {
 */
 const name = "llm-pi-ai";
 const inject = ["llm"];
-const NS = settingsNamespace("llm-pi-ai");
+const NS = "llm-pi-ai";
 /**
 * The registry captures these per route; a change here must re-register.
 * Sorted by provider so a settings document that merely reorders its keys is
@@ -2593,6 +2643,7 @@ function apply(ctx, config) {
 		resolveApiKey,
 		auth,
 		resolveAttachments: () => ctx.get("attachments"),
+		resolveImageAccess: (attachments, ref) => resolveImageAttachmentAccess(attachments, (hostPath) => ctx.get("fs")?.processPathFromHostPath(hostPath), ref),
 		onReplayDegrade: ({ provider, model, reason }) => {
 			ctx.logger.warn(`llm-pi-ai: unusable replay state on assistant history for route "${provider}/${model}"; sending that message as provider-neutral content (${reason})`);
 		}
@@ -2610,20 +2661,20 @@ function apply(ctx, config) {
 		directoryFacts = entries;
 	};
 	ensureDirectory();
-	/**
-	* The credential a named route already resolves, for an interrogation whose
-	* draft carries none. A route being declared for the first time names no
-	* profile yet, and a profile that names no credential defers to pi-ai's own
-	* discovery, so both answer `undefined` and the endpoint is asked
-	* unauthenticated — the same posture a request to that route would take.
-	*/
-	const storedApiKey = async (provider) => {
+	/** Host-owned request inputs for discovery of one configured route. */
+	const storedDiscoveryProfile = (provider) => {
 		if (provider === void 0) return void 0;
 		const profile = profiles().get(provider);
 		if (profile === void 0) return void 0;
-		return resolveApiKey(provider, profile);
+		return {
+			headers: profile.headers,
+			resolveApiKey: () => resolveApiKey(provider, profile)
+		};
 	};
-	ctx.llm.registerModelDiscovery(NS, (request) => discoverModels(request, () => storedApiKey(request.provider)));
+	ctx.llm.registerModelDiscovery(NS, (request, signal) => discoverModels({
+		...request,
+		...signal === void 0 ? {} : { signal }
+	}, () => storedDiscoveryProfile(request.provider)));
 	let registration;
 	let registeredFacts;
 	const ensureRegistrationFacts = () => {
@@ -2640,26 +2691,28 @@ function apply(ctx, config) {
 		registeredFacts = facts;
 	};
 	ensureRegistrationFacts();
-	installSettingsSection(ctx, NS, Config, config, {
-		validate: assertServiceable,
-		setSource: (source) => {
-			current = source;
-		},
-		onChange: () => {
-			try {
-				ensureRegistrationFacts();
-			} catch (error) {
-				ctx.logger.error("llm-pi-ai: keeping the previously registered routes after a refused update");
-				ctx.logger.error(error);
+	ctx.inject(["settings"], (settingsCtx) => {
+		settingsCtx.settings.installSection(ctx, NS, Config, config, {
+			validate: assertServiceable,
+			setSource: (source) => {
+				current = source;
+			},
+			onChange: () => {
+				try {
+					ensureRegistrationFacts();
+				} catch (error) {
+					ctx.logger.error("llm-pi-ai: keeping the previously registered routes after a refused update");
+					ctx.logger.error(error);
+				}
+				try {
+					ensureDirectory();
+				} catch (error) {
+					ctx.logger.error("llm-pi-ai: keeping the previous configurable-provider directory after a refused update");
+					ctx.logger.error(error);
+				}
 			}
-			try {
-				ensureDirectory();
-			} catch (error) {
-				ctx.logger.error("llm-pi-ai: keeping the previous configurable-provider directory after a refused update");
-				ctx.logger.error(error);
-			}
-		}
+		});
 	});
 }
 //#endregion
-export { Config, PiAiAdapter, apply, discoverModels, inject, name, recordKeyFor, resolveRouteModels, supportedProtocols };
+export { Config, PiAiAdapter, apply, inject, name, recordKeyFor, supportedProtocols };

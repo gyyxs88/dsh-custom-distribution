@@ -32,7 +32,7 @@ export declare const DEFAULT_STREAM_IDLE_TIMEOUT_MS = 300000;
 export declare const DEFAULT_MAX_REQUEST_IMAGE_BYTES: number;
 /** Default total-pixel budget preserves the complete 2048px normalized attachment. */
 export declare const DEFAULT_REQUEST_IMAGE_PIXEL_BUDGET: number;
-/** Default raw encoded-byte cap before inline base64 expansion. */
+/** Default raw encoded-byte target before inline base64 expansion; the smallest quality-ladder output is used when no quality fits. */
 export declare const DEFAULT_REQUEST_IMAGE_MAX_BYTES: number;
 /** Context capacity assumed for a model neither configuration nor the catalog sizes. */
 export declare const DEFAULT_CONTEXT_WINDOW = 262144;
@@ -110,7 +110,7 @@ export interface PiAiProviderProfile {
      * to answer instead.
      */
     defaultInput?: PiAiModality[];
-    /** Provider request headers; Harness attribution wins reserved names. */
+    /** Provider request headers, validated against Fetch when the profile resolves; Harness attribution wins reserved names. */
     headers?: Record<string, string>;
     /** Provider-neutral pi-ai reasoning level. */
     reasoning?: ModelThinkingLevel;
@@ -135,7 +135,10 @@ export interface PiAiProviderProfile {
     maxRequestImageBytes?: number;
     /** Total-pixel budget for each deterministic inline request version. */
     requestImagePixelBudget?: number;
-    /** Raw encoded-byte cap for each deterministic inline request version. */
+    /**
+     * Raw encoded-byte target for each deterministic inline request version;
+     * the smallest quality-ladder output is used when no quality fits.
+     */
     requestImageMaxBytes?: number;
     /** Provider-owned model-request retry policy; omission uses normal mode with five retries. */
     retryPolicy?: RetryPolicyConfig;
@@ -154,7 +157,7 @@ export interface ResolvedPiAiProviderProfile extends Omit<PiAiProviderProfile, '
     maxRequestImageBytes: number;
     /** Positive total-pixel request-version budget after defaulting. */
     requestImagePixelBudget: number;
-    /** Positive raw request-version byte cap after defaulting. */
+    /** Positive raw request-version byte target after defaulting; the smallest quality-ladder output is used when no quality fits. */
     requestImageMaxBytes: number;
     /** Immutable retry policy captured with this provider route. */
     retryPolicy: ResolvedRetryPolicy;
@@ -193,7 +196,7 @@ export declare const Config: z<Config>;
  * renders and the value an absent section resolves to; wrapping it would break
  * both.
  * @param config - the resolved section to check.
- * @throws Error naming the route and model that cannot be served.
+ * @throws Error naming the route and configuration entry that cannot be served.
  */
 export declare function assertServiceable(config: Config): void;
 /**

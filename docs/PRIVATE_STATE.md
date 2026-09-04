@@ -9,14 +9,20 @@
 `data/` 下可能包含：
 
 - `.credentials.yaml` 和 provider 凭据；
+- `.anonymous-user-id` 和本机安装身份；
+- `.agent-presets` 与 `AGENTS.md`；
 - `settings.yaml`；
-- 会话消息、压缩记录和附件；
+- `sessions/`、`storages/` 中的会话消息与压缩记录，以及 `attachments/`；
+- `skills/` 中的用户 Skill；
+- `dsh-subagent-code-agents/` 中的多 Agent 运行与回报状态；
 - 工作区绝对路径；
 - 审批、定时任务和控制操作记录；
 - SSH Host、known_hosts、远程目录、能力 token 元数据；
 - 日志、PID 和本机备份。
 
 这些文件可能同时包含秘密、隐私和机器特定绝对路径，不能打进公开 Release，也不能整体提交到 GitHub。
+
+`profiles/` 是发行版安装和升级时重建的活动插件环境，会先备份再替换；它不是从旧版程序目录直接复制的用户数据。迁移现有安装时应复制上面列出的持久状态，但保留新发行版生成的 `profiles/`，避免把旧 DSH 的插件依赖覆盖回去。
 
 ## 如确需迁移
 

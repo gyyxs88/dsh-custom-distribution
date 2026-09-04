@@ -1,19 +1,15 @@
 {
   "name": "@deepseek-ai/dsh-llm-pi-ai",
   "description": "pi-ai-backed DeepSeek adapter for the DeepSeek Harness LLM seam (design-verification twin of dsh-llm-deepseek)",
-  "version": "0.1.1-rc.2",
+  "version": "0.1.2-rc.1",
   "dshLocalPatch": {
-    "id": "model-capability-routing.1",
-    "baseVersion": "0.1.1-rc.2",
+    "id": "model-capability-routing.2",
+    "baseVersion": "0.1.2-rc.1",
     "changes": [
-      "classify provider network_error as retryable TRANSPORT",
-      "prefer registered live catalogs for opencode-go and openrouter",
-      "fall back to installed catalogs on transient discovery failure",
-      "map OpenRouter top_provider.max_completion_tokens",
-      "preserve live and fallback catalog input modalities",
-      "materialize per-model reasoning levels and defaults",
-      "expose OpenRouter upstream routing preferences",
-      "preserve explicit reasoning metadata during model discovery"
+      "classify provider network_error as retryable transport failure",
+      "refresh OpenRouter and OpenCode catalogs with safe installed-catalog fallback",
+      "discover image input and model-specific reasoning levels and defaults",
+      "support explicit OpenRouter upstream routing and per-model default reasoning"
     ]
   },
   "publishConfig": {
@@ -32,44 +28,41 @@
       "types": "./lib/types/index.d.ts",
       "default": "./lib/index.js"
     },
-    "./invariant": {
-      "types": "./lib/types/invariant.d.ts",
-      "default": "./lib/invariant.js"
-    },
     "./src/*": "./src/*",
     "./package.json": "./package.json"
   },
   "files": [
     "lib/index.js",
-    "lib/invariant.js",
     "lib/types/**/*.d.ts"
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/dsh-authorization": "^0.1.1-rc.2",
-    "@deepseek-ai/dsh-credentials": "^0.1.1-rc.2",
-    "@deepseek-ai/dsh-launch-environment": "^0.1.1-rc.2",
-    "@deepseek-ai/dsh-llm": "^0.1.1-rc.2",
-    "@deepseek-ai/dsh-invariants": "^0.1.1-rc.2",
-    "@deepseek-ai/dsh-settings": "^0.1.1-rc.2",
-    "@deepseek-ai/dsh-timeout": "^0.1.1-rc.2",
-    "@deepseek-ai/cordis": "^4.0.1",
-    "@deepseek-ai/dsh-attachment": "^0.1.1-rc.2"
+    "@deepseek-ai/cordis": "^4.0.2",
+    "@deepseek-ai/dsh-authorization": "^0.1.2-rc.1",
+    "@deepseek-ai/dsh-attachment": "^0.1.2-rc.1",
+    "@deepseek-ai/dsh-credentials": "^0.1.2-rc.1",
+    "@deepseek-ai/dsh-fs": "^0.1.2-rc.1",
+    "@deepseek-ai/dsh-launch-environment": "^0.1.2-rc.1",
+    "@deepseek-ai/dsh-llm": "^0.1.2-rc.1",
+    "@deepseek-ai/dsh-settings": "^0.1.2-rc.1",
+    "@deepseek-ai/dsh-timeout": "^0.1.2-rc.1"
   },
   "dependencies": {
-    "@earendil-works/pi-ai": "^0.82.1",
-    "@deepseek-ai/schemastery": "^3.18.1"
+    "@earendil-works/pi-ai": "^0.84.2",
+    "@deepseek-ai/dsh-brand": "^0.1.2-rc.1",
+    "@deepseek-ai/schemastery": "^3.18.2",
+    "@deepseek-ai/dsh-util-values": "^0.1.2-rc.1"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-attachment": "^0.1.1-rc.2",
-    "@deepseek-ai/dsh-authorization": "^0.1.1-rc.2",
-    "@deepseek-ai/dsh-credentials": "^0.1.1-rc.2",
-    "@deepseek-ai/dsh-launch-environment": "^0.1.1-rc.2",
-    "@deepseek-ai/dsh-invariants": "^0.1.1-rc.2",
-    "@deepseek-ai/dsh-llm": "^0.1.1-rc.2",
-    "@deepseek-ai/dsh-llm-deepseek": "^0.1.1-rc.2",
-    "@deepseek-ai/dsh-settings": "^0.1.1-rc.2",
-    "@deepseek-ai/cordis": "^4.0.1",
-    "@deepseek-ai/dsh-timeout": "^0.1.1-rc.2"
+    "@deepseek-ai/cordis": "^4.0.2",
+    "@deepseek-ai/dsh-attachment": "^0.1.2-rc.1",
+    "@deepseek-ai/dsh-authorization": "^0.1.2-rc.1",
+    "@deepseek-ai/dsh-credentials": "^0.1.2-rc.1",
+    "@deepseek-ai/dsh-fs": "^0.1.2-rc.1",
+    "@deepseek-ai/dsh-llm": "^0.1.2-rc.1",
+    "@deepseek-ai/dsh-settings": "^0.1.2-rc.1",
+    "@deepseek-ai/dsh-launch-environment": "^0.1.2-rc.1",
+    "@deepseek-ai/dsh-timeout": "^0.1.2-rc.1",
+    "@deepseek-ai/dsh-llm-deepseek": "^0.1.2-rc.1"
   }
 }

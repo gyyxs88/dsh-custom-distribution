@@ -37,6 +37,39 @@ function Test-PortListening([int]$Candidate) {
     return $null -ne (Get-NetTCPConnection -State Listen -LocalPort $Candidate -ErrorAction SilentlyContinue | Select-Object -First 1)
 }
 
+function Get-AuthenticatedWebUrl {
+    if (-not (Test-Path -LiteralPath $stdoutLog -PathType Leaf)) { return $null }
+    try {
+        $stream = [System.IO.FileStream]::new(
+            $stdoutLog,
+            [System.IO.FileMode]::Open,
+            [System.IO.FileAccess]::Read,
+            [System.IO.FileShare]::ReadWrite -bor [System.IO.FileShare]::Delete
+        )
+        try {
+            $reader = [System.IO.StreamReader]::new($stream, [System.Text.Encoding]::UTF8, $true, 1024, $true)
+            try { $stdout = $reader.ReadToEnd() }
+            finally { $reader.Dispose() }
+        }
+        finally { $stream.Dispose() }
+    }
+    catch { return $null }
+
+    $portPattern = [System.Text.RegularExpressions.Regex]::Escape([string]$selectedPort)
+    $pattern = "(?m)^dsh web: (?<url>http://127\.0\.0\.1:$portPattern/\?token=[A-Za-z0-9_-]{43})(?:\s+\(LAN:.*\))?\r?$"
+    $match = [System.Text.RegularExpressions.Regex]::Match($stdout, $pattern)
+    if (-not $match.Success) { return $null }
+
+    try { $candidate = [System.Uri]$match.Groups['url'].Value }
+    catch { return $null }
+    if ($candidate.Scheme -ne 'http' -or $candidate.Host -ne $bindAddress -or $candidate.Port -ne $selectedPort -or
+        $candidate.AbsolutePath -ne '/' -or $candidate.Query -notmatch '^\?token=[A-Za-z0-9_-]{43}$' -or
+        $candidate.Fragment -or $candidate.UserInfo) {
+        return $null
+    }
+    return $candidate.AbsoluteUri
+}
+
 $fallback = $false
 if (Test-PortListening $selectedPort) {
     $probe = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback, 0)
@@ -58,6 +91,8 @@ $hadNoProxy = Test-Path -LiteralPath 'Env:\NO_PROXY'
 $oldNoProxy = $env:NO_PROXY
 $hadDeepSeekApiKey = Test-Path -LiteralPath 'Env:\DEEPSEEK_API_KEY'
 $oldDeepSeekApiKey = $env:DEEPSEEK_API_KEY
+$hadModuleFallbackMode = Test-Path -LiteralPath 'Env:\DSH_MODULE_FALLBACK_MODE'
+$oldModuleFallbackMode = $env:DSH_MODULE_FALLBACK_MODE
 try {
     $env:DSH_HOME = $dataRoot
     $env:PATH = "$($state.runtimeRoot);$oldPath"
@@ -68,6 +103,7 @@ try {
     }
     $noProxyEntries += @('127.0.0.1', 'localhost', '::1')
     $env:NO_PROXY = ($noProxyEntries | Select-Object -Unique) -join ','
+    $env:DSH_MODULE_FALLBACK_MODE = 'proxy'
     Remove-Item -LiteralPath 'Env:\DEEPSEEK_API_KEY' -ErrorAction SilentlyContinue
     $argumentString = '"' + $entrypoint + '" web --host ' + $bindAddress + ' --port ' + $selectedPort + ' --no-open'
     $process = Start-Process -FilePath $nodeExe -ArgumentList $argumentString -WorkingDirectory $state.appRoot -WindowStyle Hidden -RedirectStandardOutput $stdoutLog -RedirectStandardError $stderrLog -PassThru
@@ -81,11 +117,14 @@ finally {
     else { Remove-Item -LiteralPath 'Env:\NO_PROXY' -ErrorAction SilentlyContinue }
     if ($hadDeepSeekApiKey) { $env:DEEPSEEK_API_KEY = $oldDeepSeekApiKey }
     else { Remove-Item -LiteralPath 'Env:\DEEPSEEK_API_KEY' -ErrorAction SilentlyContinue }
+    if ($hadModuleFallbackMode) { $env:DSH_MODULE_FALLBACK_MODE = $oldModuleFallbackMode }
+    else { Remove-Item -LiteralPath 'Env:\DSH_MODULE_FALLBACK_MODE' -ErrorAction SilentlyContinue }
 }
 
 Set-Content -LiteralPath $pidFile -Encoding UTF8 -Value $process.Id
 $deadline = (Get-Date).AddSeconds(60)
 $listener = $null
+$authenticatedUrl = $null
 do {
     Start-Sleep -Milliseconds 250
     $process.Refresh()
@@ -94,22 +133,30 @@ do {
         throw "DSH 启动失败，退出码 $($process.ExitCode)。请查看 $stderrLog"
     }
     $listener = Get-NetTCPConnection -State Listen -LocalPort $selectedPort -ErrorAction SilentlyContinue | Where-Object { $_.OwningProcess -eq $process.Id } | Select-Object -First 1
-} while (-not $listener -and (Get-Date) -lt $deadline)
+    if ($listener -and -not $authenticatedUrl) { $authenticatedUrl = Get-AuthenticatedWebUrl }
+} while ((-not $listener -or -not $authenticatedUrl) -and (Get-Date) -lt $deadline)
 
 if (-not $listener) {
     Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
     Remove-Item -LiteralPath $pidFile -Force -ErrorAction SilentlyContinue
     throw "DSH 在 60 秒内未监听 $bindAddress`:$selectedPort。请查看 $stderrLog"
 }
+if (-not $authenticatedUrl) {
+    Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $pidFile -Force -ErrorAction SilentlyContinue
+    throw "DSH 在 60 秒内没有发布可验证的浏览器认证入口。请查看 $stderrLog"
+}
 
-$url = "http://$bindAddress`:$selectedPort/"
+$origin = "http://$bindAddress`:$selectedPort/"
 $runState = [ordered]@{
     pid = $process.Id
     version = $state.version
     entrypoint = $entrypoint
     host = $bindAddress
     port = $selectedPort
-    url = $url
+    origin = $origin
+    url = $authenticatedUrl
+    authentication = 'browser-token-exchange'
     startedAt = (Get-Date).ToString('o')
     stdoutLog = $stdoutLog
     stderrLog = $stderrLog
@@ -119,5 +166,5 @@ Write-JsonAtomic -Value $runState -Path $runStateFile
 Write-Output 'STATUS=STARTED'
 Write-Output "VERSION=$($state.version)"
 Write-Output "PID=$($process.Id)"
-Write-Output "URL=$url"
+Write-Output "URL=$authenticatedUrl"
 Write-Output "PORT_FALLBACK=$fallback"

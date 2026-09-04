@@ -1,0 +1,8 @@
+- insert:
+    - id: local-service-control
+      name: 'dsh-local-service-control'
+      inject: [webServer]
+      config:
+        projectRoot: '.'
+        launcherScript: 'Service-Control-Launcher.ps1'
+        powershellExecutable: 'powershell.exe'

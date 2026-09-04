@@ -42,7 +42,7 @@ for (const script of scripts) {
 
 const release = JSON.parse(readFileSync(join(root, "manifest", "release-lock.json"), "utf8"));
 assert.equal(release.distribution.version, JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version);
-assert.equal(release.artifacts.length, 10);
+assert.equal(release.artifacts.length, 11);
 assert.equal(new Set(release.artifacts.map((entry) => entry.file)).size, release.artifacts.length);
 assert.ok(release.artifacts.every((entry) => /^[a-f0-9]{64}$/u.test(entry.sha256)));
 

@@ -21,18 +21,23 @@
  *
  * @module dsh-llm-pi-ai/discovery
  */
-import type { LlmDiscoveredModel, LlmModelDiscoveryRequest } from '@deepseek-ai/dsh-llm';
+import type { LlmDiscoveredModel, LlmModelDiscoveryOperation } from '@deepseek-ai/dsh-llm';
+/** Host-owned profile inputs that a configuration draft deliberately omits. */
+export interface StoredModelDiscoveryProfile {
+    /** Deployment headers configured on the named route. */
+    readonly headers: Readonly<Record<string, string>> | undefined;
+    /** Resolve the named route's credential only when the draft carries none. */
+    readonly resolveApiKey: () => Promise<string | undefined>;
+}
 /**
  * Interrogate one draft provider endpoint for the models it advertises.
  * @param request - the endpoint, protocol, and one-shot credential to use.
- * @param storedApiKey - the credential the named route already stored, asked
- *   for only when the draft carries none and only on the path that reaches the
- *   network. A configuration surface never holds a stored secret — it edits a
- *   redacted descriptor — so without this an already-configured route would be
- *   interrogated unauthenticated and answer 401.
+ * @param storedProfile - Host-owned headers and lazy credential resolution for
+ *   the named route. It is read only on the path that reaches the network; the
+ *   credential is resolved only when the draft carries none.
  * @returns the advertised models in endpoint order.
  * @throws LlmError when the protocol has no readable listing, the endpoint
  *   refuses or fails the request, or the reply is not a model listing.
  */
-export declare function discoverModels(request: LlmModelDiscoveryRequest, storedApiKey?: () => Promise<string | undefined>): Promise<readonly LlmDiscoveredModel[]>;
+export declare function discoverModels(request: LlmModelDiscoveryOperation, storedProfile?: () => StoredModelDiscoveryProfile | undefined): Promise<readonly LlmDiscoveredModel[]>;
 //# sourceMappingURL=discovery.d.ts.map

@@ -29,7 +29,7 @@ export interface DeepSeekModelsValidationFailure {
     /** Zero-based model position. */
     index: number;
     /** Message key owned by the Models settings section. */
-    key: 'modelIdRequired' | 'modelIdDuplicate' | 'modelNameInvalid' | 'modelContextInvalid' | 'modelMaxTokensInvalid';
+    key: 'modelIdRequired' | 'modelIdDuplicate' | 'modelNameInvalid' | 'modelContextInvalid' | 'modelMaxTokensInvalid' | 'modelInputInvalid' | 'modelReasoningInvalid' | 'modelReasoningDefaultInvalid';
 }
 /** Convert a schema-validated catalog value into records without dropping hidden fields. */
 export declare function modelDrafts(value: unknown): DeepSeekModelDraft[];
