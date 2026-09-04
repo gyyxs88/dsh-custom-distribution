@@ -71,7 +71,7 @@ test("session menu copies the durable session ID", () => {
 });
 
 test("pinned control artifacts include durable asynchronous reports and their Skills", () => {
-  const sessionArchive = join(root, "packages", "dsh-session-control-0.7.2.tgz");
+  const sessionArchive = join(root, "packages", "dsh-session-control-0.7.3.tgz");
   const sessionNotifier = execFileSync(
     "tar.exe",
     ["-xOf", sessionArchive, "package/lib/operation-notifier.js"],
@@ -91,6 +91,14 @@ test("pinned control artifacts include durable asynchronous reports and their Sk
   assert.match(sessionNotifier, /completionDelivery === 'followup'/u);
   assert.match(sessionSkill, /completion_delivery=followup/u);
   assert.match(sessionSkill, /不能剥离 `session-` 前缀/u);
+  assert.match(sessionSkill, /自动兼容 live\/cold/u);
+  const sessionIndex = execFileSync(
+    "tar.exe",
+    ["-xOf", sessionArchive, "package/lib/index.js"],
+    { encoding: "utf8" },
+  );
+  assert.match(sessionIndex, /指定 target_id 时自动兼容 live\/cold/u);
+  assert.doesNotMatch(sessionIndex, /当前版本只控制 live 普通会话/u);
   assert.match(sessionSecurity, /data\?\.message\?\.source\?\.callId/u);
   assert.match(sessionSecurity, /includeToolResults/u);
 

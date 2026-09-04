@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "distribution": {
     "name": "dsh-custom-distribution",
-    "version": "0.2.7",
+    "version": "0.2.8",
     "platform": "win32",
     "architecture": "x64",
     "repository": "https://github.com/gyyxs88/dsh-custom-distribution"
@@ -112,14 +112,14 @@
       "commit": "ccaee1c273a322ece30bc160be1a6dc0a6a1ecb9"
     },
     {
-      "file": "dsh-session-control-0.7.2.tgz",
+      "file": "dsh-session-control-0.7.3.tgz",
       "package": "dsh-session-control",
-      "version": "0.7.2",
+      "version": "0.7.3",
       "license": "MIT",
       "placement": "profile",
-      "sha256": "7b994009d8e5ab93a60ce13aa69840fbcb20c2757d76103e7271e1abeca5a707",
+      "sha256": "f55eb9bf1a02f355ccb23f75b65d2498117b6bb23bef73bce75895601add4598",
       "source": "https://github.com/gyyxs88/dsh-session-control",
-      "commit": "37aa94faa133b2fce484ed8fc8ff29a58f1888f2"
+      "commit": "205e183ea7d17947cb4faa1031c5186320d4b7ae"
     },
     {
       "file": "dsh-subagent-code-agents-0.1.8.tgz",
