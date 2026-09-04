@@ -7,21 +7,19 @@
  * the provider editor with extra fields: the route id is being *chosen* here,
  * and the settings address does not exist until it is. One `settings.mutate`
  * sets the whole profile at `providers.<route>`; the key travels separately
- * through `credentials.set` under the reference the profile records, exactly as
+ * through `credentials/set` under the reference the profile records, exactly as
  * an existing provider's key does.
  *
  * The three fields a hand-declared route cannot default — endpoint, protocol,
  * and at least one model — are required here rather than at load, so the
  * failure names the field while the user is still looking at it.
  *
- * There is deliberately no reasoning-effort control, here or on the editor
- * card: effort is a per-MODEL capability, and the models under one provider
- * disagree about it, so a provider-scoped control can only be set to a value
- * some of them reject. The composer's model picker offers each model its own
- * levels instead.
+ * Reasoning capability belongs to each model row because models under one
+ * provider can disagree. The separate new-session default editor derives its
+ * choices from the selected model instead of applying one provider-wide list.
  */
 import type { ReactNode } from 'react';
-import type { IApiClient } from '@deepseek-ai/dsh-api-remotes/client';
+import type { ModelsOperations } from './operations.ts';
 import type { en } from './locales.ts';
 /** Props of {@link CustomProviderCard}. */
 export interface CustomProviderCardProps {
@@ -35,8 +33,8 @@ export interface CustomProviderCardProps {
      * than a silent overwrite of its whole profile.
      */
     revision: number;
-    /** Wire faces for the write and for interrogating the endpoint. */
-    api: Pick<IApiClient, 'settings' | 'credentials' | 'llm'>;
+    /** The Host operations this card writes and interrogates through. */
+    operations: ModelsOperations;
     /** Section copy. */
     t: (key: keyof typeof en) => string;
     /** Disable writes (read-only settings provider). */

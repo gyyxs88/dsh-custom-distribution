@@ -31,6 +31,11 @@ test("app template and lockfile retain the exact DSH and local overrides", () =>
   for (const artifact of release.artifacts.filter((entry) => entry.placement === "app")) {
     assert.ok(Object.values(packageJson.dependencies).includes(`file:.packages/${artifact.file}`), artifact.file);
   }
+  assert.equal(
+    lock.packages["node_modules/@deepseek-ai/dsh-app-boot"].resolved,
+    "file:.packages/dsh-app-boot-0.1.2-rc.1-windows-module-fallback-proxy.1.tgz",
+  );
+  assert.equal(lock.packages["node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-app-boot"], undefined);
   assert.equal(packageJson.engines.node, release.node.version);
 });
 
@@ -39,4 +44,23 @@ test("all source-based profile components pin immutable commits", () => {
   for (const artifact of release.artifacts.filter((entry) => entry.commit)) {
     assert.match(artifact.commit, /^[a-f0-9]{40}$/u, artifact.package);
   }
+});
+
+test("release lock protects every durable local state category", () => {
+  const expected = [
+    ".agent-presets",
+    ".anonymous-user-id",
+    ".credentials.yaml",
+    "AGENTS.md",
+    "attachments",
+    "dsh-subagent-code-agents",
+    "profiles",
+    "remote-control",
+    "session-control",
+    "sessions",
+    "settings.yaml",
+    "skills",
+    "storages",
+  ];
+  for (const name of expected) assert.ok(release.privateState.includes(name), name);
 });

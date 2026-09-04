@@ -2,14 +2,15 @@
   "schemaVersion": 1,
   "distribution": {
     "name": "dsh-custom-distribution",
-    "version": "0.2.8",
+    "version": "0.3.0",
     "platform": "win32",
     "architecture": "x64",
     "repository": "https://github.com/gyyxs88/dsh-custom-distribution"
   },
   "base": {
     "package": "@deepseek-ai/dsh",
-    "version": "0.1.1-rc.2",
+    "version": "0.1.2-rc.1",
+    "commit": "a66e4702047846cdaa10c66c9d3df3951f5ea70d",
     "license": "MIT",
     "repository": "https://github.com/deepseek-ai/deepseek-harness"
   },
@@ -31,6 +32,7 @@
       "@deepseek-ai/dsh-web-app",
       "dsh-at-file",
       "@omdsh-dev/dsh-genui",
+      "dsh-local-service-control",
       "dsh-session-control",
       "dsh-remote-control",
       "dsh-subagent-code-agents"
@@ -38,104 +40,120 @@
   },
   "artifacts": [
     {
-      "file": "dsh-llm-pi-ai-0.1.1-rc.2-model-capability-routing.1.tgz",
-      "package": "@deepseek-ai/dsh-llm-pi-ai",
-      "version": "0.1.1-rc.2",
+      "file": "dsh-app-boot-0.1.2-rc.1-windows-module-fallback-proxy.1.tgz",
+      "package": "@deepseek-ai/dsh-app-boot",
+      "version": "0.1.2-rc.1",
       "license": "MIT",
       "placement": "app",
-      "sha256": "c5c0567d8dab1ca3560b9f6862de3ad5f6fa1620fba9deba312f2ece04a4619d",
+      "sha256": "c27816fce5ca644d1b0b0271a0d62d518452852a566277f691487d6233f34275",
+      "source": "sources/dsh-app-boot-windows-module-proxy"
+    },
+    {
+      "file": "dsh-llm-0.1.2-rc.1-discovered-model-capabilities.2.tgz",
+      "package": "@deepseek-ai/dsh-llm",
+      "version": "0.1.2-rc.1",
+      "license": "MIT",
+      "placement": "app",
+      "sha256": "9cad3c2dce132554e25bd413c8ed78a7573f1c23c5be727f884740088b0a8018",
+      "source": "sources/dsh-llm-model-discovery-capabilities"
+    },
+    {
+      "file": "dsh-api-remotes-0.1.2-rc.1-discovered-model-capabilities.2.tgz",
+      "package": "@deepseek-ai/dsh-api-remotes",
+      "version": "0.1.2-rc.1",
+      "license": "MIT",
+      "placement": "app",
+      "sha256": "882ac9274c507084c82e1ec3b23b925540a343e74538c36609c8692ea9137b54",
+      "source": "sources/dsh-api-remotes-model-discovery-capabilities"
+    },
+    {
+      "file": "dsh-llm-pi-ai-0.1.2-rc.1-model-capability-routing.2.tgz",
+      "package": "@deepseek-ai/dsh-llm-pi-ai",
+      "version": "0.1.2-rc.1",
+      "license": "MIT",
+      "placement": "app",
+      "sha256": "7ad6cc52905f734c688ae670288b95c25154058c5675ab728f466f1418b30c0a",
       "source": "sources/dsh-llm-pi-ai-live-discovery"
     },
     {
-      "file": "dsh-host-apiproxy-0.1.1-rc.2-discovered-model-capabilities.1.tgz",
-      "package": "@deepseek-ai/dsh-host-apiproxy",
-      "version": "0.1.1-rc.2",
-      "license": "MIT",
-      "placement": "app",
-      "sha256": "ef870583c76c0c78676f74edd8dc5f5c028a27522731353da94f7bb271409898",
-      "source": "sources/dsh-host-apiproxy-image-modalities"
-    },
-    {
-      "file": "dsh-client-connection-0.1.1-rc.2-discovered-model-capabilities.1.tgz",
-      "package": "@deepseek-ai/dsh-client-connection",
-      "version": "0.1.1-rc.2",
-      "license": "MIT",
-      "placement": "app",
-      "sha256": "9068eb9d2c985d6afa1f5a85926c89279c70943dc29ae57d6f4c4b394c6e6da4",
-      "source": "sources/dsh-client-connection-image-modalities"
-    },
-    {
-      "file": "dsh-client-ui-settings-models-0.1.1-rc.2-model-capability-editor.1.tgz",
+      "file": "dsh-client-ui-settings-models-0.1.2-rc.1-model-capability-editor.2.tgz",
       "package": "@deepseek-ai/dsh-client-ui-settings-models",
-      "version": "0.1.1-rc.2",
+      "version": "0.1.2-rc.1",
       "license": "MIT",
       "placement": "app",
-      "sha256": "63168af54049c840600a6d29b515c4e10ab5aec6a4dbe0bf3f3dcb8a5054528c",
+      "sha256": "1d90c0f8623c3027a8b23682ad5d04c04c88d734d1e98a2d0e37373ccc03da39",
       "source": "sources/dsh-client-ui-settings-models-image-modalities"
     },
     {
-      "file": "dsh-client-ui-conversation-0.1.1-rc.2-message-provenance.2.tgz",
-      "package": "@deepseek-ai/dsh-client-ui-conversation",
-      "version": "0.1.1-rc.2",
-      "license": "MIT",
-      "placement": "app",
-      "sha256": "6b31e8d528952ca1174800324c8f6800ea3ec3dd9c5b75553eb1e0601d7939dd",
-      "source": "sources/dsh-client-ui-conversation-message-provenance"
-    },
-    {
-      "file": "dsh-client-ui-workspace-0.1.1-rc.2-copy-session-id.1.tgz",
+      "file": "dsh-client-ui-workspace-0.1.2-rc.1-copy-session-id.2.tgz",
       "package": "@deepseek-ai/dsh-client-ui-workspace",
-      "version": "0.1.1-rc.2",
+      "version": "0.1.2-rc.1",
       "license": "MIT",
       "placement": "app",
-      "sha256": "1af0ee7adda966becb8c51c216d6e1047ccb74636da3473478892adfaf689d1b",
+      "sha256": "87343da4a4d2f21db7692e9606fe9affe6a174f80e7d42245c665380b3c94378",
       "source": "sources/dsh-client-ui-workspace-copy-session-id"
     },
     {
-      "file": "dsh-at-file-0.6.7.tgz",
+      "file": "dsh-at-file-0.6.8.tgz",
       "package": "dsh-at-file",
-      "version": "0.6.7",
+      "version": "0.6.8",
       "license": "MIT",
       "placement": "profile",
-      "sha256": "3b7fcaaf0dd7bd6569b9dde823e562284c31b3f4348821f4c80c59693c74ef8b",
-      "source": "bundled-artifact-only",
-      "sourceLimitation": "The package metadata does not declare a repository and this version is not available from the public npm registry. The exact MIT artifact is retained for reproducibility."
+      "sha256": "7fdd128bf1bcae562d0ad837c8bc586cbed0992eed8602e1991d76103e83039b",
+      "source": "sources/dsh-at-file-settings-rc1",
+      "sourceLimitation": "Upstream 0.6.7 declares no source repository. This reviewed 0.6.8 snapshot contains the exact MIT artifact with the DSH 0.1.2 settings namespace migration."
     },
     {
-      "file": "dsh-remote-control-0.2.6.tgz",
+      "file": "dsh-local-service-control-0.2.0.tgz",
+      "package": "dsh-local-service-control",
+      "version": "0.2.0",
+      "license": "MIT",
+      "placement": "profile",
+      "sha256": "28057c7b6d046e90169b5a04c301f979bd3e9677a3e654a13ad1f6c8b38d6a1a",
+      "source": "sources/dsh-local-service-control"
+    },
+    {
+      "file": "dsh-remote-control-0.3.0.tgz",
       "package": "dsh-remote-control",
-      "version": "0.2.6",
+      "version": "0.3.0",
       "license": "MIT",
       "placement": "profile",
-      "sha256": "e36fdf79b80473d5ee47ec7dbe6d99a8f2e45774fe0939705b3d3168ef90f00b",
+      "sha256": "80ca3bf9645d6f444bb3ebe4131ec264452e372a8eb7ba94600797ca84163fcb",
       "source": "https://github.com/gyyxs88/dsh-remote-control",
-      "commit": "ccaee1c273a322ece30bc160be1a6dc0a6a1ecb9"
+      "commit": "495ecea5951dbce6ac4ab68f9e889c5291ddf0c1"
     },
     {
-      "file": "dsh-session-control-0.7.3.tgz",
+      "file": "dsh-session-control-0.8.0.tgz",
       "package": "dsh-session-control",
-      "version": "0.7.3",
+      "version": "0.8.0",
       "license": "MIT",
       "placement": "profile",
-      "sha256": "f55eb9bf1a02f355ccb23f75b65d2498117b6bb23bef73bce75895601add4598",
+      "sha256": "0a5443df82fca19686fad7f60a7bd8d2f3c87760ae0d3e6ee1aaa1414863ed66",
       "source": "https://github.com/gyyxs88/dsh-session-control",
-      "commit": "205e183ea7d17947cb4faa1031c5186320d4b7ae"
+      "commit": "a2b819c75c9aef4e56201fc1a94788eca3f83896"
     },
     {
-      "file": "dsh-subagent-code-agents-0.1.8.tgz",
+      "file": "dsh-subagent-code-agents-0.2.0.tgz",
       "package": "dsh-subagent-code-agents",
-      "version": "0.1.8",
+      "version": "0.2.0",
       "license": "MIT",
       "placement": "profile",
-      "sha256": "30f0d9318484b8cbde8f3e3fb9725c8a809fff8471f0d30e162ff11faa6967da",
+      "sha256": "aa593023115c8a5bd433cbc6d1d7f03e3b6d48dcbae9e1d71068dff421c0a07e",
       "source": "https://github.com/gyyxs88/dsh-subagent-code-agents",
-      "commit": "771e5c1998e765bb185163fcbe1ebab0a6c2f223"
+      "commit": "82f8ed03c60bb0d0deb63d57e60f7f29a2a63380"
     }
   ],
   "privateState": [
+    ".agent-presets",
+    ".anonymous-user-id",
     ".credentials.yaml",
+    "AGENTS.md",
+    "attachments",
+    "dsh-subagent-code-agents",
+    "profiles",
     "settings.yaml",
     "sessions",
+    "skills",
     "storages",
     "session-control",
     "remote-control",

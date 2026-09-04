@@ -7,7 +7,7 @@ window.__ModuleLoader__.load({
 		let react_jsx_runtime = require("react/jsx-runtime");
 		let react = require("react");
 		let _deepseek_ai_dsh_client_ui_primitives = require("@deepseek-ai/dsh-client-ui-primitives");
-		let _deepseek_ai_dsh_client_runtime_client = require("@deepseek-ai/dsh-client-runtime/client");
+		let _deepseek_ai_dsh_client_store = require("@deepseek-ai/dsh-client-store");
 		//#region lib/types/client/apiKey.js
 		/**
 		* Browser-side judgement of a typed API key.
@@ -54,8 +54,8 @@ window.__ModuleLoader__.load({
 			if (!LEGAL_API_KEY.test(value)) return "keyIllegalCharacters";
 		}
 		//#endregion
-		//#region \0dsh-css:/home/runner/work/deepseek-harness/deepseek-harness/packages/client/ui-settings-models/src/client/ModelsSection.module.css.mjs
-		const css$3 = ".zGbnIq_section{max-width:720px;color:var(--dsw-alias-label-primary);flex-direction:column;gap:12px;display:flex}.zGbnIq_title{color:var(--dsw-alias-label-primary);margin:0;font-size:16px;font-weight:500;line-height:24px}.zGbnIq_intro{color:var(--dsw-alias-label-tertiary);margin:0;font-size:14px;line-height:22px}.zGbnIq_notice{color:var(--dsw-alias-state-warn-label);margin:0;font-size:12px;line-height:18px}.zGbnIq_savedNotice{color:var(--dsw-alias-state-success-primary);margin:0;font-size:12px;line-height:18px}.zGbnIq_rows{flex-direction:column;gap:8px;margin:12px 0 0;padding:0;list-style:none;display:flex}.zGbnIq_rowCard{border:1px solid var(--dsw-alias-border-l2);border-radius:12px;flex-direction:column;gap:12px;padding:12px 14px;display:flex}.zGbnIq_rowHead{align-items:center;gap:10px;display:flex}.zGbnIq_rowIdentity{align-items:center;gap:6px;min-width:0;display:inline-flex}.zGbnIq_rowName{color:var(--dsw-alias-label-primary);font-size:14px;font-weight:500;line-height:22px}.zGbnIq_rowTag{border:1px solid var(--dsw-alias-border-l3);color:var(--dsw-alias-label-secondary);border-radius:4px;flex:none;padding:1px 6px;font-size:11px;line-height:16px}.zGbnIq_credentialDot{box-sizing:border-box;border-radius:50%;flex:none;width:8px;height:8px;display:inline-block}.zGbnIq_credentialDotConfigured{background:var(--dsw-alias-state-success-primary)}.zGbnIq_credentialDotMissing{background:var(--dsw-alias-state-error-primary)}.zGbnIq_rowActions{align-items:center;gap:4px;margin-left:auto;display:inline-flex}.zGbnIq_primaryButton,.zGbnIq_secondaryButton,.zGbnIq_addButton{box-sizing:border-box;height:36px;font:inherit;cursor:pointer;border:none;border-radius:18px;justify-content:center;align-items:center;gap:4px;padding:0 14px;font-size:14px;line-height:22px;display:inline-flex}.zGbnIq_primaryButton{background:var(--dsw-alias-button-primary-fill);color:var(--dsw-alias-label-primary-foreground)}.zGbnIq_primaryButton:hover:not(:disabled){background:var(--dsw-alias-button-primary-hover)}.zGbnIq_secondaryButton,.zGbnIq_addButton{border:1px solid var(--dsw-alias-border-l2);color:var(--dsw-alias-label-primary);background:0 0}.zGbnIq_secondaryButton:hover:not(:disabled),.zGbnIq_addButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover)}.zGbnIq_secondaryButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover-solid)}.zGbnIq_dangerButton{box-sizing:border-box;height:36px;color:var(--dsw-alias-state-error-primary);font:inherit;cursor:pointer;background:0 0;border:none;border-radius:18px;justify-content:center;align-items:center;padding:0 14px;font-size:14px;line-height:22px;display:inline-flex}.zGbnIq_dangerButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover-danger)}.zGbnIq_rowActions .zGbnIq_secondaryButton,.zGbnIq_rowActions .zGbnIq_dangerButton{border-radius:14px;height:28px;padding:0 10px;font-size:12px;line-height:18px}.zGbnIq_primaryButton:disabled,.zGbnIq_secondaryButton:disabled,.zGbnIq_dangerButton:disabled,.zGbnIq_addButton:disabled,.zGbnIq_linkButton:disabled,.zGbnIq_addModelButton:disabled{opacity:.4;cursor:default}.zGbnIq_primaryButton:focus-visible,.zGbnIq_secondaryButton:focus-visible,.zGbnIq_dangerButton:focus-visible,.zGbnIq_addButton:focus-visible,.zGbnIq_linkButton:focus-visible,.zGbnIq_addModelButton:focus-visible,.zGbnIq_iconButton:focus-visible,.zGbnIq_customizedSummary:focus-visible{box-shadow:0 0 0 2px var(--dsw-alias-border-l3);outline:none}.zGbnIq_editor{background:var(--dsw-alias-bg-module-platform);border-radius:12px;flex-direction:column;gap:14px;padding:14px 16px;display:flex}.zGbnIq_editorHeader{align-items:baseline;gap:8px;display:flex}.zGbnIq_editorTitle{color:var(--dsw-alias-label-primary);font-size:14px;font-weight:500;line-height:22px}.zGbnIq_editorRoute{color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:18px}.zGbnIq_field{flex-direction:column;gap:6px;display:flex}.zGbnIq_fieldLabel{color:var(--dsw-alias-label-secondary);align-items:center;gap:10px;font-size:12px;font-weight:500;line-height:18px;display:inline-flex}.zGbnIq_linkButton{box-sizing:border-box;height:28px;color:var(--dsw-alias-label-tertiary);font:inherit;cursor:pointer;background:0 0;border:none;border-radius:14px;align-items:center;padding:0 10px;font-size:12px;line-height:18px;display:inline-flex}.zGbnIq_linkButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary)}.zGbnIq_advancedHint{color:var(--dsw-alias-label-tertiary);margin:0;font-size:12px;line-height:18px}.zGbnIq_editorActions{justify-content:flex-end;gap:8px;display:flex}.zGbnIq_addBlock{flex-direction:column;gap:12px;display:flex}.zGbnIq_addActions{flex-wrap:wrap;gap:10px;display:flex}.zGbnIq_addButton{border:1px dashed var(--dsw-alias-border-l3);border-radius:12px;flex:1 1 0;gap:6px;min-width:180px;height:44px}.zGbnIq_addCard,.zGbnIq_setupCard{background:var(--dsw-alias-bg-module-platform);border-radius:12px;flex-direction:column;gap:14px;padding:14px 16px;list-style:none;display:flex}.zGbnIq_addCard .zGbnIq_editor,.zGbnIq_setupCard .zGbnIq_editor{background:0 0;padding:0}.zGbnIq_customized{border-top:1px solid var(--dsw-alias-border-l2);padding-top:10px}.zGbnIq_customizedSummary{cursor:pointer;width:fit-content;color:var(--dsw-alias-label-secondary);border-radius:6px;align-items:center;gap:6px;margin-left:-4px;padding:2px 4px;font-size:12px;font-weight:500;line-height:18px;list-style:none;display:flex}.zGbnIq_customizedSummary::-webkit-details-marker{display:none}.zGbnIq_customizedSummary:before{content:\"\";border-bottom:1.5px solid;border-right:1.5px solid;width:5px;height:5px;transition:transform .12s;transform:rotate(-45deg)translate(-1px,-1px)}.zGbnIq_customized[open]>.zGbnIq_customizedSummary:before{transform:rotate(45deg)translate(-1px,-1px)}.zGbnIq_customizedSummary:hover{color:var(--dsw-alias-label-primary)}.zGbnIq_customizedBody{flex-direction:column;gap:12px;padding-top:12px;display:flex}.zGbnIq_modelCatalog{border-top:1px solid var(--dsw-alias-border-l2);flex-direction:column;gap:10px;padding-top:12px;display:flex}.zGbnIq_modelCatalogHeading{flex-direction:column;gap:2px;display:flex}.zGbnIq_modelCatalogTitle{color:var(--dsw-alias-label-secondary);font-size:12px;font-weight:500;line-height:18px}.zGbnIq_modelCatalogMeta,.zGbnIq_modelEmpty{color:var(--dsw-alias-label-tertiary);margin:0;font-size:12px;line-height:18px}.zGbnIq_modelList{flex-direction:column;gap:8px;display:flex}.zGbnIq_modelListHead{justify-content:space-between;align-items:flex-start;gap:12px;display:flex}.zGbnIq_modelEntry{border:1px solid var(--dsw-alias-border-l2);border-radius:8px;padding:6px}.zGbnIq_modelRow{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) auto auto;align-items:center;gap:6px;display:grid}.zGbnIq_iconButton{box-sizing:border-box;width:28px;height:28px;color:var(--dsw-alias-label-tertiary);cursor:pointer;background:0 0;border:none;border-radius:6px;justify-content:center;align-items:center;display:inline-flex}.zGbnIq_iconButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}.zGbnIq_iconButton:disabled{cursor:default;opacity:.4}.zGbnIq_iconButtonDanger:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover-danger);color:var(--dsw-alias-state-error-primary)}.zGbnIq_modelAdvanced{grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;padding:8px 4px 2px;display:grid}.zGbnIq_modelField{flex-direction:column;gap:4px;display:flex}.zGbnIq_modelFieldLabel{color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:18px}.zGbnIq_modelEmpty{border:1px dashed var(--dsw-alias-border-l3);text-align:center;border-radius:8px;padding:12px}.zGbnIq_addModelButton{box-sizing:border-box;border:1px solid var(--dsw-alias-border-l2);height:28px;color:var(--dsw-alias-label-primary);font:inherit;cursor:pointer;background:0 0;border-radius:14px;align-self:flex-start;align-items:center;gap:4px;padding:0 10px;font-size:12px;line-height:18px;display:inline-flex}.zGbnIq_addModelButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover)}.zGbnIq_input{box-sizing:border-box;border:1px solid var(--dsw-alias-border-l2);width:100%;height:32px;font:inherit;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);border-radius:8px;padding:0 10px;font-size:14px;line-height:22px}select.zGbnIq_input{cursor:pointer;max-width:240px}.zGbnIq_input:focus{border-color:var(--dsw-alias-brand-primary);outline:none}.zGbnIq_input::placeholder{color:var(--dsw-alias-label-dimmed)}.zGbnIq_input:disabled{opacity:.6;cursor:default}.zGbnIq_selectInput{appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%2381858C' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\");background-position:right 12px center;background-repeat:no-repeat;background-size:12px 12px;padding-right:32px}.zGbnIq_error{color:var(--dsw-alias-state-error-primary);margin:0;font-size:12px;line-height:18px}.zGbnIq_deleteDialog{width:min(480px,100%)}.zGbnIq_deleteConfirm:not(:disabled){border-color:var(--dsw-alias-state-error-primary);color:var(--dsw-alias-state-error-primary)}.zGbnIq_deleteConfirm:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover-danger)}.zGbnIq_hiddenLabel{clip:rect(0 0 0 0);white-space:nowrap;width:1px;height:1px;position:absolute;overflow:hidden}@media (prefers-reduced-motion:reduce){.zGbnIq_customizedSummary:before{transition:none}}.zGbnIq_fetchDialog{--dsh-scrollbar-thumb:var(--dsw-alias-scrollbar-bg-l2);--dsh-scrollbar-thumb-hover:var(--dsw-alias-scrollbar-hover-l2);max-width:520px}.zGbnIq_candidateActions{justify-content:flex-end;margin-bottom:6px;display:flex}.zGbnIq_candidateList{flex-direction:column;gap:2px;max-height:320px;margin:0;padding:0;list-style:none;display:flex;overflow-y:auto}.zGbnIq_candidate{border-radius:6px}.zGbnIq_candidateLabel{cursor:pointer;align-items:center;gap:8px;padding:6px 8px;display:flex}.zGbnIq_candidateId{font-family:var(--ds-font-family-code);overflow-wrap:anywhere;flex:auto;font-size:13px}";
+		//#region \0dsh-css:D:\Project\deepseek-harness-lab\.tmp\upstream-dsh-0.1.2-rc.1\packages\client\ui-settings-models\src\client\ModelsSection.module.css.mjs
+		const css$3 = ".CEkx3a_section{max-width:720px;color:var(--dsw-alias-label-primary);flex-direction:column;gap:12px;display:flex}.CEkx3a_title{color:var(--dsw-alias-label-primary);margin:0;font-size:16px;font-weight:500;line-height:24px}.CEkx3a_intro{color:var(--dsw-alias-label-tertiary);margin:0;font-size:14px;line-height:22px}.CEkx3a_notice{color:var(--dsw-alias-state-warn-label);margin:0;font-size:12px;line-height:18px}.CEkx3a_savedNotice{color:var(--dsw-alias-state-success-primary);margin:0;font-size:12px;line-height:18px}.CEkx3a_rows{flex-direction:column;gap:8px;margin:12px 0 0;padding:0;list-style:none;display:flex}.CEkx3a_rowCard{border:.5px solid var(--dsw-alias-border-l4);border-radius:16px;flex-direction:column;gap:12px;padding:12px 14px;display:flex}.CEkx3a_rowHead{align-items:center;gap:10px;display:flex}.CEkx3a_rowIdentity{align-items:center;gap:6px;min-width:0;display:inline-flex}.CEkx3a_rowName{color:var(--dsw-alias-label-primary);font-size:14px;font-weight:500;line-height:22px}.CEkx3a_rowTag{border:.5px solid var(--dsw-alias-border-l3);color:var(--dsw-alias-label-secondary);border-radius:4px;flex:none;padding:1px 6px;font-size:11px;line-height:16px}.CEkx3a_credentialDot{box-sizing:border-box;corner-shape:round;border-radius:50%;flex:none;width:8px;height:8px;display:inline-block}.CEkx3a_credentialDotConfigured{background:var(--dsw-alias-state-success-primary)}.CEkx3a_credentialDotMissing{background:var(--dsw-alias-state-error-primary)}.CEkx3a_rowActions{align-items:center;gap:4px;margin-left:auto;display:inline-flex}.CEkx3a_primaryButton,.CEkx3a_secondaryButton,.CEkx3a_addButton{box-sizing:border-box;height:36px;font:inherit;cursor:pointer;border:none;border-radius:18px;justify-content:center;align-items:center;gap:4px;padding:0 14px;font-size:14px;line-height:22px;display:inline-flex}.CEkx3a_primaryButton{background:var(--dsw-alias-button-primary-fill);color:var(--dsw-alias-label-primary-foreground)}.CEkx3a_primaryButton:hover:not(:disabled){background:var(--dsw-alias-button-primary-hover)}.CEkx3a_secondaryButton,.CEkx3a_addButton{border:.5px solid var(--dsw-alias-border-l3);color:var(--dsw-alias-label-primary);background:0 0}.CEkx3a_secondaryButton:hover:not(:disabled),.CEkx3a_addButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover)}.CEkx3a_secondaryButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover-solid)}.CEkx3a_dangerButton{box-sizing:border-box;height:36px;color:var(--dsw-alias-state-error-primary);font:inherit;cursor:pointer;background:0 0;border:none;border-radius:18px;justify-content:center;align-items:center;padding:0 14px;font-size:14px;line-height:22px;display:inline-flex}.CEkx3a_dangerButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover-danger)}.CEkx3a_rowActions .CEkx3a_secondaryButton,.CEkx3a_rowActions .CEkx3a_dangerButton{border-radius:14px;height:28px;padding:0 10px;font-size:12px;line-height:18px}.CEkx3a_primaryButton:disabled,.CEkx3a_secondaryButton:disabled,.CEkx3a_dangerButton:disabled,.CEkx3a_addButton:disabled,.CEkx3a_linkButton:disabled,.CEkx3a_addModelButton:disabled{opacity:.4;cursor:default}.CEkx3a_primaryButton:focus-visible,.CEkx3a_secondaryButton:focus-visible,.CEkx3a_dangerButton:focus-visible,.CEkx3a_addButton:focus-visible,.CEkx3a_linkButton:focus-visible,.CEkx3a_addModelButton:focus-visible,.CEkx3a_iconButton:focus-visible,.CEkx3a_customizedSummary:focus-visible{box-shadow:0 0 0 2px var(--dsw-alias-border-l3);outline:none}.CEkx3a_editor{background:var(--dsw-alias-bg-module-platform);border-radius:12px;flex-direction:column;gap:14px;padding:14px 16px;display:flex}.CEkx3a_editorHeader{align-items:baseline;gap:8px;display:flex}.CEkx3a_editorTitle{color:var(--dsw-alias-label-primary);font-size:14px;font-weight:500;line-height:22px}.CEkx3a_editorRoute{color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:18px}.CEkx3a_field{flex-direction:column;gap:6px;display:flex}.CEkx3a_fieldLabel{color:var(--dsw-alias-label-secondary);align-items:center;gap:10px;font-size:12px;font-weight:500;line-height:18px;display:inline-flex}.CEkx3a_linkButton{box-sizing:border-box;height:28px;color:var(--dsw-alias-label-tertiary);font:inherit;cursor:pointer;background:0 0;border:none;border-radius:14px;align-items:center;padding:0 10px;font-size:12px;line-height:18px;display:inline-flex}.CEkx3a_linkButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary)}.CEkx3a_advancedHint{color:var(--dsw-alias-label-tertiary);margin:0;font-size:12px;line-height:18px}.CEkx3a_editorActions{justify-content:flex-end;gap:8px;display:flex}.CEkx3a_addBlock{flex-direction:column;gap:12px;display:flex}.CEkx3a_addActions{flex-wrap:wrap;gap:10px;display:flex}.CEkx3a_addButton{border:1px dashed var(--dsw-alias-border-l3);border-radius:16px;flex:1 1 0;gap:6px;min-width:180px;height:44px}.CEkx3a_addCard,.CEkx3a_setupCard{background:var(--dsw-alias-bg-module-platform);border-radius:12px;flex-direction:column;gap:14px;padding:14px 16px;list-style:none;display:flex}.CEkx3a_addCard .CEkx3a_editor,.CEkx3a_setupCard .CEkx3a_editor{background:0 0;padding:0}.CEkx3a_customized{border-top:.5px solid var(--dsw-alias-border-l2);padding-top:10px}.CEkx3a_customizedSummary{cursor:pointer;width:fit-content;color:var(--dsw-alias-label-secondary);border-radius:6px;align-items:center;gap:6px;margin-left:-4px;padding:2px 4px;font-size:12px;font-weight:500;line-height:18px;list-style:none;display:flex}.CEkx3a_customizedSummary::-webkit-details-marker{display:none}.CEkx3a_customizedSummary:before{content:\"\";border-bottom:1.5px solid;border-right:1.5px solid;width:5px;height:5px;transition:transform .12s;transform:rotate(-45deg)translate(-1px,-1px)}.CEkx3a_customized[open]>.CEkx3a_customizedSummary:before{transform:rotate(45deg)translate(-1px,-1px)}.CEkx3a_customizedSummary:hover{color:var(--dsw-alias-label-primary)}.CEkx3a_customizedBody{flex-direction:column;gap:12px;padding-top:12px;display:flex}.CEkx3a_modelCatalog{border-top:.5px solid var(--dsw-alias-border-l2);flex-direction:column;gap:10px;padding-top:12px;display:flex}.CEkx3a_modelCatalogHeading{flex-direction:column;gap:2px;display:flex}.CEkx3a_modelCatalogTitle{color:var(--dsw-alias-label-secondary);font-size:12px;font-weight:500;line-height:18px}.CEkx3a_modelCatalogMeta,.CEkx3a_modelEmpty{color:var(--dsw-alias-label-tertiary);margin:0;font-size:12px;line-height:18px}.CEkx3a_modelList{flex-direction:column;gap:8px;display:flex}.CEkx3a_modelListHead{justify-content:space-between;align-items:flex-start;gap:12px;display:flex}.CEkx3a_modelEntry{border:.5px solid var(--dsw-alias-border-l4);border-radius:10px;padding:6px}.CEkx3a_modelRow{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) auto auto;align-items:center;gap:6px;display:grid}.CEkx3a_iconButton{box-sizing:border-box;width:28px;height:28px;color:var(--dsw-alias-label-tertiary);cursor:pointer;background:0 0;border:none;border-radius:6px;justify-content:center;align-items:center;display:inline-flex}.CEkx3a_iconButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}.CEkx3a_iconButton:disabled{cursor:default;opacity:.4}.CEkx3a_iconButtonDanger:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover-danger);color:var(--dsw-alias-state-error-primary)}.CEkx3a_modelAdvanced{grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;padding:8px 4px 2px;display:grid}.CEkx3a_modelField{flex-direction:column;gap:4px;display:flex}.CEkx3a_modelFieldLabel{color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:18px}.CEkx3a_modelEmpty{border:1px dashed var(--dsw-alias-border-l3);text-align:center;border-radius:8px;padding:12px}.CEkx3a_addModelButton{box-sizing:border-box;border:.5px solid var(--dsw-alias-border-l3);height:28px;color:var(--dsw-alias-label-primary);font:inherit;cursor:pointer;background:0 0;border-radius:14px;align-self:flex-start;align-items:center;gap:4px;padding:0 10px;font-size:12px;line-height:18px;display:inline-flex}.CEkx3a_addModelButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover)}.CEkx3a_input{box-sizing:border-box;border:.5px solid var(--dsw-alias-border-l4);width:100%;height:32px;font:inherit;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);border-radius:8px;padding:0 10px;font-size:14px;line-height:22px}select.CEkx3a_input{cursor:pointer;max-width:240px}.CEkx3a_input:focus{border-color:var(--dsw-alias-brand-primary);outline:none}.CEkx3a_input::placeholder{color:var(--dsw-alias-label-dimmed)}.CEkx3a_input:disabled{opacity:.6;cursor:default}.CEkx3a_selectInput{appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%2381858C' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\");background-position:right 12px center;background-repeat:no-repeat;background-size:12px 12px;padding-right:32px}.CEkx3a_error{color:var(--dsw-alias-state-error-primary);margin:0;font-size:12px;line-height:18px}.CEkx3a_deleteDialog{width:min(480px,100%)}.CEkx3a_deleteConfirm:not(:disabled){border-color:var(--dsw-alias-state-error-primary);color:var(--dsw-alias-state-error-primary)}.CEkx3a_deleteConfirm:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover-danger)}.CEkx3a_hiddenLabel{clip:rect(0 0 0 0);white-space:nowrap;width:1px;height:1px;position:absolute;overflow:hidden}@media (prefers-reduced-motion:reduce){.CEkx3a_customizedSummary:before,.CEkx3a_switchThumb{transition:none}}.CEkx3a_fetchDialog{--dsh-scrollbar-thumb:var(--dsw-alias-scrollbar-bg-l2);--dsh-scrollbar-thumb-hover:var(--dsw-alias-scrollbar-hover-l2);max-width:520px}.CEkx3a_candidateToolbar{align-items:center;gap:8px;margin-bottom:6px;display:flex}.CEkx3a_candidateSearch{flex:240px;min-width:0}.CEkx3a_candidateList{flex-direction:column;gap:2px;max-height:320px;margin:0;padding:0;list-style:none;display:flex;overflow-y:auto}.CEkx3a_candidate{border-radius:6px}.CEkx3a_candidateLabel{cursor:pointer;align-items:center;gap:8px;padding:6px 8px;display:flex}.CEkx3a_candidateId{font-family:var(--ds-font-family-code);overflow-wrap:anywhere;flex:auto;font-size:13px}.CEkx3a_candidateEmpty{color:var(--dsw-alias-label-secondary);text-align:center;margin:24px 0;font-size:13px;line-height:20px}";
 		const tagId$3 = "@deepseek-ai/dsh-client-ui-settings-models/ModelsSection.module.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId$3) + "]") === null) {
 			const tag = document.createElement("style");
@@ -65,68 +65,71 @@ window.__ModuleLoader__.load({
 			document.head.appendChild(tag);
 		}
 		var ModelsSection_module_css_default = {
-			"addActions": "zGbnIq_addActions",
-			"addBlock": "zGbnIq_addBlock",
-			"addButton": "zGbnIq_addButton",
-			"addCard": "zGbnIq_addCard",
-			"addModelButton": "zGbnIq_addModelButton",
-			"advancedHint": "zGbnIq_advancedHint",
-			"candidate": "zGbnIq_candidate",
-			"candidateActions": "zGbnIq_candidateActions",
-			"candidateId": "zGbnIq_candidateId",
-			"candidateLabel": "zGbnIq_candidateLabel",
-			"candidateList": "zGbnIq_candidateList",
-			"credentialDot": "zGbnIq_credentialDot",
-			"credentialDotConfigured": "zGbnIq_credentialDotConfigured",
-			"credentialDotMissing": "zGbnIq_credentialDotMissing",
-			"customized": "zGbnIq_customized",
-			"customizedBody": "zGbnIq_customizedBody",
-			"customizedSummary": "zGbnIq_customizedSummary",
-			"dangerButton": "zGbnIq_dangerButton",
-			"deleteConfirm": "zGbnIq_deleteConfirm",
-			"deleteDialog": "zGbnIq_deleteDialog",
-			"editor": "zGbnIq_editor",
-			"editorActions": "zGbnIq_editorActions",
-			"editorHeader": "zGbnIq_editorHeader",
-			"editorRoute": "zGbnIq_editorRoute",
-			"editorTitle": "zGbnIq_editorTitle",
-			"error": "zGbnIq_error",
-			"fetchDialog": "zGbnIq_fetchDialog",
-			"field": "zGbnIq_field",
-			"fieldLabel": "zGbnIq_fieldLabel",
-			"hiddenLabel": "zGbnIq_hiddenLabel",
-			"iconButton": "zGbnIq_iconButton",
-			"iconButtonDanger": "zGbnIq_iconButtonDanger",
-			"input": "zGbnIq_input",
-			"intro": "zGbnIq_intro",
-			"linkButton": "zGbnIq_linkButton",
-			"modelAdvanced": "zGbnIq_modelAdvanced",
-			"modelCatalog": "zGbnIq_modelCatalog",
-			"modelCatalogHeading": "zGbnIq_modelCatalogHeading",
-			"modelCatalogMeta": "zGbnIq_modelCatalogMeta",
-			"modelCatalogTitle": "zGbnIq_modelCatalogTitle",
-			"modelEmpty": "zGbnIq_modelEmpty",
-			"modelEntry": "zGbnIq_modelEntry",
-			"modelField": "zGbnIq_modelField",
-			"modelFieldLabel": "zGbnIq_modelFieldLabel",
-			"modelList": "zGbnIq_modelList",
-			"modelListHead": "zGbnIq_modelListHead",
-			"modelRow": "zGbnIq_modelRow",
-			"notice": "zGbnIq_notice",
-			"primaryButton": "zGbnIq_primaryButton",
-			"rowActions": "zGbnIq_rowActions",
-			"rowCard": "zGbnIq_rowCard",
-			"rowHead": "zGbnIq_rowHead",
-			"rowIdentity": "zGbnIq_rowIdentity",
-			"rowName": "zGbnIq_rowName",
-			"rowTag": "zGbnIq_rowTag",
-			"rows": "zGbnIq_rows",
-			"savedNotice": "zGbnIq_savedNotice",
-			"secondaryButton": "zGbnIq_secondaryButton",
-			"section": "zGbnIq_section",
-			"selectInput": "zGbnIq_selectInput",
-			"setupCard": "zGbnIq_setupCard",
-			"title": "zGbnIq_title"
+			"addActions": "CEkx3a_addActions",
+			"addBlock": "CEkx3a_addBlock",
+			"addButton": "CEkx3a_addButton",
+			"addCard": "CEkx3a_addCard",
+			"addModelButton": "CEkx3a_addModelButton",
+			"advancedHint": "CEkx3a_advancedHint",
+			"candidate": "CEkx3a_candidate",
+			"candidateEmpty": "CEkx3a_candidateEmpty",
+			"candidateId": "CEkx3a_candidateId",
+			"candidateLabel": "CEkx3a_candidateLabel",
+			"candidateList": "CEkx3a_candidateList",
+			"candidateSearch": "CEkx3a_candidateSearch",
+			"candidateToolbar": "CEkx3a_candidateToolbar",
+			"credentialDot": "CEkx3a_credentialDot",
+			"credentialDotConfigured": "CEkx3a_credentialDotConfigured",
+			"credentialDotMissing": "CEkx3a_credentialDotMissing",
+			"customized": "CEkx3a_customized",
+			"customizedBody": "CEkx3a_customizedBody",
+			"customizedSummary": "CEkx3a_customizedSummary",
+			"dangerButton": "CEkx3a_dangerButton",
+			"deleteConfirm": "CEkx3a_deleteConfirm",
+			"deleteDialog": "CEkx3a_deleteDialog",
+			"editor": "CEkx3a_editor",
+			"editorActions": "CEkx3a_editorActions",
+			"editorHeader": "CEkx3a_editorHeader",
+			"editorRoute": "CEkx3a_editorRoute",
+			"editorTitle": "CEkx3a_editorTitle",
+			"error": "CEkx3a_error",
+			"fetchDialog": "CEkx3a_fetchDialog",
+			"field": "CEkx3a_field",
+			"fieldLabel": "CEkx3a_fieldLabel",
+			"hiddenLabel": "CEkx3a_hiddenLabel",
+			"iconButton": "CEkx3a_iconButton",
+			"iconButtonDanger": "CEkx3a_iconButtonDanger",
+			"input": "CEkx3a_input",
+			"intro": "CEkx3a_intro",
+			"linkButton": "CEkx3a_linkButton",
+			"modelAdvanced": "CEkx3a_modelAdvanced",
+			"modelCatalog": "CEkx3a_modelCatalog",
+			"modelCatalogHeading": "CEkx3a_modelCatalogHeading",
+			"modelCatalogMeta": "CEkx3a_modelCatalogMeta",
+			"modelCatalogTitle": "CEkx3a_modelCatalogTitle",
+			"modelEmpty": "CEkx3a_modelEmpty",
+			"modelEntry": "CEkx3a_modelEntry",
+			"modelField": "CEkx3a_modelField",
+			"modelFieldLabel": "CEkx3a_modelFieldLabel",
+			"modelList": "CEkx3a_modelList",
+			"modelListHead": "CEkx3a_modelListHead",
+			"modelRow": "CEkx3a_modelRow",
+			"notice": "CEkx3a_notice",
+			"primaryButton": "CEkx3a_primaryButton",
+			"rowActions": "CEkx3a_rowActions",
+			"rowCard": "CEkx3a_rowCard",
+			"rowHead": "CEkx3a_rowHead",
+			"rowIdentity": "CEkx3a_rowIdentity",
+			"rowName": "CEkx3a_rowName",
+			"rowTag": "CEkx3a_rowTag",
+			"rows": "CEkx3a_rows",
+			"savedNotice": "CEkx3a_savedNotice",
+			"secondaryButton": "CEkx3a_secondaryButton",
+			"section": "CEkx3a_section",
+			"selectInput": "CEkx3a_selectInput",
+			"setupCard": "CEkx3a_setupCard",
+			"switchThumb": "CEkx3a_switchThumb",
+			"title": "CEkx3a_title"
 		};
 		//#endregion
 		//#region lib/types/client/EditorFooter.js
@@ -144,13 +147,13 @@ window.__ModuleLoader__.load({
 					className: ModelsSection_module_css_default["secondaryButton"],
 					disabled: props.busy,
 					onClick: props.onCancel,
-					children: t(props.cancelLabel ?? "cancel")
+					children: t(props.cancelLabelKey ?? "cancel")
 				}), (0, react_jsx_runtime.jsx)("button", {
 					type: "button",
 					className: ModelsSection_module_css_default["primaryButton"],
 					disabled: props.submitDisabled,
 					onClick: props.onSubmit,
-					children: props.busy ? t(props.submitBusyLabel) : t(props.submitLabel)
+					children: props.busy ? t(props.submitBusyLabelKey) : t(props.submitLabelKey)
 				})]
 			});
 		}
@@ -204,6 +207,16 @@ window.__ModuleLoader__.load({
 			if (value % CAPACITY_SCALE.k === 0) return `${String(value / CAPACITY_SCALE.k)}K`;
 			return String(value);
 		}
+		/** Model reasoning vocabulary accepted by the pi-ai settings schema. */
+		const REASONING_LEVELS$1 = [
+			"off",
+			"minimal",
+			"low",
+			"medium",
+			"high",
+			"xhigh",
+			"max"
+		];
 		/** Convert a schema-validated catalog value into records without dropping hidden fields. */
 		function modelDrafts(value) {
 			if (!Array.isArray(value)) return [];
@@ -252,12 +265,24 @@ window.__ModuleLoader__.load({
 				};
 				const efforts = model["reasoningEfforts"];
 				if (efforts !== void 0 && efforts !== false) {
-					if (typeof efforts !== "object" || efforts === null || Array.isArray(efforts)) return { index, key: "modelReasoningInvalid" };
+					if (typeof efforts !== "object" || efforts === null || Array.isArray(efforts)) return {
+						index,
+						key: "modelReasoningInvalid"
+					};
 					const entries = Object.entries(efforts);
-					if (!entries.some(([level]) => level !== "off") || entries.some(([level, wire]) => !REASONING_LEVELS.includes(level) || (level === "off" ? wire !== null : typeof wire !== "string" || wire.length === 0))) return { index, key: "modelReasoningInvalid" };
+					if (!entries.some(([level]) => level !== "off") || entries.some(([level, wire]) => !REASONING_LEVELS$1.includes(level) || (level === "off" ? wire !== null : typeof wire !== "string" || wire.length === 0))) return {
+						index,
+						key: "modelReasoningInvalid"
+					};
 					const defaultEffort = model["defaultReasoningEffort"];
-					if (defaultEffort !== void 0 && !Object.prototype.hasOwnProperty.call(efforts, defaultEffort)) return { index, key: "modelReasoningDefaultInvalid" };
-				} else if (efforts === false && model["defaultReasoningEffort"] !== void 0) return { index, key: "modelReasoningDefaultInvalid" };
+					if (defaultEffort !== void 0 && (typeof defaultEffort !== "string" || !Object.prototype.hasOwnProperty.call(efforts, defaultEffort))) return {
+						index,
+						key: "modelReasoningDefaultInvalid"
+					};
+				} else if (efforts === false && model["defaultReasoningEffort"] !== void 0) return {
+					index,
+					key: "modelReasoningDefaultInvalid"
+				};
 			}
 		}
 		/**
@@ -455,222 +480,6 @@ window.__ModuleLoader__.load({
 			});
 		}
 		//#endregion
-		//#region lib/types/client/store.js
-		/**
-		* Models settings page store: one snapshot joining the configurable-provider
-		* directory (`llm.providers`), the settings namespaces (shared settings mirror),
-		* and the referenced credentials (`credentials.describe`). The host stays the
-		* single fact source — every mutation writes through the wire and the page
-		* re-renders from the next describe, pushed or refetched.
-		*/
-		/**
-		* Any route key walks a dict schema to the same profile node, so the lookup
-		* names one that cannot collide with a configured route.
-		*/
-		const PROBE_ROUTE = "\0probe";
-		/**
-		* Human text for a rejected wire call. A transport failure rejects with an
-		* Error; a host or a runtime can reject with anything, and the page still has
-		* to say something.
-		* @param error - the rejection value.
-		* @returns the message to show.
-		*/
-		function messageOf(error) {
-			return error instanceof Error ? error.message : String(error);
-		}
-		/**
-		* Derive the conventional credential reference for a provider route: the v1
-		* page never asks for an environment-variable name, so a typed key stores
-		* under this derived reference and the profile records it as `apiKeyEnv`.
-		* @param provider - provider route id (e.g. `anthropic`, `minimax-cn`).
-		* @returns the derived reference name (e.g. `MINIMAX_CN_API_KEY`).
-		*/
-		function deriveKeyRef(provider) {
-			return `${provider.toUpperCase().replace(/[^A-Z0-9]+/g, "_")}_API_KEY`;
-		}
-		/**
-		* The wire protocols a hand-declared route may name, read out of the owning
-		* namespace's own schema. This stays a schema read rather than a wire field so
-		* the choices the page offers cannot drift from the ones the adapter accepts:
-		* both come from the same `Config`.
-		* @param namespace - the namespace view whose schema declares the profile shape.
-		* @param schema - settings schema operations.
-		* @returns the protocol identifiers, or an empty list when the schema has none.
-		*/
-		function protocolChoices(namespace, schema) {
-			if (namespace === void 0) return [];
-			const list = schema.nodeAtPath(schema.rehydrate(namespace.schema), [
-				"providers",
-				PROBE_ROUTE,
-				"api"
-			]);
-			if (list?.type !== "union" || list.list === void 0) return [];
-			return list.list.map((entry) => entry.value).filter((value) => typeof value === "string");
-		}
-		/** The credential reference a resolved profile names (its `apiKeyEnv` field). */
-		function apiKeyEnvOf(namespace, path, schema) {
-			if (namespace === void 0) return void 0;
-			const profile = schema.getPath(namespace.value, path);
-			if (typeof profile !== "object" || profile === null) return void 0;
-			const ref = profile.apiKeyEnv;
-			return typeof ref === "string" && ref.length > 0 ? ref : void 0;
-		}
-		/** The models settings page controller (one per settings surface). */
-		var ModelsSettingsStore = class {
-			api;
-			schema;
-			describeFace;
-			/** The snapshot the section renders from (uSES-safe store). */
-			store = (0, _deepseek_ai_dsh_client_runtime_client.createSnapshotStore)({
-				status: "idle",
-				error: null,
-				credentialError: null,
-				writable: false,
-				rows: [],
-				namespaces: /* @__PURE__ */ new Map(),
-				groups: [],
-				modelFailures: []
-			});
-			/** Latest load wins; an older response never overwrites a newer one. */
-			generation = 0;
-			/**
-			* @param api - the wire face (credentials/llm domains, and settings writes).
-			* @param describeFace - the shared mirror's describe face (namespace views and writability).
-			*/
-			constructor(api, schema, describeFace) {
-				this.api = api;
-				this.schema = schema;
-				this.describeFace = describeFace;
-			}
-			/**
-			* Refresh the whole page snapshot: the provider directory and the mirror's
-			* settings answer in parallel, then one batched credential describe over
-			* every referenced ref. Provider failure or absence of an initial settings
-			* answer keeps the last good rows and surfaces an error; a failed settings
-			* refresh reuses the mirror's held view.
-			* @returns nothing; the snapshot carries the outcome.
-			*/
-			async load() {
-				const generation = ++this.generation;
-				this.store.update((s) => {
-					s.status = "loading";
-					s.error = null;
-				});
-				let providers;
-				let writable;
-				let views;
-				let groups = [];
-				let modelFailures = [];
-				try {
-					const [providersResponse, modelsResponse] = await Promise.all([this.api.llm.providers({}), this.api.llm.models({}), this.describeFace.ensure()]);
-					if (!providersResponse.result.ok) throw new Error(providersResponse.result.error.message);
-					if (modelsResponse.result.ok) {
-						groups = modelsResponse.result.value.groups;
-						modelFailures = modelsResponse.result.value.failures;
-					} else modelFailures = [{ provider: "", name: "", message: modelsResponse.result.error.message }];
-					const mirrored = this.describeFace.getSnapshot();
-					if (mirrored.view === void 0) throw new Error(mirrored.error ?? "settings are unavailable in this browser");
-					providers = providersResponse.result.value.providers;
-					writable = mirrored.view.writable;
-					views = mirrored.view.namespaces;
-				} catch (error) {
-					if (generation !== this.generation) return;
-					this.store.update((s) => {
-						s.status = "error";
-						s.error = error instanceof Error ? error.message : String(error);
-					});
-					return;
-				}
-				const namespaces = new Map(views.map((view) => [view.ns, view]));
-				const rows = providers.map((entry) => {
-					const namespace = namespaces.get(entry.settingsNs);
-					return {
-						entry,
-						configured: namespace !== void 0 && (entry.settingsPath.length === 0 || this.schema.getPath(namespace.value, entry.settingsPath) !== void 0),
-						removable: namespace !== void 0 && entry.settingsPath.length > 0 && this.schema.hasPath(namespace.user, entry.settingsPath) && !this.schema.hasPath(namespace.base, entry.settingsPath),
-						apiKeyEnv: apiKeyEnvOf(namespace, entry.settingsPath, this.schema),
-						credential: void 0
-					};
-				});
-				const refs = [...new Set(rows.flatMap((row) => row.apiKeyEnv === void 0 ? [] : [row.apiKeyEnv]))];
-				let credentials = {};
-				let credentialError = null;
-				if (refs.length > 0) try {
-					const response = await this.api.credentials.describe({ refs });
-					if (response.result.ok) credentials = response.result.value.credentials;
-					else credentialError = response.result.error.message;
-				} catch (error) {
-					credentialError = messageOf(error);
-				}
-				if (generation !== this.generation) return;
-				this.store.update((s) => {
-					s.status = "ready";
-					s.error = null;
-					s.credentialError = credentialError;
-					s.writable = writable;
-					s.rows = rows.map((row) => ({
-						...row,
-						...row.apiKeyEnv !== void 0 && credentials[row.apiKeyEnv] !== void 0 ? { credential: credentials[row.apiKeyEnv] } : {}
-					}));
-					s.namespaces = namespaces;
-					s.groups = groups;
-					s.modelFailures = modelFailures;
-				});
-			}
-		};
-		/**
-		* Whether a joined row can serve model requests as it stands: the route is
-		* registered with the adapter registry, and whatever credential its resolved
-		* profile names is stored. A profile naming no reference authenticates through
-		* the provider's own path (the Bedrock chain, Vertex ADC, a gateway that needs
-		* nothing), as does a live route with no settings address at all, so neither
-		* owes this page a key.
-		* @param row - one joined provider row.
-		* @returns whether the user already has this provider to talk to.
-		*/
-		function providerUsable(row) {
-			if (!row.entry.active) return false;
-			if (row.apiKeyEnv === void 0) return true;
-			return row.credential?.configured === true;
-		}
-		/**
-		* Project first-run readiness from the provider/settings/credential join used
-		* by the Models page. The step exists to leave the user with a model to talk
-		* to, so ANY usable provider ends it; only when none exists does the official
-		* DeepSeek route — the one route the prompt can offer a key field for — decide
-		* whether prompting can help. A missing official configurable-provider
-		* declaration means the adapter is not repairable by navigating to Models.
-		* @param state - current shared Models join snapshot.
-		* @returns the onboarding state without reading a parallel fact source.
-		*/
-		function onboardingReadiness(state) {
-			if ((state.status === "idle" || state.status === "loading") && state.rows.length === 0) return { kind: "loading" };
-			if (state.status === "error") return {
-				kind: "unavailable",
-				reason: "load-failed"
-			};
-			if (state.rows.some(providerUsable)) return { kind: "provider-ready" };
-			const row = state.rows.find((candidate) => candidate.entry.provider === "deepseek-official" && candidate.entry.settingsNs === "llm-deepseek" && candidate.entry.settingsPath.length === 0);
-			if (row === void 0) return { kind: "adapter-absent" };
-			if (!row.entry.active) return {
-				kind: "unavailable",
-				reason: "provider-inactive"
-			};
-			if (state.credentialError !== null || row.credential === void 0) return {
-				kind: "unavailable",
-				reason: "credentials-unavailable"
-			};
-			if (!state.writable) return {
-				kind: "unavailable",
-				reason: "settings-read-only"
-			};
-			if (!row.credential.writable) return {
-				kind: "unavailable",
-				reason: "credential-read-only"
-			};
-			return { kind: "credential-missing" };
-		}
-		//#endregion
 		//#region lib/types/client/ModelListEditor.js
 		/**
 		* The model list of one pi-ai provider profile, plus the action that asks the
@@ -751,13 +560,38 @@ window.__ModuleLoader__.load({
 			maxTokens: "32K"
 		};
 		/** Model capability vocabulary shared by the settings form and adapter. */
-		const REASONING_LEVELS = ["off", "minimal", "low", "medium", "high", "xhigh", "max"];
-		const THINKING_FORMATS = ["openai", "openrouter", "deepseek", "together", "zai", "qwen", "chat-template", "qwen-chat-template", "string-thinking", "ant-ling"];
+		const REASONING_LEVELS = [
+			"off",
+			"minimal",
+			"low",
+			"medium",
+			"high",
+			"xhigh",
+			"max"
+		];
+		const THINKING_FORMATS = [
+			"openai",
+			"deepseek",
+			"openrouter",
+			"together",
+			"baseten",
+			"zai",
+			"qwen",
+			"chat-template",
+			"qwen-chat-template",
+			"string-thinking",
+			"ant-ling"
+		];
 		const MAX_TOKEN_FIELDS = ["max_completion_tokens", "max_tokens"];
-		const objectValue = (value) => typeof value === "object" && value !== null && !Array.isArray(value) ? value : {};
-		const listValue = (value) => Array.isArray(value) ? value.filter((entry) => typeof entry === "string" && entry.length > 0) : [];
-		const parseList = (value) => [...new Set(value.split(/[\n,]/u).map((entry) => entry.trim()).filter((entry) => entry.length > 0))];
-		const listText = (value) => listValue(value).join(", ");
+		/** Safely view an open settings object. */
+		function objectValue$2(value) {
+			return typeof value === "object" && value !== null && !Array.isArray(value) ? value : {};
+		}
+		/** Keep only the model modalities this editor understands. */
+		function modalityList(value) {
+			if (!Array.isArray(value)) return [];
+			return value.filter((entry) => entry === "text" || entry === "image");
+		}
 		/**
 		* Spell a stored count for a field that may be unset. The spelling itself is
 		* {@link formatCapacity}, shared with the DeepSeek catalog editor so both
@@ -785,7 +619,14 @@ window.__ModuleLoader__.load({
 		function mergeCandidate(existing, candidate) {
 			const found = adopt(candidate);
 			const next = { ...existing };
-			for (const field of ["name", "contextWindow", "maxTokens", "input", "reasoningEfforts", "defaultReasoningEffort"]) if (next[field] === void 0 && found[field] !== void 0) next[field] = found[field];
+			for (const field of [
+				"name",
+				"contextWindow",
+				"maxTokens",
+				"input",
+				"reasoningEfforts",
+				"defaultReasoningEffort"
+			]) if (next[field] === void 0 && found[field] !== void 0) next[field] = found[field];
 			return next;
 		}
 		/**
@@ -794,11 +635,12 @@ window.__ModuleLoader__.load({
 		* @returns the model-list editor.
 		*/
 		function ModelListEditor(props) {
-			const { models, onChange, probe, api, t, disabled } = props;
+			const { models, onChange, probe, operations, t, disabled } = props;
 			const [busy, setBusy] = (0, react.useState)(false);
 			const [failure, setFailure] = (0, react.useState)(void 0);
 			const [candidates, setCandidates] = (0, react.useState)(void 0);
 			const [picked, setPicked] = (0, react.useState)(/* @__PURE__ */ new Set());
+			const [candidateQuery, setCandidateQuery] = (0, react.useState)("");
 			const [expanded, setExpanded] = (0, react.useState)(/* @__PURE__ */ new Set());
 			const [editing, setEditing] = (0, react.useState)(/* @__PURE__ */ new Map());
 			/** Buffer key for one capacity field; the row half moves when rows do. */
@@ -840,27 +682,25 @@ window.__ModuleLoader__.load({
 				setBusy(true);
 				setFailure(void 0);
 				try {
-					const response = await api.llm.discoverModels({
-						settingsNs: probe.settingsNs,
+					const answer = await operations.discoverModels(probe.settingsNs, {
 						...probe.provider === void 0 ? {} : { provider: probe.provider },
 						...probe.baseURL === void 0 || probe.baseURL.length === 0 ? {} : { baseURL: probe.baseURL },
 						...probe.api === void 0 ? {} : { api: probe.api },
 						...probe.apiKey === void 0 ? {} : { apiKey: probe.apiKey }
 					});
-					if (!response.result.ok) {
-						setFailure(response.result.error.message);
+					if (answer.kind === "refused") {
+						setFailure(answer.message);
 						return;
 					}
-					const found = response.result.value.models;
+					const found = answer.models;
 					if (found.length === 0) {
 						setFailure(t("fetchEmpty"));
 						return;
 					}
 					const known = new Set(models.map((model) => textOf(model, "id")));
+					setCandidateQuery("");
 					setCandidates(found);
 					setPicked(new Set(found.filter((model) => !known.has(model.id)).map((model) => model.id)));
-				} catch (error) {
-					setFailure(messageOf(error));
 				} finally {
 					setBusy(false);
 				}
@@ -868,6 +708,7 @@ window.__ModuleLoader__.load({
 			const closePicker = () => {
 				setCandidates(void 0);
 				setPicked(/* @__PURE__ */ new Set());
+				setCandidateQuery("");
 			};
 			const adoptPicked = () => {
 				/* v8 ignore next -- the dialog only renders with candidates loaded */
@@ -889,16 +730,20 @@ window.__ModuleLoader__.load({
 				});
 			};
 			const activeCandidates = candidates ?? [];
-			const allCandidatesPicked = activeCandidates.length > 0 && activeCandidates.every((candidate) => picked.has(candidate.id));
-			const toggleAllCandidates = () => {
+			const normalizedCandidateQuery = candidateQuery.trim().toLowerCase();
+			const visibleCandidates = normalizedCandidateQuery.length === 0 ? activeCandidates : activeCandidates.filter((candidate) => candidate.id.toLowerCase().includes(normalizedCandidateQuery) || candidate.name?.toLowerCase().includes(normalizedCandidateQuery) === true);
+			const allVisibleCandidatesPicked = visibleCandidates.length > 0 && visibleCandidates.every((candidate) => picked.has(candidate.id));
+			const toggleVisibleCandidates = () => {
 				setPicked((current) => {
-					return activeCandidates.every((candidate) => current.has(candidate.id)) ? /* @__PURE__ */ new Set() : new Set(activeCandidates.map((candidate) => candidate.id));
+					const next = new Set(current);
+					if (visibleCandidates.every((candidate) => current.has(candidate.id))) for (const candidate of visibleCandidates) next.delete(candidate.id);
+					else for (const candidate of visibleCandidates) next.add(candidate.id);
+					return next;
 				});
 			};
-			const askable = probe.provider !== void 0 || probe.baseURL !== void 0 && probe.baseURL.length > 0;
 			const protocol = probe.api ?? (probe.provider === "openrouter" ? "openai-completions" : void 0);
 			const modalitiesOf = (model) => {
-				const configured = listValue(model.input);
+				const configured = modalityList(model["input"]);
 				return configured.length === 0 ? ["text"] : configured;
 			};
 			const setModality = (model, index, modality, enabled) => {
@@ -907,70 +752,266 @@ window.__ModuleLoader__.load({
 				else next.delete(modality);
 				if (next.size > 0) patch(index, { input: [...next] });
 			};
-			const reasoningMode = (model) => model.reasoningEfforts === false ? "none" : typeof model.reasoningEfforts === "object" && model.reasoningEfforts !== null ? "custom" : "auto";
+			const reasoningMode = (model) => model["reasoningEfforts"] === false ? "none" : typeof model["reasoningEfforts"] === "object" && model["reasoningEfforts"] !== null ? "custom" : "auto";
 			const setReasoningMode = (index, mode) => {
-				if (mode === "auto") patch(index, { reasoningEfforts: void 0, defaultReasoningEffort: void 0 });
-				else if (mode === "none") patch(index, { reasoningEfforts: false, defaultReasoningEffort: void 0 });
-				else patch(index, { reasoningEfforts: { off: null, low: "low", medium: "medium", high: "high" } });
+				if (mode === "auto") patch(index, {
+					reasoningEfforts: void 0,
+					defaultReasoningEffort: void 0
+				});
+				else if (mode === "none") patch(index, {
+					reasoningEfforts: false,
+					defaultReasoningEffort: void 0
+				});
+				else patch(index, { reasoningEfforts: {
+					off: null,
+					low: "low",
+					medium: "medium",
+					high: "high"
+				} });
 			};
 			const setReasoningLevel = (model, index, level, enabled) => {
-				const efforts = { ...objectValue(model.reasoningEfforts) };
+				const efforts = { ...objectValue$2(model["reasoningEfforts"]) };
 				if (enabled) efforts[level] = level === "off" ? null : level;
-				else delete efforts[level];
+				else Reflect.deleteProperty(efforts, level);
 				patch(index, {
 					reasoningEfforts: efforts,
-					...!enabled && model.defaultReasoningEffort === level ? { defaultReasoningEffort: void 0 } : {}
+					...!enabled && model["defaultReasoningEffort"] === level ? { defaultReasoningEffort: void 0 } : {}
 				});
 			};
 			const setCompat = (model, index, field, value) => {
-				const compat = { ...objectValue(model.compat) };
-				if (value === void 0 || value === "") delete compat[field];
+				const compat = { ...objectValue$2(model["compat"]) };
+				if (value === void 0 || value === "") Reflect.deleteProperty(compat, field);
 				else compat[field] = value;
 				patch(index, { compat: Object.keys(compat).length === 0 ? void 0 : compat });
 			};
-			const renderTriStateCompat = (model, index, field, labelKey) => (0, react_jsx_runtime.jsxs)("label", {
-				className: ModelsSection_module_css_default["modelField"],
-				children: [(0, react_jsx_runtime.jsx)("span", {
-					className: ModelsSection_module_css_default["modelFieldLabel"],
-					children: t(labelKey)
-				}), (0, react_jsx_runtime.jsxs)("select", {
-					className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`,
-					"aria-label": t(labelKey),
-					value: typeof objectValue(model.compat)[field] === "boolean" ? String(objectValue(model.compat)[field]) : "",
-					disabled,
-					onChange: (event) => setCompat(model, index, field, event.target.value === "" ? void 0 : event.target.value === "true"),
-					children: [(0, react_jsx_runtime.jsx)("option", { value: "", children: t("automatic") }), (0, react_jsx_runtime.jsx)("option", { value: "true", children: t("enabled") }), (0, react_jsx_runtime.jsx)("option", { value: "false", children: t("disabled") })]
-				})]
-			});
+			const triStateCompat = (model, index, field, label) => {
+				const value = objectValue$2(model["compat"])[field];
+				return (0, react_jsx_runtime.jsxs)("label", {
+					className: ModelsSection_module_css_default["modelField"],
+					children: [(0, react_jsx_runtime.jsx)("span", {
+						className: ModelsSection_module_css_default["modelFieldLabel"],
+						children: t(label)
+					}), (0, react_jsx_runtime.jsxs)("select", {
+						className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`,
+						"aria-label": t(label),
+						value: typeof value === "boolean" ? String(value) : "",
+						disabled,
+						onChange: (event) => {
+							setCompat(model, index, field, event.target.value === "" ? void 0 : event.target.value === "true");
+						},
+						children: [
+							(0, react_jsx_runtime.jsx)("option", {
+								value: "",
+								children: t("automatic")
+							}),
+							(0, react_jsx_runtime.jsx)("option", {
+								value: "true",
+								children: t("enabled")
+							}),
+							(0, react_jsx_runtime.jsx)("option", {
+								value: "false",
+								children: t("disabled")
+							})
+						]
+					})]
+				});
+			};
 			const renderCapabilities = (model, index) => {
 				const modalities = modalitiesOf(model);
 				const mode = reasoningMode(model);
-				const efforts = objectValue(model.reasoningEfforts);
+				const efforts = objectValue$2(model["reasoningEfforts"]);
 				return (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [
 					(0, react_jsx_runtime.jsxs)("div", {
 						className: ModelsSection_module_css_default["modelField"],
 						style: { gridColumn: "1 / -1" },
-						children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("inputCapabilities") }), (0, react_jsx_runtime.jsxs)("span", { children: [
-							(0, react_jsx_runtime.jsxs)("label", { style: { marginRight: "16px" }, children: [(0, react_jsx_runtime.jsx)("input", { type: "checkbox", checked: modalities.includes("text"), disabled, onChange: (event) => setModality(model, index, "text", event.target.checked) }), ` ${t("inputText")}`] }),
-							(0, react_jsx_runtime.jsxs)("label", { children: [(0, react_jsx_runtime.jsx)("input", { type: "checkbox", checked: modalities.includes("image"), disabled, onChange: (event) => setModality(model, index, "image", event.target.checked) }), ` ${t("inputImage")}`] })
-						] })]
+						children: [(0, react_jsx_runtime.jsx)("span", {
+							className: ModelsSection_module_css_default["modelFieldLabel"],
+							children: t("inputCapabilities")
+						}), (0, react_jsx_runtime.jsx)("span", { children: ["text", "image"].map((modality) => (0, react_jsx_runtime.jsxs)("label", {
+							style: { marginRight: "16px" },
+							children: [
+								(0, react_jsx_runtime.jsx)("input", {
+									type: "checkbox",
+									checked: modalities.includes(modality),
+									disabled,
+									onChange: (event) => {
+										setModality(model, index, modality, event.target.checked);
+									}
+								}),
+								" ",
+								t(modality === "text" ? "inputText" : "inputImage")
+							]
+						}, modality)) })]
 					}),
-					(0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("reasoningCapability") }), (0, react_jsx_runtime.jsxs)("select", { className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`, "aria-label": t("reasoningCapability"), value: mode, disabled, onChange: (event) => setReasoningMode(index, event.target.value), children: [(0, react_jsx_runtime.jsx)("option", { value: "auto", children: t("reasoningAuto") }), (0, react_jsx_runtime.jsx)("option", { value: "none", children: t("reasoningNone") }), (0, react_jsx_runtime.jsx)("option", { value: "custom", children: t("reasoningCustom") })] })] }),
-					mode !== "custom" ? null : (0, react_jsx_runtime.jsxs)("div", { className: ModelsSection_module_css_default["modelField"], style: { gridColumn: "1 / -1" }, children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("reasoningLevels") }), ...REASONING_LEVELS.map((level) => (0, react_jsx_runtime.jsxs)("label", { style: { display: "grid", gridTemplateColumns: "100px minmax(160px, 1fr)", alignItems: "center", gap: "8px", marginTop: "4px" }, children: [(0, react_jsx_runtime.jsxs)("span", { children: [(0, react_jsx_runtime.jsx)("input", { type: "checkbox", "aria-label": `${t("reasoningLevels")} ${level}`, checked: Object.prototype.hasOwnProperty.call(efforts, level), disabled, onChange: (event) => setReasoningLevel(model, index, level, event.target.checked) }), ` ${level}`] }), level === "off" ? (0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["advancedHint"], children: t("reasoningOffWire") }) : (0, react_jsx_runtime.jsx)("input", { className: ModelsSection_module_css_default["input"], type: "text", value: typeof efforts[level] === "string" ? efforts[level] : level, disabled: disabled || !Object.prototype.hasOwnProperty.call(efforts, level), "aria-label": `${t("reasoningWireValue")} ${level}`, onChange: (event) => { const next = { ...efforts, [level]: event.target.value }; patch(index, { reasoningEfforts: next }); } })] }, level)), (0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], style: { marginTop: "8px" }, children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("reasoningDefault") }), (0, react_jsx_runtime.jsxs)("select", { className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`, "aria-label": t("reasoningDefault"), value: typeof model.defaultReasoningEffort === "string" ? model.defaultReasoningEffort : "", disabled, onChange: (event) => patch(index, { defaultReasoningEffort: event.target.value === "" ? void 0 : event.target.value }), children: [(0, react_jsx_runtime.jsx)("option", { value: "", children: t("providerDefault") }), ...REASONING_LEVELS.filter((level) => Object.prototype.hasOwnProperty.call(efforts, level)).map((level) => (0, react_jsx_runtime.jsx)("option", { value: level, children: level }, level))] })] })] })
+					(0, react_jsx_runtime.jsxs)("label", {
+						className: ModelsSection_module_css_default["modelField"],
+						children: [(0, react_jsx_runtime.jsx)("span", {
+							className: ModelsSection_module_css_default["modelFieldLabel"],
+							children: t("reasoningCapability")
+						}), (0, react_jsx_runtime.jsxs)("select", {
+							className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`,
+							"aria-label": t("reasoningCapability"),
+							value: mode,
+							disabled,
+							onChange: (event) => {
+								setReasoningMode(index, event.target.value);
+							},
+							children: [
+								(0, react_jsx_runtime.jsx)("option", {
+									value: "auto",
+									children: t("reasoningAuto")
+								}),
+								(0, react_jsx_runtime.jsx)("option", {
+									value: "none",
+									children: t("reasoningNone")
+								}),
+								(0, react_jsx_runtime.jsx)("option", {
+									value: "custom",
+									children: t("reasoningCustom")
+								})
+							]
+						})]
+					}),
+					mode !== "custom" ? null : (0, react_jsx_runtime.jsxs)("div", {
+						className: ModelsSection_module_css_default["modelField"],
+						style: { gridColumn: "1 / -1" },
+						children: [
+							(0, react_jsx_runtime.jsx)("span", {
+								className: ModelsSection_module_css_default["modelFieldLabel"],
+								children: t("reasoningLevels")
+							}),
+							REASONING_LEVELS.map((level) => (0, react_jsx_runtime.jsxs)("label", {
+								style: {
+									display: "grid",
+									gridTemplateColumns: "100px minmax(160px, 1fr)",
+									gap: "8px"
+								},
+								children: [(0, react_jsx_runtime.jsxs)("span", { children: [
+									(0, react_jsx_runtime.jsx)("input", {
+										type: "checkbox",
+										"aria-label": `${t("reasoningLevels")} ${level}`,
+										checked: Object.prototype.hasOwnProperty.call(efforts, level),
+										disabled,
+										onChange: (event) => {
+											setReasoningLevel(model, index, level, event.target.checked);
+										}
+									}),
+									" ",
+									level
+								] }), level === "off" ? (0, react_jsx_runtime.jsx)("span", {
+									className: ModelsSection_module_css_default["advancedHint"],
+									children: t("reasoningOffWire")
+								}) : (0, react_jsx_runtime.jsx)("input", {
+									className: ModelsSection_module_css_default["input"],
+									type: "text",
+									value: typeof efforts[level] === "string" ? efforts[level] : level,
+									disabled: disabled || !Object.prototype.hasOwnProperty.call(efforts, level),
+									"aria-label": `${t("reasoningWireValue")} ${level}`,
+									onChange: (event) => {
+										patch(index, { reasoningEfforts: {
+											...efforts,
+											[level]: event.target.value
+										} });
+									}
+								})]
+							}, level)),
+							(0, react_jsx_runtime.jsxs)("label", {
+								className: ModelsSection_module_css_default["modelField"],
+								children: [(0, react_jsx_runtime.jsx)("span", {
+									className: ModelsSection_module_css_default["modelFieldLabel"],
+									children: t("reasoningDefault")
+								}), (0, react_jsx_runtime.jsxs)("select", {
+									className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`,
+									value: typeof model["defaultReasoningEffort"] === "string" ? model["defaultReasoningEffort"] : "",
+									"aria-label": t("reasoningDefault"),
+									disabled,
+									onChange: (event) => {
+										patch(index, { defaultReasoningEffort: event.target.value || void 0 });
+									},
+									children: [(0, react_jsx_runtime.jsx)("option", {
+										value: "",
+										children: t("providerDefault")
+									}), REASONING_LEVELS.filter((level) => Object.prototype.hasOwnProperty.call(efforts, level)).map((level) => (0, react_jsx_runtime.jsx)("option", {
+										value: level,
+										children: level
+									}, level))]
+								})]
+							})
+						]
+					})
 				] });
 			};
 			const renderModelCompat = (model, index) => {
-				if (protocol === void 0) return (0, react_jsx_runtime.jsx)("p", { className: ModelsSection_module_css_default["advancedHint"], style: { gridColumn: "1 / -1" }, children: t("compatNeedsProtocol") });
-				const compat = objectValue(model.compat);
-				const children = [];
-				if (protocol === "openai-completions") {
-					children.push((0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("thinkingFormat") }), (0, react_jsx_runtime.jsxs)("select", { className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`, "aria-label": t("thinkingFormat"), value: typeof compat.thinkingFormat === "string" ? compat.thinkingFormat : "", disabled, onChange: (event) => setCompat(model, index, "thinkingFormat", event.target.value || void 0), children: [(0, react_jsx_runtime.jsx)("option", { value: "", children: t("automatic") }), ...THINKING_FORMATS.map((value) => (0, react_jsx_runtime.jsx)("option", { value, children: value }, value))] })] }, "thinkingFormat"));
-					children.push((0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("maxTokensField") }), (0, react_jsx_runtime.jsxs)("select", { className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`, "aria-label": t("maxTokensField"), value: typeof compat.maxTokensField === "string" ? compat.maxTokensField : "", disabled, onChange: (event) => setCompat(model, index, "maxTokensField", event.target.value || void 0), children: [(0, react_jsx_runtime.jsx)("option", { value: "", children: t("automatic") }), ...MAX_TOKEN_FIELDS.map((value) => (0, react_jsx_runtime.jsx)("option", { value, children: value }, value))] })] }, "maxTokensField"));
-					children.push(renderTriStateCompat(model, index, "supportsReasoningEffort", "supportsReasoningEffort"), renderTriStateCompat(model, index, "supportsDeveloperRole", "supportsDeveloperRole"), renderTriStateCompat(model, index, "supportsStrictMode", "supportsStrictTools"));
-				} else if (protocol === "anthropic-messages") children.push(renderTriStateCompat(model, index, "supportsTemperature", "supportsTemperature"), renderTriStateCompat(model, index, "forceAdaptiveThinking", "forceAdaptiveThinking"), renderTriStateCompat(model, index, "supportsStrictTools", "supportsStrictTools"));
-				else if (protocol.includes("responses")) children.push(renderTriStateCompat(model, index, "supportsDeveloperRole", "supportsDeveloperRole"), renderTriStateCompat(model, index, "supportsStrictMode", "supportsStrictTools"));
-				return children.length === 0 ? null : (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [(0, react_jsx_runtime.jsx)("h4", { style: { gridColumn: "1 / -1", margin: "8px 0 0", fontSize: "12px" }, children: t("compatibility") }), ...children] });
+				if (protocol === void 0) return (0, react_jsx_runtime.jsx)("p", {
+					className: ModelsSection_module_css_default["advancedHint"],
+					style: { gridColumn: "1 / -1" },
+					children: t("compatNeedsProtocol")
+				});
+				const compat = objectValue$2(model["compat"]);
+				if (protocol === "openai-completions") return (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [
+					(0, react_jsx_runtime.jsx)("h4", {
+						style: {
+							gridColumn: "1 / -1",
+							margin: "8px 0 0",
+							fontSize: "12px"
+						},
+						children: t("compatibility")
+					}),
+					(0, react_jsx_runtime.jsxs)("label", {
+						className: ModelsSection_module_css_default["modelField"],
+						children: [(0, react_jsx_runtime.jsx)("span", {
+							className: ModelsSection_module_css_default["modelFieldLabel"],
+							children: t("thinkingFormat")
+						}), (0, react_jsx_runtime.jsxs)("select", {
+							className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`,
+							value: typeof compat["thinkingFormat"] === "string" ? compat["thinkingFormat"] : "",
+							disabled,
+							onChange: (event) => {
+								setCompat(model, index, "thinkingFormat", event.target.value || void 0);
+							},
+							children: [(0, react_jsx_runtime.jsx)("option", {
+								value: "",
+								children: t("automatic")
+							}), THINKING_FORMATS.map((value) => (0, react_jsx_runtime.jsx)("option", {
+								value,
+								children: value
+							}, value))]
+						})]
+					}),
+					(0, react_jsx_runtime.jsxs)("label", {
+						className: ModelsSection_module_css_default["modelField"],
+						children: [(0, react_jsx_runtime.jsx)("span", {
+							className: ModelsSection_module_css_default["modelFieldLabel"],
+							children: t("maxTokensField")
+						}), (0, react_jsx_runtime.jsxs)("select", {
+							className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`,
+							value: typeof compat["maxTokensField"] === "string" ? compat["maxTokensField"] : "",
+							disabled,
+							onChange: (event) => {
+								setCompat(model, index, "maxTokensField", event.target.value || void 0);
+							},
+							children: [(0, react_jsx_runtime.jsx)("option", {
+								value: "",
+								children: t("automatic")
+							}), MAX_TOKEN_FIELDS.map((value) => (0, react_jsx_runtime.jsx)("option", {
+								value,
+								children: value
+							}, value))]
+						})]
+					}),
+					triStateCompat(model, index, "supportsReasoningEffort", "supportsReasoningEffort"),
+					triStateCompat(model, index, "supportsDeveloperRole", "supportsDeveloperRole"),
+					triStateCompat(model, index, "supportsStrictMode", "supportsStrictTools")
+				] });
+				if (protocol === "anthropic-messages") return (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [
+					triStateCompat(model, index, "supportsTemperature", "supportsTemperature"),
+					triStateCompat(model, index, "forceAdaptiveThinking", "forceAdaptiveThinking"),
+					triStateCompat(model, index, "supportsStrictTools", "supportsStrictTools")
+				] });
+				if (protocol.includes("responses")) return (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [triStateCompat(model, index, "supportsDeveloperRole", "supportsDeveloperRole"), triStateCompat(model, index, "supportsStrictMode", "supportsStrictTools")] });
+				return null;
 			};
+			const askable = probe.provider !== void 0 || probe.baseURL !== void 0 && probe.baseURL.length > 0;
 			return (0, react_jsx_runtime.jsxs)("section", {
 				className: ModelsSection_module_css_default["modelCatalog"],
 				"aria-label": t("models"),
@@ -1041,7 +1082,7 @@ window.__ModuleLoader__.load({
 								}),
 								(0, react_jsx_runtime.jsx)("span", {
 									className: ModelsSection_module_css_default["rowTag"],
-									children: t(model.source === "discovered" ? "modelSourceDiscovered" : "modelSourceManual")
+									children: t(model["source"] === "discovered" ? "modelSourceDiscovered" : "modelSourceManual")
 								}),
 								(0, react_jsx_runtime.jsx)("button", {
 									type: "button",
@@ -1075,41 +1116,46 @@ window.__ModuleLoader__.load({
 							]
 						}), expanded.has(index) ? (0, react_jsx_runtime.jsxs)("div", {
 							className: ModelsSection_module_css_default["modelAdvanced"],
-							children: [(0, react_jsx_runtime.jsxs)("label", {
-								className: ModelsSection_module_css_default["modelField"],
-								children: [(0, react_jsx_runtime.jsx)("span", {
-									className: ModelsSection_module_css_default["modelFieldLabel"],
-									children: t("modelContextWindow")
-								}), (0, react_jsx_runtime.jsx)("input", {
-									className: ModelsSection_module_css_default["input"],
-									type: "text",
-									inputMode: "numeric",
-									value: capacityText(model, index, "contextWindow"),
-									placeholder: CAPACITY_HINT.contextWindow,
-									"aria-label": `${t("modelContextWindow")} ${index + 1}`,
-									disabled,
-									onChange: (event) => {
-										editCapacity(index, "contextWindow", event.target.value);
-									}
-								})]
-							}), (0, react_jsx_runtime.jsxs)("label", {
-								className: ModelsSection_module_css_default["modelField"],
-								children: [(0, react_jsx_runtime.jsx)("span", {
-									className: ModelsSection_module_css_default["modelFieldLabel"],
-									children: t("modelMaxTokens")
-								}), (0, react_jsx_runtime.jsx)("input", {
-									className: ModelsSection_module_css_default["input"],
-									type: "text",
-									inputMode: "numeric",
-									value: capacityText(model, index, "maxTokens"),
-									placeholder: CAPACITY_HINT.maxTokens,
-									"aria-label": `${t("modelMaxTokens")} ${index + 1}`,
-									disabled,
-									onChange: (event) => {
-										editCapacity(index, "maxTokens", event.target.value);
-									}
-								})]
-							}), renderCapabilities(model, index), renderModelCompat(model, index)]
+							children: [
+								(0, react_jsx_runtime.jsxs)("label", {
+									className: ModelsSection_module_css_default["modelField"],
+									children: [(0, react_jsx_runtime.jsx)("span", {
+										className: ModelsSection_module_css_default["modelFieldLabel"],
+										children: t("modelContextWindow")
+									}), (0, react_jsx_runtime.jsx)("input", {
+										className: ModelsSection_module_css_default["input"],
+										type: "text",
+										inputMode: "numeric",
+										value: capacityText(model, index, "contextWindow"),
+										placeholder: CAPACITY_HINT.contextWindow,
+										"aria-label": `${t("modelContextWindow")} ${index + 1}`,
+										disabled,
+										onChange: (event) => {
+											editCapacity(index, "contextWindow", event.target.value);
+										}
+									})]
+								}),
+								(0, react_jsx_runtime.jsxs)("label", {
+									className: ModelsSection_module_css_default["modelField"],
+									children: [(0, react_jsx_runtime.jsx)("span", {
+										className: ModelsSection_module_css_default["modelFieldLabel"],
+										children: t("modelMaxTokens")
+									}), (0, react_jsx_runtime.jsx)("input", {
+										className: ModelsSection_module_css_default["input"],
+										type: "text",
+										inputMode: "numeric",
+										value: capacityText(model, index, "maxTokens"),
+										placeholder: CAPACITY_HINT.maxTokens,
+										"aria-label": `${t("modelMaxTokens")} ${index + 1}`,
+										disabled,
+										onChange: (event) => {
+											editCapacity(index, "maxTokens", event.target.value);
+										}
+									})]
+								}),
+								renderCapabilities(model, index),
+								renderModelCompat(model, index)
+							]
 						}) : null]
 					}, index)),
 					(0, react_jsx_runtime.jsx)("button", {
@@ -1117,7 +1163,10 @@ window.__ModuleLoader__.load({
 						className: ModelsSection_module_css_default["addModelButton"],
 						disabled,
 						onClick: () => {
-							onChange([...models, { id: "", source: "manual" }]);
+							onChange([...models, {
+								id: "",
+								source: "manual"
+							}]);
 						},
 						children: t("addModel")
 					}),
@@ -1141,17 +1190,31 @@ window.__ModuleLoader__.load({
 							onClick: adoptPicked,
 							children: t("fetchAdopt")
 						})] }),
-						children: [(0, react_jsx_runtime.jsx)("div", {
-							className: ModelsSection_module_css_default["candidateActions"],
-							children: (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
+						children: [(0, react_jsx_runtime.jsxs)("div", {
+							className: ModelsSection_module_css_default["candidateToolbar"],
+							children: [(0, react_jsx_runtime.jsx)("input", {
+								className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["candidateSearch"]}`,
+								type: "search",
+								value: candidateQuery,
+								placeholder: t("fetchSearch"),
+								"aria-label": t("fetchSearch"),
+								onChange: (event) => {
+									setCandidateQuery(event.target.value);
+								}
+							}), (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
 								variant: "ghost",
 								size: "sm",
-								onClick: toggleAllCandidates,
-								children: t(allCandidatesPicked ? "fetchDeselectAll" : "fetchSelectAll")
-							})
-						}), (0, react_jsx_runtime.jsx)("ul", {
+								disabled: visibleCandidates.length === 0,
+								onClick: toggleVisibleCandidates,
+								children: t(allVisibleCandidatesPicked ? "fetchDeselectAll" : "fetchSelectAll")
+							})]
+						}), visibleCandidates.length === 0 ? (0, react_jsx_runtime.jsx)("p", {
+							className: ModelsSection_module_css_default["candidateEmpty"],
+							role: "status",
+							children: t("fetchNoMatches")
+						}) : (0, react_jsx_runtime.jsx)("ul", {
 							className: ModelsSection_module_css_default["candidateList"],
-							children: (candidates ?? []).map((candidate) => (0, react_jsx_runtime.jsx)("li", {
+							children: visibleCandidates.map((candidate) => (0, react_jsx_runtime.jsx)("li", {
 								className: ModelsSection_module_css_default["candidate"],
 								children: (0, react_jsx_runtime.jsxs)("label", {
 									className: ModelsSection_module_css_default["candidateLabel"],
@@ -1173,6 +1236,256 @@ window.__ModuleLoader__.load({
 			});
 		}
 		//#endregion
+		//#region lib/types/client/store.js
+		/**
+		* Models settings page store: one snapshot joining the configurable-provider
+		* directory (`llm/listProviders` joined with `llm/listConfigurableProviders`),
+		* the settings namespaces (shared settings mirror),
+		* and the referenced credentials (`credentials/describe`). The host stays the
+		* single fact source — every mutation writes through the wire and the page
+		* re-renders from the next describe, pushed or refetched.
+		*/
+		/**
+		* Any route key walks a dict schema to the same profile node, so the lookup
+		* names one that cannot collide with a configured route.
+		*/
+		const PROBE_ROUTE = "\0probe";
+		/**
+		* Join declared configurable providers with the currently registered routes.
+		* @param registered - live provider routes in registration order.
+		* @param directory - declared configurable providers in declaration order.
+		* @returns declared rows followed by live routes with no declaration.
+		*/
+		function joinProviderDirectory(registered, directory) {
+			const active = new Set(registered.map((provider) => provider.id));
+			const declared = new Set(directory.map((entry) => entry.provider));
+			const rows = directory.map((entry) => ({
+				provider: entry.provider,
+				displayName: entry.displayName,
+				settingsNs: entry.settingsNs,
+				settingsPath: [...entry.settingsPath],
+				active: active.has(entry.provider),
+				...entry.declared === void 0 ? {} : { declared: entry.declared }
+			}));
+			for (const provider of registered) {
+				if (declared.has(provider.id)) continue;
+				rows.push({
+					provider: provider.id,
+					displayName: provider.name,
+					settingsNs: "",
+					settingsPath: [],
+					active: true
+				});
+			}
+			return rows;
+		}
+		/**
+		* Derive the conventional credential reference for a provider route: the v1
+		* page never asks for an environment-variable name, so a typed key stores
+		* under this derived reference and the profile records it as `apiKeyEnv`.
+		* @param provider - provider route id (e.g. `anthropic`, `minimax-cn`).
+		* @returns the derived reference name (e.g. `MINIMAX_CN_API_KEY`).
+		*/
+		function deriveKeyRef(provider) {
+			return `${provider.toUpperCase().replace(/[^A-Z0-9]+/g, "_")}_API_KEY`;
+		}
+		/**
+		* The wire protocols a hand-declared route may name, read out of the owning
+		* namespace's own schema. This stays a schema read rather than a wire field so
+		* the choices the page offers cannot drift from the ones the adapter accepts:
+		* both come from the same `Config`.
+		* @param namespace - the namespace view whose schema declares the profile shape.
+		* @param schema - settings schema operations.
+		* @returns the protocol identifiers, or an empty list when the schema has none.
+		*/
+		function protocolChoices(namespace, schema) {
+			if (namespace === void 0) return [];
+			const list = schema.nodeAtPath(schema.rehydrate(namespace.schema), [
+				"providers",
+				PROBE_ROUTE,
+				"api"
+			]);
+			if (list?.type !== "union" || list.list === void 0) return [];
+			return list.list.map((entry) => entry.value).filter((value) => typeof value === "string");
+		}
+		/** The credential reference a resolved profile names (its `apiKeyEnv` field). */
+		function apiKeyEnvOf(namespace, path, schema) {
+			if (namespace === void 0) return void 0;
+			const profile = schema.getPath(namespace.value, path);
+			if (typeof profile !== "object" || profile === null) return void 0;
+			const ref = profile.apiKeyEnv;
+			return typeof ref === "string" && ref.length > 0 ? ref : void 0;
+		}
+		/** The models settings page controller (one per settings surface). */
+		var ModelsSettingsStore = class {
+			ctx;
+			schema;
+			describeFace;
+			/** The snapshot the section renders from (uSES-safe store). */
+			store = (0, _deepseek_ai_dsh_client_store.createSnapshotStore)({
+				status: "idle",
+				error: null,
+				credentialError: null,
+				writable: false,
+				rows: [],
+				namespaces: /* @__PURE__ */ new Map(),
+				groups: [],
+				modelFailures: []
+			});
+			/** Latest load wins; an older response never overwrites a newer one. */
+			generation = 0;
+			/**
+			* @param ctx - the page plugin's context, whose `remote.llm` and
+			* `remote.credentials` namespaces carry the directory and credential reads.
+			* @param schema - settings-owned schema and immutable path operations.
+			* @param describeFace - the shared mirror's describe face (namespace views and writability).
+			*/
+			constructor(ctx, schema, describeFace) {
+				this.ctx = ctx;
+				this.schema = schema;
+				this.describeFace = describeFace;
+			}
+			/**
+			* Refresh the whole page snapshot: the provider directory and the mirror's
+			* settings answer in parallel, then one batched credential describe over
+			* every referenced ref. Provider failure or absence of an initial settings
+			* answer keeps the last good rows and surfaces an error; a failed settings
+			* refresh reuses the mirror's held view.
+			* @returns nothing; the snapshot carries the outcome.
+			*/
+			async load() {
+				const generation = ++this.generation;
+				this.store.update((s) => {
+					s.status = "loading";
+					s.error = null;
+				});
+				const [registered, declared, modelCatalog] = await Promise.all([
+					this.ctx.remote.llm.listProviders(),
+					this.ctx.remote.llm.listConfigurableProviders(),
+					this.ctx.remote.session?.modelCatalog?.() ?? Promise.resolve(void 0),
+					this.describeFace.ensure()
+				]);
+				if (!registered.ok) {
+					this.failLoad(generation, registered.error.message);
+					return;
+				}
+				if (!declared.ok) {
+					this.failLoad(generation, declared.error.message);
+					return;
+				}
+				const mirrored = this.describeFace.getSnapshot();
+				if (mirrored.view === void 0) {
+					this.failLoad(generation, mirrored.error ?? "settings are unavailable in this browser");
+					return;
+				}
+				const providers = joinProviderDirectory(registered.value, declared.value);
+				const writable = mirrored.view.writable;
+				const views = mirrored.view.namespaces;
+				const namespaces = new Map(views.map((view) => [view.ns, view]));
+				const rows = providers.map((entry) => {
+					const namespace = namespaces.get(entry.settingsNs);
+					return {
+						entry,
+						configured: namespace !== void 0 && (entry.settingsPath.length === 0 || this.schema.getPath(namespace.value, entry.settingsPath) !== void 0),
+						removable: namespace !== void 0 && entry.settingsPath.length > 0 && this.schema.hasPath(namespace.user, entry.settingsPath) && !this.schema.hasPath(namespace.base, entry.settingsPath),
+						apiKeyEnv: apiKeyEnvOf(namespace, entry.settingsPath, this.schema),
+						credential: void 0
+					};
+				});
+				const refs = [...new Set(rows.map((row) => row.apiKeyEnv ?? deriveKeyRef(row.entry.provider)))];
+				let credentials = {};
+				let credentialError = null;
+				if (refs.length > 0) {
+					const response = await this.ctx.remote.credentials.describe(refs);
+					if (response.ok) credentials = response.value;
+					else credentialError = response.error.message;
+				}
+				if (generation !== this.generation) return;
+				this.store.update((s) => {
+					s.status = "ready";
+					s.error = null;
+					s.credentialError = credentialError;
+					s.writable = writable;
+					s.rows = rows.map((row) => {
+						const named = row.apiKeyEnv === void 0 ? void 0 : credentials[row.apiKeyEnv];
+						const derived = row.apiKeyEnv !== void 0 ? void 0 : credentials[deriveKeyRef(row.entry.provider)];
+						return {
+							...row,
+							...named === void 0 ? {} : { credential: named },
+							...derived === void 0 ? {} : { derivedCredential: derived }
+						};
+					});
+					s.namespaces = namespaces;
+					s.groups = modelCatalog?.ok === true ? modelCatalog.value.groups : [];
+					s.modelFailures = modelCatalog?.ok === true ? modelCatalog.value.failures : modelCatalog === void 0 ? [] : [{
+						id: "",
+						name: "",
+						message: modelCatalog.error.message
+					}];
+				});
+			}
+			/** Publish one load's failure text, unless a newer load already took over. */
+			failLoad(generation, message) {
+				if (generation !== this.generation) return;
+				this.store.update((s) => {
+					s.status = "error";
+					s.error = message;
+				});
+			}
+		};
+		/**
+		* Whether a joined row can serve model requests as it stands: the route is
+		* registered with the adapter registry, and whatever credential its resolved
+		* profile names is stored. A profile naming no reference authenticates through
+		* the provider's own path (the Bedrock chain, Vertex ADC, a gateway that needs
+		* nothing), as does a live route with no settings address at all, so neither
+		* owes this page a key.
+		* @param row - one joined provider row.
+		* @returns whether the user already has this provider to talk to.
+		*/
+		function providerUsable(row) {
+			if (!row.entry.active) return false;
+			if (row.apiKeyEnv === void 0) return true;
+			return row.credential?.configured === true;
+		}
+		/**
+		* Project first-run readiness from the provider/settings/credential join used
+		* by the Models page. The step exists to leave the user with a model to talk
+		* to, so ANY usable provider ends it; only when none exists does the official
+		* DeepSeek route — the one route the prompt can offer a key field for — decide
+		* whether prompting can help. A missing official configurable-provider
+		* declaration means the adapter is not repairable by navigating to Models.
+		* @param state - current shared Models join snapshot.
+		* @returns the onboarding state without reading a parallel fact source.
+		*/
+		function onboardingReadiness(state) {
+			if ((state.status === "idle" || state.status === "loading") && state.rows.length === 0) return { kind: "loading" };
+			if (state.status === "error") return {
+				kind: "unavailable",
+				reason: "load-failed"
+			};
+			if (state.rows.some(providerUsable)) return { kind: "provider-ready" };
+			const row = state.rows.find((candidate) => candidate.entry.provider === "deepseek-official" && candidate.entry.settingsNs === "llm-deepseek" && candidate.entry.settingsPath.length === 0);
+			if (row === void 0) return { kind: "adapter-absent" };
+			if (!row.entry.active) return {
+				kind: "unavailable",
+				reason: "provider-inactive"
+			};
+			if (state.credentialError !== null || row.credential === void 0) return {
+				kind: "unavailable",
+				reason: "credentials-unavailable"
+			};
+			if (!state.writable) return {
+				kind: "unavailable",
+				reason: "settings-read-only"
+			};
+			if (!row.credential.writable) return {
+				kind: "unavailable",
+				reason: "credential-read-only"
+			};
+			return { kind: "credential-missing" };
+		}
+		//#endregion
 		//#region lib/types/client/CustomProviderCard.js
 		/**
 		* The card that declares a provider pi-ai does not ship — an OpenAI-compatible
@@ -1183,18 +1496,16 @@ window.__ModuleLoader__.load({
 		* the provider editor with extra fields: the route id is being *chosen* here,
 		* and the settings address does not exist until it is. One `settings.mutate`
 		* sets the whole profile at `providers.<route>`; the key travels separately
-		* through `credentials.set` under the reference the profile records, exactly as
+		* through `credentials/set` under the reference the profile records, exactly as
 		* an existing provider's key does.
 		*
 		* The three fields a hand-declared route cannot default — endpoint, protocol,
 		* and at least one model — are required here rather than at load, so the
 		* failure names the field while the user is still looking at it.
 		*
-		* There is deliberately no reasoning-effort control, here or on the editor
-		* card: effort is a per-MODEL capability, and the models under one provider
-		* disagree about it, so a provider-scoped control can only be set to a value
-		* some of them reject. The composer's model picker offers each model its own
-		* levels instead.
+		* Reasoning capability belongs to each model row because models under one
+		* provider can disagree. The separate new-session default editor derives its
+		* choices from the selected model instead of applying one provider-wide list.
 		*/
 		/** The settings namespace a hand-declared provider is written into. */
 		const NS$1 = "llm-pi-ai";
@@ -1213,7 +1524,7 @@ window.__ModuleLoader__.load({
 		* @returns the creation card.
 		*/
 		function CustomProviderCard(props) {
-			const { taken, protocols, api, t } = props;
+			const { taken, protocols, operations, t } = props;
 			const [openedAt] = (0, react.useState)(() => props.revision);
 			const [route, setRoute] = (0, react.useState)("");
 			const [displayName, setDisplayName] = (0, react.useState)("");
@@ -1251,24 +1562,17 @@ window.__ModuleLoader__.load({
 						baseURL,
 						models: models.map((model) => ({ ...model }))
 					};
-					const response = await api.settings.mutate({
-						ns: NS$1,
-						ops: [{
-							op: "set",
-							path: ["providers", route],
-							value: profile
-						}],
-						expectedRevision: openedAt
-					});
-					if (!response.result.ok) return response.result.error.message;
+					const written = await operations.writeSettings(NS$1, [{
+						op: "set",
+						path: ["providers", route],
+						value: profile
+					}], openedAt);
+					if (written.kind !== "written") return written.kind === "conflict" ? t("conflict") : written.message;
 					setCommitted(true);
 				}
 				if (storesKey) {
-					const stored = await api.credentials.set({
-						ref: keyRef,
-						value: keyValue
-					});
-					if (!stored.result.ok) return stored.result.error.message;
+					const stored = await operations.storeCredential(keyRef, keyValue);
+					if (stored !== void 0) return stored;
 				}
 			};
 			const create = async () => {
@@ -1281,8 +1585,6 @@ window.__ModuleLoader__.load({
 						return;
 					}
 					props.onClose(true);
-				} catch (error) {
-					setFailure(messageOf(error));
 				} finally {
 					setBusy(false);
 				}
@@ -1347,7 +1649,7 @@ window.__ModuleLoader__.load({
 							className: ModelsSection_module_css_default["input"],
 							type: "text",
 							value: baseURL,
-							placeholder: "https://gateway.example/v1",
+							placeholder: t("customBaseUrlPlaceholder"),
 							"aria-label": t("baseUrl"),
 							disabled: profileDisabled,
 							onChange: (event) => {
@@ -1409,7 +1711,7 @@ window.__ModuleLoader__.load({
 							...keyValue.length === 0 ? {} : { apiKey: keyValue }
 						},
 						probeBlocked: keyFailure === "keyBlank" ? "keyBlankNew" : keyFailure,
-						api,
+						operations,
 						t,
 						disabled: profileDisabled
 					}),
@@ -1425,8 +1727,8 @@ window.__ModuleLoader__.load({
 						t,
 						busy,
 						submitDisabled: disabled || !ready,
-						submitLabel: "create",
-						submitBusyLabel: "creating",
+						submitLabelKey: "create",
+						submitBusyLabelKey: "creating",
 						onCancel: () => {
 							props.onClose(committed);
 						},
@@ -1438,11 +1740,212 @@ window.__ModuleLoader__.load({
 			});
 		}
 		//#endregion
+		//#region lib/types/client/OpenRouterRoutingEditor.js
+		/** Friendly editor for the OpenRouter upstream-routing policy sent by pi-ai. */
+		function objectValue$1(value) {
+			return typeof value === "object" && value !== null && !Array.isArray(value) ? value : {};
+		}
+		function stringList(value) {
+			return Array.isArray(value) ? value.filter((entry) => typeof entry === "string" && entry.length > 0) : [];
+		}
+		function parseList(value) {
+			return [...new Set(value.split(/[\n,]/u).map((entry) => entry.trim()).filter((entry) => entry.length > 0))];
+		}
+		function RoutingListInput(props) {
+			const [draft, setDraft] = (0, react.useState)(() => stringList(props.value).join(", "));
+			return (0, react_jsx_runtime.jsx)("input", {
+				className: ModelsSection_module_css_default["input"],
+				type: "text",
+				"aria-label": props.label,
+				value: draft,
+				placeholder: props.placeholder,
+				disabled: props.disabled,
+				onChange: (event) => {
+					setDraft(event.target.value);
+					props.onChange(parseList(event.target.value));
+				}
+			});
+		}
+		function OpenRouterRoutingEditor(props) {
+			const routing = objectValue$1(props.value);
+			const { t, disabled } = props;
+			const set = (field, next) => {
+				const updated = { ...routing };
+				if (next === void 0 || next === "" || Array.isArray(next) && next.length === 0) Reflect.deleteProperty(updated, field);
+				else updated[field] = next;
+				props.onChange(Object.keys(updated).length === 0 ? void 0 : updated);
+			};
+			const booleanField = (field, label) => (0, react_jsx_runtime.jsxs)("label", {
+				className: ModelsSection_module_css_default["modelField"],
+				children: [(0, react_jsx_runtime.jsx)("span", {
+					className: ModelsSection_module_css_default["modelFieldLabel"],
+					children: t(label)
+				}), (0, react_jsx_runtime.jsxs)("select", {
+					className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`,
+					"aria-label": t(label),
+					value: typeof routing[field] === "boolean" ? String(routing[field]) : "",
+					disabled,
+					onChange: (event) => {
+						set(field, event.target.value === "" ? void 0 : event.target.value === "true");
+					},
+					children: [
+						(0, react_jsx_runtime.jsx)("option", {
+							value: "",
+							children: t("automatic")
+						}),
+						(0, react_jsx_runtime.jsx)("option", {
+							value: "true",
+							children: t("enabled")
+						}),
+						(0, react_jsx_runtime.jsx)("option", {
+							value: "false",
+							children: t("disabled")
+						})
+					]
+				})]
+			});
+			const listField = (field, label, placeholder) => (0, react_jsx_runtime.jsxs)("label", {
+				className: ModelsSection_module_css_default["modelField"],
+				children: [(0, react_jsx_runtime.jsx)("span", {
+					className: ModelsSection_module_css_default["modelFieldLabel"],
+					children: t(label)
+				}), (0, react_jsx_runtime.jsx)(RoutingListInput, {
+					value: routing[field],
+					label: t(label),
+					placeholder,
+					disabled,
+					onChange: (next) => {
+						set(field, next);
+					}
+				})]
+			});
+			const price = objectValue$1(routing["max_price"]);
+			const setPrice = (field, next) => {
+				const updated = { ...price };
+				if (next.trim().length === 0) Reflect.deleteProperty(updated, field);
+				else updated[field] = next.trim();
+				set("max_price", Object.keys(updated).length === 0 ? void 0 : updated);
+			};
+			return (0, react_jsx_runtime.jsxs)("details", {
+				className: ModelsSection_module_css_default["customized"],
+				children: [(0, react_jsx_runtime.jsx)("summary", {
+					className: ModelsSection_module_css_default["customizedSummary"],
+					children: t("openRouterRouting")
+				}), (0, react_jsx_runtime.jsxs)("div", {
+					className: ModelsSection_module_css_default["modelAdvanced"],
+					style: { paddingTop: "12px" },
+					children: [
+						listField("only", "routingOnly", "DeepSeek, Google"),
+						listField("order", "routingOrder", "DeepSeek, Google"),
+						listField("ignore", "routingIgnore", "Provider slug"),
+						listField("quantizations", "routingQuantizations", "fp16, bf16"),
+						booleanField("allow_fallbacks", "routingFallbacks"),
+						booleanField("require_parameters", "routingRequireParameters"),
+						booleanField("zdr", "routingZdr"),
+						booleanField("enforce_distillable_text", "routingDistillable"),
+						(0, react_jsx_runtime.jsxs)("label", {
+							className: ModelsSection_module_css_default["modelField"],
+							children: [(0, react_jsx_runtime.jsx)("span", {
+								className: ModelsSection_module_css_default["modelFieldLabel"],
+								children: t("routingDataCollection")
+							}), (0, react_jsx_runtime.jsxs)("select", {
+								className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`,
+								value: typeof routing["data_collection"] === "string" ? routing["data_collection"] : "",
+								disabled,
+								onChange: (event) => {
+									set("data_collection", event.target.value || void 0);
+								},
+								children: [
+									(0, react_jsx_runtime.jsx)("option", {
+										value: "",
+										children: t("automatic")
+									}),
+									(0, react_jsx_runtime.jsx)("option", {
+										value: "deny",
+										children: t("routingDataDeny")
+									}),
+									(0, react_jsx_runtime.jsx)("option", {
+										value: "allow",
+										children: t("routingDataAllow")
+									})
+								]
+							})]
+						}),
+						(0, react_jsx_runtime.jsxs)("label", {
+							className: ModelsSection_module_css_default["modelField"],
+							children: [(0, react_jsx_runtime.jsx)("span", {
+								className: ModelsSection_module_css_default["modelFieldLabel"],
+								children: t("routingSort")
+							}), (0, react_jsx_runtime.jsxs)("select", {
+								className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`,
+								value: typeof routing["sort"] === "string" ? routing["sort"] : "",
+								disabled,
+								onChange: (event) => {
+									set("sort", event.target.value || void 0);
+								},
+								children: [
+									(0, react_jsx_runtime.jsx)("option", {
+										value: "",
+										children: t("automatic")
+									}),
+									(0, react_jsx_runtime.jsx)("option", {
+										value: "price",
+										children: t("routingSortPrice")
+									}),
+									(0, react_jsx_runtime.jsx)("option", {
+										value: "throughput",
+										children: t("routingSortThroughput")
+									}),
+									(0, react_jsx_runtime.jsx)("option", {
+										value: "latency",
+										children: t("routingSortLatency")
+									})
+								]
+							})]
+						}),
+						["prompt", "completion"].map((field) => (0, react_jsx_runtime.jsxs)("label", {
+							className: ModelsSection_module_css_default["modelField"],
+							children: [(0, react_jsx_runtime.jsx)("span", {
+								className: ModelsSection_module_css_default["modelFieldLabel"],
+								children: t(field === "prompt" ? "routingMaxPromptPrice" : "routingMaxCompletionPrice")
+							}), (0, react_jsx_runtime.jsx)("input", {
+								className: ModelsSection_module_css_default["input"],
+								type: "text",
+								inputMode: "decimal",
+								value: typeof price[field] === "string" || typeof price[field] === "number" ? price[field] : "",
+								disabled,
+								onChange: (event) => {
+									setPrice(field, event.target.value);
+								}
+							})]
+						}, field)),
+						["preferred_min_throughput", "preferred_max_latency"].map((field) => (0, react_jsx_runtime.jsxs)("label", {
+							className: ModelsSection_module_css_default["modelField"],
+							children: [(0, react_jsx_runtime.jsx)("span", {
+								className: ModelsSection_module_css_default["modelFieldLabel"],
+								children: t(field === "preferred_min_throughput" ? "routingMinThroughput" : "routingMaxLatency")
+							}), (0, react_jsx_runtime.jsx)("input", {
+								className: ModelsSection_module_css_default["input"],
+								type: "number",
+								min: "0",
+								step: field === "preferred_max_latency" ? "0.1" : void 0,
+								value: typeof routing[field] === "number" ? routing[field] : "",
+								disabled,
+								onChange: (event) => {
+									set(field, event.target.value === "" ? void 0 : Number(event.target.value));
+								}
+							})]
+						}, field))
+					]
+				})]
+			});
+		}
+		//#endregion
 		//#region lib/types/client/ProviderEditor.js
 		/**
 		* One provider's editor card, hand-written per adapter family: the primary
 		* field is a single write-only **API key** input (the page never asks for an
-		* environment-variable name — a typed key stores through `credentials.set`
+		* environment-variable name — a typed key stores through `credentials/set`
 		* under the profile's reference, deriving `<ROUTE>_API_KEY` when the profile
 		* has none. The pi-ai profile records that derivation as `apiKeyEnv` only when
 		* a key is entered; a blank key materializes a reference-free profile for
@@ -1452,12 +1955,10 @@ window.__ModuleLoader__.load({
 		* display name and wire protocol of a pi-ai route the adapter does not ship —
 		* the two fields the create card asked that route for, editable here for the
 		* same reason).
-		* Reasoning effort is deliberately absent: it is a per-MODEL capability, and
-		* the models under one provider disagree about it, so a provider-scoped
-		* control can only be set to a value some of them reject. The composer's
-		* model picker offers each model its own levels; `settings.yaml` keeps the
-		* profile field for a deployment that knows its route. Everything else stays
-		* owned by `settings.yaml`. Profile edits land as minimal `settings.mutate`
+		* Reasoning capability stays on each model row because models under one
+		* provider can disagree; the separate new-session default editor only offers
+		* levels supported by the selected model. Everything else stays owned by
+		* `settings.yaml`. Profile edits land as minimal `settings.mutate`
 		* path ops against the stored section — the card names only the fields it can
 		* see instead of rebuilding the whole subtree from a partial descriptor.
 		*/
@@ -1508,58 +2009,13 @@ window.__ModuleLoader__.load({
 			const named = typeof profile === "object" && profile !== null ? profile.apiKeyEnv : void 0;
 			return typeof named === "string" && named.length > 0 ? named : deriveKeyRef(provider);
 		}
-		/** Keep comma-separated routing input stable while its parsed list updates. */
-		function RoutingListInput({ value, onChange, label, placeholder, disabled }) {
-			const [draft, setDraft] = (0, react.useState)(() => listText(value));
-			return (0, react_jsx_runtime.jsx)("input", {
-				className: ModelsSection_module_css_default["input"],
-				type: "text",
-				"aria-label": label,
-				value: draft,
-				placeholder,
-				disabled,
-				onChange: (event) => {
-					setDraft(event.target.value);
-					onChange(parseList(event.target.value));
-				}
-			});
-		}
-		/** Friendly editor for the OpenRouter routing policy pi-ai sends upstream. */
-		function OpenRouterRoutingEditor({ value, onChange, t, disabled }) {
-			const routing = objectValue(value);
-			const set = (field, next) => {
-				const updated = { ...routing };
-				if (next === void 0 || next === "" || Array.isArray(next) && next.length === 0) delete updated[field];
-				else updated[field] = next;
-				onChange(Object.keys(updated).length === 0 ? void 0 : updated);
-			};
-			const booleanField = (field, labelKey) => (0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t(labelKey) }), (0, react_jsx_runtime.jsxs)("select", { className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`, "aria-label": t(labelKey), value: typeof routing[field] === "boolean" ? String(routing[field]) : "", disabled, onChange: (event) => set(field, event.target.value === "" ? void 0 : event.target.value === "true"), children: [(0, react_jsx_runtime.jsx)("option", { value: "", children: t("automatic") }), (0, react_jsx_runtime.jsx)("option", { value: "true", children: t("enabled") }), (0, react_jsx_runtime.jsx)("option", { value: "false", children: t("disabled") })] })] });
-			const listField = (field, labelKey, placeholder) => (0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t(labelKey) }), (0, react_jsx_runtime.jsx)(RoutingListInput, { value: routing[field], label: t(labelKey), placeholder, disabled, onChange: (next) => set(field, next) })] });
-			const price = objectValue(routing.max_price);
-			const setPrice = (field, next) => {
-				const updated = { ...price };
-				if (next.trim().length === 0) delete updated[field];
-				else updated[field] = next.trim();
-				set("max_price", Object.keys(updated).length === 0 ? void 0 : updated);
-			};
-			return (0, react_jsx_runtime.jsxs)("details", { className: ModelsSection_module_css_default["customized"], children: [(0, react_jsx_runtime.jsx)("summary", { className: ModelsSection_module_css_default["customizedSummary"], children: t("openRouterRouting") }), (0, react_jsx_runtime.jsxs)("div", { className: ModelsSection_module_css_default["modelAdvanced"], style: { paddingTop: "12px" }, children: [
-				listField("only", "routingOnly", "DeepSeek, Google"), listField("order", "routingOrder", "DeepSeek, Google"), listField("ignore", "routingIgnore", "Provider slug"), listField("quantizations", "routingQuantizations", "fp16, bf16"),
-				booleanField("allow_fallbacks", "routingFallbacks"), booleanField("require_parameters", "routingRequireParameters"), booleanField("zdr", "routingZdr"), booleanField("enforce_distillable_text", "routingDistillable"),
-				(0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("routingDataCollection") }), (0, react_jsx_runtime.jsxs)("select", { className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`, "aria-label": t("routingDataCollection"), value: typeof routing.data_collection === "string" ? routing.data_collection : "", disabled, onChange: (event) => set("data_collection", event.target.value || void 0), children: [(0, react_jsx_runtime.jsx)("option", { value: "", children: t("automatic") }), (0, react_jsx_runtime.jsx)("option", { value: "deny", children: t("routingDataDeny") }), (0, react_jsx_runtime.jsx)("option", { value: "allow", children: t("routingDataAllow") })] })] }),
-				(0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("routingSort") }), (0, react_jsx_runtime.jsxs)("select", { className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`, "aria-label": t("routingSort"), value: typeof routing.sort === "string" ? routing.sort : "", disabled, onChange: (event) => set("sort", event.target.value || void 0), children: [(0, react_jsx_runtime.jsx)("option", { value: "", children: t("automatic") }), (0, react_jsx_runtime.jsx)("option", { value: "price", children: t("routingSortPrice") }), (0, react_jsx_runtime.jsx)("option", { value: "throughput", children: t("routingSortThroughput") }), (0, react_jsx_runtime.jsx)("option", { value: "latency", children: t("routingSortLatency") })] })] }),
-				(0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("routingMaxPromptPrice") }), (0, react_jsx_runtime.jsx)("input", { className: ModelsSection_module_css_default["input"], type: "text", inputMode: "decimal", "aria-label": t("routingMaxPromptPrice"), value: price.prompt ?? "", disabled, onChange: (event) => setPrice("prompt", event.target.value) })] }),
-				(0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("routingMaxCompletionPrice") }), (0, react_jsx_runtime.jsx)("input", { className: ModelsSection_module_css_default["input"], type: "text", inputMode: "decimal", "aria-label": t("routingMaxCompletionPrice"), value: price.completion ?? "", disabled, onChange: (event) => setPrice("completion", event.target.value) })] }),
-				(0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("routingMinThroughput") }), (0, react_jsx_runtime.jsx)("input", { className: ModelsSection_module_css_default["input"], type: "number", min: "0", "aria-label": t("routingMinThroughput"), value: typeof routing.preferred_min_throughput === "number" ? routing.preferred_min_throughput : "", disabled, onChange: (event) => set("preferred_min_throughput", event.target.value === "" ? void 0 : Number(event.target.value)) })] }),
-				(0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("routingMaxLatency") }), (0, react_jsx_runtime.jsx)("input", { className: ModelsSection_module_css_default["input"], type: "number", min: "0", step: "0.1", "aria-label": t("routingMaxLatency"), value: typeof routing.preferred_max_latency === "number" ? routing.preferred_max_latency : "", disabled, onChange: (event) => set("preferred_max_latency", event.target.value === "" ? void 0 : Number(event.target.value)) })] })
-			] })] });
-		}
 		/**
 		* Render one provider's editing card.
 		* @param props - the addressed profile plus wire faces and copy.
 		* @returns the editor card.
 		*/
 		function ProviderEditor(props) {
-			const { namespace, schema, settingsPath, api, t } = props;
+			const { namespace, schema, settingsPath, operations, t } = props;
 			const [draft, setDraft] = (0, react.useState)(() => draftAt(schema, namespace, settingsPath));
 			const [keyDraft, setKeyDraft] = (0, react.useState)("");
 			const [keyState, setKeyState] = (0, react.useState)(void 0);
@@ -1585,14 +2041,14 @@ window.__ModuleLoader__.load({
 			(0, react.useEffect)(() => {
 				let stale = false;
 				setKeyState(void 0);
-				api.credentials.describe({ refs: [keyRef] }).then((response) => {
-					if (stale || !response.result.ok) return;
-					setKeyState(response.result.value.credentials[keyRef]);
-				}, () => void 0);
+				operations.describeCredential(keyRef).then((described) => {
+					if (stale) return;
+					setKeyState(described);
+				});
 				return () => {
 					stale = true;
 				};
-			}, [api.credentials, keyRef]);
+			}, [operations, keyRef]);
 			const stringAt = (source, key) => {
 				const value = schema.getPath(source, [key]);
 				return typeof value === "string" && value.trim().length > 0 ? value : void 0;
@@ -1640,22 +2096,15 @@ window.__ModuleLoader__.load({
 					value: {}
 				}] : pathOps(settingsPath, committedOriginal, next);
 				if (ops.length > 0) {
-					const response = await api.settings.mutate({
-						ns,
-						ops,
-						expectedRevision
-					});
-					if (!response.result.ok) return response.result.error.code === "settings-conflict" ? t("conflict") : response.result.error.message;
-					setCommittedOriginal(schema.getPath(response.result.value.user, settingsPath));
-					setExpectedRevision(response.result.value.revision);
+					const written = await operations.writeSettings(ns, ops, expectedRevision);
+					if (written.kind !== "written") return written.kind === "conflict" ? t("conflict") : written.message;
+					setCommittedOriginal(schema.getPath(written.view.user, settingsPath));
+					setExpectedRevision(written.view.revision);
 					setDraft(next);
 				}
 				if (keyValue.length > 0) {
-					const stored = await api.credentials.set({
-						ref: keyRef,
-						value: keyValue
-					});
-					if (!stored.result.ok) return stored.result.error.message;
+					const stored = await operations.storeCredential(keyRef, keyValue);
+					if (stored !== void 0) return stored;
 				}
 				setKeyDraft("");
 			};
@@ -1669,15 +2118,17 @@ window.__ModuleLoader__.load({
 						return;
 					}
 					props.onClose(true);
-				} catch (error) {
-					setFailure(messageOf(error));
 				} finally {
 					setBusy(false);
 				}
 			};
-			if (node === void 0) return (0, react_jsx_runtime.jsx)("p", {
+			if (node === void 0) return (0, react_jsx_runtime.jsxs)("p", {
 				className: ModelsSection_module_css_default["error"],
-				children: `${props.provider}: unresolvable settings path`
+				children: [
+					props.provider,
+					": ",
+					props.t("settingsPathUnresolvable")
+				]
 			});
 			const keyLocked = keyState?.writable === false;
 			/**
@@ -1702,11 +2153,12 @@ window.__ModuleLoader__.load({
 				const models = modelDrafts(modelsOverridden ? customModels : inheritedModels());
 				const defaultContextWindow = schema.getPath(fallback, ["defaultContextWindow"]);
 				const defaultMaxTokens = schema.getPath(fallback, ["maxTokens"]);
-				const routeCompat = objectValue(schema.getPath(draft, ["compat"]));
+				const routeCompatValue = schema.getPath(draft, ["compat"]);
+				const routeCompat = typeof routeCompatValue === "object" && routeCompatValue !== null && !Array.isArray(routeCompatValue) ? routeCompatValue : {};
 				const setOpenRouterRouting = (routing) => {
 					const compat = { ...routeCompat };
-					if (routing === void 0) delete compat.openRouterRouting;
-					else compat.openRouterRouting = routing;
+					if (routing === void 0) Reflect.deleteProperty(compat, "openRouterRouting");
+					else compat["openRouterRouting"] = routing;
 					setDraft((current) => Object.keys(compat).length === 0 ? schema.deletePath(current, ["compat"]) : schema.setPath(current, ["compat"], compat));
 				};
 				const keyPlaceholder = keyLocked ? t("keyEnvLocked") : keyState?.configured === true && props.credentialRequired !== true ? t("keyStored") : family === "pi-ai" ? t("keyPlaceholderNative") : t("keyPlaceholder");
@@ -1822,9 +2274,10 @@ window.__ModuleLoader__.load({
 								...catalogProps,
 								probe,
 								probeBlocked: keyFailure,
-								api
-							}), family === "pi-ai" && props.provider === "openrouter" ? (0, react_jsx_runtime.jsx)(OpenRouterRoutingEditor, {
-								value: routeCompat.openRouterRouting,
+								operations
+							}),
+							family === "pi-ai" && props.provider === "openrouter" ? (0, react_jsx_runtime.jsx)(OpenRouterRoutingEditor, {
+								value: routeCompat["openRouterRouting"],
 								onChange: setOpenRouterRouting,
 								t,
 								disabled
@@ -1862,15 +2315,202 @@ window.__ModuleLoader__.load({
 						t,
 						busy,
 						submitDisabled: disabled || layout === "unknown" || props.credentialOnly !== true && modelFailure !== void 0 || shownKeyFailure !== void 0 || props.credentialRequired === true && keyValue.length === 0,
-						submitLabel: props.submitLabel ?? "apply",
-						submitBusyLabel: props.submitBusyLabel ?? "applying",
-						...props.cancelLabel === void 0 ? {} : { cancelLabel: props.cancelLabel },
+						submitLabelKey: props.submitLabelKey ?? "apply",
+						submitBusyLabelKey: props.submitBusyLabelKey ?? "applying",
+						...props.cancelLabelKey === void 0 ? {} : { cancelLabelKey: props.cancelLabelKey },
 						onCancel: () => {
 							props.onClose(false);
 						},
 						onSubmit: () => {
 							apply();
 						}
+					})
+				]
+			});
+		}
+		//#endregion
+		//#region lib/types/client/DefaultModelEditor.js
+		/** Editor for the model and reasoning defaults applied to newly created sessions. */
+		function objectValue(value) {
+			return typeof value === "object" && value !== null && !Array.isArray(value) ? value : {};
+		}
+		function DefaultModelEditor(props) {
+			const current = objectValue(props.namespace.value);
+			const initialProvider = typeof current["provider"] === "string" ? current["provider"] : props.groups[0]?.id ?? "";
+			const initialGroup = props.groups.find((group) => group.id === initialProvider);
+			const [provider, setProvider] = (0, react.useState)(initialProvider);
+			const [model, setModel] = (0, react.useState)(typeof current["model"] === "string" ? current["model"] : initialGroup?.models[0]?.id ?? "");
+			const [reasoningEffort, setReasoningEffort] = (0, react.useState)(typeof current["reasoningEffort"] === "string" ? current["reasoningEffort"] : "");
+			const [busy, setBusy] = (0, react.useState)(false);
+			const [failure, setFailure] = (0, react.useState)();
+			const group = props.groups.find((entry) => entry.id === provider);
+			const selected = group?.models.find((entry) => entry.id === model);
+			const unavailableProvider = provider.length > 0 && group === void 0;
+			const unavailableModel = model.length > 0 && selected === void 0;
+			const efforts = selected?.reasoning?.efforts ?? [];
+			const unavailableReasoning = reasoningEffort.length > 0 && !efforts.some((effort) => effort.id === reasoningEffort);
+			const changeProvider = (next) => {
+				setProvider(next);
+				const nextModel = props.groups.find((entry) => entry.id === next)?.models[0];
+				setModel(nextModel?.id ?? "");
+				setReasoningEffort(nextModel?.reasoning?.defaultEffort ?? "");
+			};
+			const changeModel = (next) => {
+				setModel(next);
+				const nextModel = group?.models.find((entry) => entry.id === next);
+				setReasoningEffort(nextModel?.reasoning?.defaultEffort ?? "");
+			};
+			const save = async () => {
+				if (provider.length === 0 || model.length === 0 || unavailableProvider || unavailableModel || unavailableReasoning) return;
+				setBusy(true);
+				setFailure(void 0);
+				try {
+					const written = await props.operations.writeSettings("agent-default-model", [
+						{
+							op: "set",
+							path: ["provider"],
+							value: provider
+						},
+						{
+							op: "set",
+							path: ["model"],
+							value: model
+						},
+						reasoningEffort.length === 0 ? {
+							op: "unset",
+							path: ["reasoningEffort"]
+						} : {
+							op: "set",
+							path: ["reasoningEffort"],
+							value: reasoningEffort
+						}
+					], props.namespace.revision);
+					if (written.kind !== "written") {
+						setFailure(written.kind === "conflict" ? props.t("conflict") : written.message);
+						return;
+					}
+					await props.controller.load();
+				} catch (error) {
+					setFailure(error instanceof Error ? error.message : String(error));
+				} finally {
+					setBusy(false);
+				}
+			};
+			return (0, react_jsx_runtime.jsxs)("section", {
+				className: ModelsSection_module_css_default["editor"],
+				children: [
+					(0, react_jsx_runtime.jsx)("h3", {
+						className: ModelsSection_module_css_default["editorTitle"],
+						children: props.t("defaultModelTitle")
+					}),
+					(0, react_jsx_runtime.jsx)("p", {
+						className: ModelsSection_module_css_default["advancedHint"],
+						children: props.t("defaultModelDescription")
+					}),
+					(0, react_jsx_runtime.jsxs)("label", {
+						className: ModelsSection_module_css_default["modelField"],
+						children: [(0, react_jsx_runtime.jsx)("span", {
+							className: ModelsSection_module_css_default["modelFieldLabel"],
+							children: props.t("provider")
+						}), (0, react_jsx_runtime.jsxs)("select", {
+							className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`,
+							value: provider,
+							disabled: props.readOnly || busy,
+							onChange: (event) => {
+								changeProvider(event.target.value);
+							},
+							children: [unavailableProvider ? (0, react_jsx_runtime.jsxs)("option", {
+								value: provider,
+								disabled: true,
+								children: [
+									provider,
+									" (",
+									props.t("unavailable"),
+									")"
+								]
+							}) : null, props.groups.map((entry) => (0, react_jsx_runtime.jsx)("option", {
+								value: entry.id,
+								children: entry.name
+							}, entry.id))]
+						})]
+					}),
+					(0, react_jsx_runtime.jsxs)("label", {
+						className: ModelsSection_module_css_default["modelField"],
+						children: [(0, react_jsx_runtime.jsx)("span", {
+							className: ModelsSection_module_css_default["modelFieldLabel"],
+							children: props.t("model")
+						}), (0, react_jsx_runtime.jsxs)("select", {
+							className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`,
+							value: model,
+							disabled: props.readOnly || busy || group === void 0,
+							onChange: (event) => {
+								changeModel(event.target.value);
+							},
+							children: [unavailableModel ? (0, react_jsx_runtime.jsxs)("option", {
+								value: model,
+								disabled: true,
+								children: [
+									model,
+									" (",
+									props.t("unavailable"),
+									")"
+								]
+							}) : null, (group?.models ?? []).map((entry) => (0, react_jsx_runtime.jsx)("option", {
+								value: entry.id,
+								children: entry.name
+							}, entry.id))]
+						})]
+					}),
+					(0, react_jsx_runtime.jsxs)("label", {
+						className: ModelsSection_module_css_default["modelField"],
+						children: [(0, react_jsx_runtime.jsx)("span", {
+							className: ModelsSection_module_css_default["modelFieldLabel"],
+							children: props.t("reasoningDefault")
+						}), (0, react_jsx_runtime.jsxs)("select", {
+							className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`,
+							value: reasoningEffort,
+							disabled: props.readOnly || busy || selected?.reasoning === void 0,
+							onChange: (event) => {
+								setReasoningEffort(event.target.value);
+							},
+							children: [
+								(0, react_jsx_runtime.jsx)("option", {
+									value: "",
+									children: selected?.reasoning === void 0 ? props.t("reasoningUnavailable") : props.t("providerDefault")
+								}),
+								unavailableReasoning ? (0, react_jsx_runtime.jsxs)("option", {
+									value: reasoningEffort,
+									disabled: true,
+									children: [
+										reasoningEffort,
+										" (",
+										props.t("unavailable"),
+										")"
+									]
+								}) : null,
+								efforts.map((effort) => (0, react_jsx_runtime.jsx)("option", {
+									value: effort.id,
+									children: effort.name
+								}, effort.id))
+							]
+						})]
+					}),
+					unavailableReasoning ? (0, react_jsx_runtime.jsx)("p", {
+						className: ModelsSection_module_css_default["notice"],
+						children: props.t("reasoningSelectionUnavailable")
+					}) : null,
+					failure === void 0 ? null : (0, react_jsx_runtime.jsx)("p", {
+						className: ModelsSection_module_css_default["error"],
+						children: failure
+					}),
+					(0, react_jsx_runtime.jsx)("button", {
+						type: "button",
+						className: ModelsSection_module_css_default["primaryButton"],
+						disabled: props.readOnly || busy || provider.length === 0 || model.length === 0 || unavailableProvider || unavailableModel || unavailableReasoning,
+						onClick: () => {
+							save();
+						},
+						children: busy ? props.t("applying") : props.t("saveDefault")
 					})
 				]
 			});
@@ -1906,28 +2546,21 @@ window.__ModuleLoader__.load({
 		* and the whole operation safely retryable; both unsets are idempotent.
 		* The settings removal names the profile rather than rebuilding its whole
 		* namespace from a partial view.
-		* @param api - settings and credential wire faces.
+		* @param operations - the page's Host operations.
 		* @param controller - the page store to refresh.
 		* @param target - the provider's settings address and optional managed credential.
 		* @returns the failure message, or undefined once the write and reload landed.
 		*/
-		async function removeProviderProfile(api, controller, target) {
-			try {
-				if (target.credentialRef !== void 0) {
-					const credential = await api.credentials.unset({ ref: target.credentialRef });
-					if (!credential.result.ok) return credential.result.error.message;
-				}
-				const response = await api.settings.mutate({
-					ns: target.settingsNs,
-					ops: [{
-						op: "unset",
-						path: [...target.settingsPath]
-					}]
-				});
-				if (!response.result.ok) return response.result.error.message;
-			} catch (error) {
-				return messageOf(error);
+		async function removeProviderProfile(operations, controller, target) {
+			if (target.credentialRef !== void 0) {
+				const credential = await operations.removeCredential(target.credentialRef);
+				if (credential !== void 0) return credential;
 			}
+			const written = await operations.writeSettings(target.settingsNs, [{
+				op: "unset",
+				path: [...target.settingsPath]
+			}], void 0);
+			if (written.kind !== "written") return written.message;
 			await controller.load();
 		}
 		/**
@@ -1943,6 +2576,16 @@ window.__ModuleLoader__.load({
 			if (anyUsable) return false;
 			if (row.entry.settingsPath.length > 0) return false;
 			return row.credential?.configured !== true;
+		}
+		/**
+		* The provider-card seat's credential fact: the reference this page would use
+		* for the row — the profile's `apiKeyEnv`, or the page's derived
+		* `<ROUTE>_API_KEY` while the profile names none — confirmed configured. The
+		* derived half is what keeps the seat consistent with the editor on the
+		* add-provider draft, whose dormant row names no reference yet.
+		*/
+		function keyConfiguredOf(row) {
+			return row.apiKeyEnv !== void 0 ? row.credential?.configured === true : row.derivedCredential?.configured === true;
 		}
 		function targetOf(row) {
 			const managedRef = deriveKeyRef(row.entry.provider);
@@ -1964,85 +2607,27 @@ window.__ModuleLoader__.load({
 		function providerCopy(template, target) {
 			return template.replace("{provider}", () => providerTargetLabel(target));
 		}
-		/** Edit the durable provider/model/reasoning defaults applied to new sessions. */
-		function DefaultModelEditor({ namespace, groups, api, controller, t, readOnly }) {
-			const current = objectValue(namespace.value);
-			const [provider, setProvider] = (0, react.useState)(typeof current.provider === "string" ? current.provider : groups[0]?.id ?? "");
-			const [model, setModel] = (0, react.useState)(typeof current.model === "string" ? current.model : groups.find((group) => group.id === provider)?.models[0]?.id ?? "");
-			const [reasoningEffort, setReasoningEffort] = (0, react.useState)(typeof current.reasoningEffort === "string" ? current.reasoningEffort : "");
-			const [busy, setBusy] = (0, react.useState)(false);
-			const [failure, setFailure] = (0, react.useState)(void 0);
-			const group = groups.find((entry) => entry.id === provider);
-			const selected = group?.models.find((entry) => entry.id === model);
-			const unavailableProvider = provider.length > 0 && group === void 0;
-			const unavailableModel = model.length > 0 && selected === void 0;
-			const availableReasoningEfforts = selected?.reasoning?.efforts ?? [];
-			const unavailableReasoning = reasoningEffort.length > 0 && !availableReasoningEfforts.some((effort) => effort.id === reasoningEffort);
-			const changeProvider = (next) => {
-				setProvider(next);
-				const nextModel = groups.find((entry) => entry.id === next)?.models[0];
-				setModel(nextModel?.id ?? "");
-				setReasoningEffort(nextModel?.reasoning?.defaultEffort ?? "");
-			};
-			const changeModel = (next) => {
-				setModel(next);
-				const nextModel = group?.models.find((entry) => entry.id === next);
-				setReasoningEffort(nextModel?.reasoning?.defaultEffort ?? "");
-			};
-			const save = async () => {
-				if (provider.length === 0 || model.length === 0 || unavailableProvider || unavailableModel || unavailableReasoning) return;
-				setBusy(true);
-				setFailure(void 0);
-				try {
-					const response = await api.settings.mutate({
-						ns: "agent-default-model",
-						expectedRevision: namespace.revision,
-						ops: [
-							{ op: "set", path: ["provider"], value: provider },
-							{ op: "set", path: ["model"], value: model },
-							reasoningEffort.length === 0 ? { op: "unset", path: ["reasoningEffort"] } : { op: "set", path: ["reasoningEffort"], value: reasoningEffort }
-						]
-					});
-					if (!response.result.ok) {
-						setFailure(response.result.error.code === "settings-conflict" ? t("conflict") : response.result.error.message);
-						return;
-					}
-					await controller.load();
-				} catch (error) {
-					setFailure(messageOf(error));
-				} finally {
-					setBusy(false);
-				}
-			};
-			return (0, react_jsx_runtime.jsxs)("section", { className: ModelsSection_module_css_default["editor"], children: [
-				(0, react_jsx_runtime.jsx)("h3", { className: ModelsSection_module_css_default["editorTitle"], children: t("defaultModelTitle") }),
-				(0, react_jsx_runtime.jsx)("p", { className: ModelsSection_module_css_default["advancedHint"], children: t("defaultModelDescription") }),
-				(0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("provider") }), (0, react_jsx_runtime.jsxs)("select", { className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`, "aria-label": t("provider"), value: provider, disabled: readOnly || busy, onChange: (event) => changeProvider(event.target.value), children: [unavailableProvider ? (0, react_jsx_runtime.jsx)("option", { value: provider, disabled: true, children: `${provider} (${t("unavailable")})` }) : null, ...groups.map((entry) => (0, react_jsx_runtime.jsx)("option", { value: entry.id, children: entry.name }, entry.id))] })] }),
-				(0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("model") }), (0, react_jsx_runtime.jsxs)("select", { className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`, "aria-label": t("model"), value: model, disabled: readOnly || busy || group === void 0, onChange: (event) => changeModel(event.target.value), children: [unavailableModel ? (0, react_jsx_runtime.jsx)("option", { value: model, disabled: true, children: `${model} (${t("unavailable")})` }) : null, ...(group?.models ?? []).map((entry) => (0, react_jsx_runtime.jsx)("option", { value: entry.id, children: entry.name }, entry.id))] })] }),
-				(0, react_jsx_runtime.jsxs)("label", { className: ModelsSection_module_css_default["modelField"], children: [(0, react_jsx_runtime.jsx)("span", { className: ModelsSection_module_css_default["modelFieldLabel"], children: t("reasoningDefault") }), (0, react_jsx_runtime.jsxs)("select", { className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`, "aria-label": t("reasoningDefault"), value: reasoningEffort, disabled: readOnly || busy || selected?.reasoning === void 0, onChange: (event) => setReasoningEffort(event.target.value), children: [(0, react_jsx_runtime.jsx)("option", { value: "", children: selected?.reasoning === void 0 ? t("reasoningUnavailable") : t("providerDefault") }), unavailableReasoning ? (0, react_jsx_runtime.jsx)("option", { value: reasoningEffort, disabled: true, children: `${reasoningEffort} (${t("unavailable")})` }) : null, ...availableReasoningEfforts.map((effort) => (0, react_jsx_runtime.jsx)("option", { value: effort.id, children: effort.name }, effort.id))] })] }),
-				unavailableReasoning ? (0, react_jsx_runtime.jsx)("p", { className: ModelsSection_module_css_default["notice"], children: t("reasoningSelectionUnavailable") }) : null,
-				failure === void 0 ? null : (0, react_jsx_runtime.jsx)("p", { className: ModelsSection_module_css_default["error"], children: failure }),
-				(0, react_jsx_runtime.jsx)("button", { type: "button", className: ModelsSection_module_css_default["primaryButton"], disabled: readOnly || busy || provider.length === 0 || model.length === 0 || unavailableProvider || unavailableModel || unavailableReasoning, onClick: save, children: busy ? t("applying") : t("saveDefault") })
-			] });
-		}
 		/**
 		* Render the Models section content column.
 		* @param props - slot-delivered injected dependencies.
 		* @returns the section, or null while the shell has not injected yet.
 		*/
 		function ModelsSection(props) {
-			const { controller, useSnapshot, api, schema, t } = props;
-			if (controller === void 0 || useSnapshot === void 0 || api === void 0 || schema === void 0 || t === void 0) return null;
-			return (0, react_jsx_runtime.jsx)(Loaded, { injected: {
-				controller,
-				useSnapshot,
-				api,
-				schema,
-				t
-			} });
+			const { controller, useSnapshot, operations, schema, t, renderSlot } = props;
+			if (controller === void 0 || useSnapshot === void 0 || operations === void 0 || schema === void 0 || t === void 0) return null;
+			return (0, react_jsx_runtime.jsx)(Loaded, {
+				injected: {
+					controller,
+					useSnapshot,
+					operations,
+					schema,
+					t
+				},
+				renderSlot
+			});
 		}
-		function Loaded({ injected }) {
-			const { controller, api, schema, t } = injected;
+		function Loaded({ injected, renderSlot }) {
+			const { controller, operations, schema, t } = injected;
 			const state = injected.useSnapshot((snapshot) => snapshot);
 			const [editing, setEditing] = (0, react.useState)(void 0);
 			const [adding, setAdding] = (0, react.useState)(false);
@@ -2084,7 +2669,7 @@ window.__ModuleLoader__.load({
 				if (deleteTarget === void 0 || deleting) return;
 				setDeleting(true);
 				setDeleteFailure(void 0);
-				removeProviderProfile(api, controller, deleteTarget).then((failure) => {
+				removeProviderProfile(operations, controller, deleteTarget).then((failure) => {
 					if (failure !== void 0) {
 						setDeleteFailure(failure);
 						return;
@@ -2123,6 +2708,7 @@ window.__ModuleLoader__.load({
 			const addable = state.rows.filter((row) => !row.configured && row.entry.settingsNs !== "");
 			const addTarget = adding ? editing : void 0;
 			const addNamespace = addTarget === void 0 ? void 0 : state.namespaces.get(addTarget.settingsNs);
+			const addRow = addTarget === void 0 ? void 0 : state.rows.find((row) => row.entry.provider === addTarget.provider);
 			const defaultModelNamespace = state.namespaces.get("agent-default-model");
 			const protocols = protocolChoices(state.namespaces.get("llm-pi-ai"), schema);
 			return (0, react_jsx_runtime.jsxs)("div", {
@@ -2139,7 +2725,7 @@ window.__ModuleLoader__.load({
 					defaultModelNamespace === void 0 ? null : (0, react_jsx_runtime.jsx)(DefaultModelEditor, {
 						namespace: defaultModelNamespace,
 						groups: state.groups,
-						api,
+						operations,
 						controller,
 						t,
 						readOnly: !state.writable
@@ -2165,87 +2751,99 @@ window.__ModuleLoader__.load({
 							const namespace = state.namespaces.get(target.settingsNs);
 							/* v8 ignore next -- the join marks a row configured only when its namespace resolved */
 							if (namespace === void 0) return null;
-							if (needsSetup(row, anyUsable) && !dismissedSetup.has(row.entry.provider)) return (0, react_jsx_runtime.jsx)("li", {
+							if (needsSetup(row, anyUsable) && !dismissedSetup.has(row.entry.provider)) return (0, react_jsx_runtime.jsxs)("li", {
 								className: ModelsSection_module_css_default["setupCard"],
-								children: renderProviderEditor({
+								children: [renderProviderEditor({
 									target,
 									namespace,
 									schema,
-									api,
+									operations,
 									t,
 									readOnly: !state.writable,
 									onClose: (changed) => {
 										closeSetup(changed, target);
 									}
-								})
+								}), renderSlot("settings.models.provider-card", {
+									provider: row.entry,
+									configured: row.configured,
+									keyConfigured: keyConfiguredOf(row)
+								}, { entryKey: row.entry.settingsNs })]
 							}, row.entry.provider);
 							const open = !adding && editing?.provider === row.entry.provider;
 							const credentialConfigured = row.credential?.configured === true;
 							const credentialMissing = !credentialConfigured && row.apiKeyEnv !== void 0 && row.credential?.configured === false;
 							return (0, react_jsx_runtime.jsxs)("li", {
 								className: ModelsSection_module_css_default["rowCard"],
-								children: [(0, react_jsx_runtime.jsxs)("div", {
-									className: ModelsSection_module_css_default["rowHead"],
-									children: [(0, react_jsx_runtime.jsxs)("span", {
-										className: ModelsSection_module_css_default["rowIdentity"],
-										children: [
-											(0, react_jsx_runtime.jsx)("span", {
-												className: ModelsSection_module_css_default["rowName"],
-												children: row.entry.displayName
-											}),
-											row.entry.declared === true ? (0, react_jsx_runtime.jsx)("span", {
-												className: ModelsSection_module_css_default["rowTag"],
-												children: t("customTag")
-											}) : null,
-											credentialConfigured ? (0, react_jsx_runtime.jsx)("span", {
-												className: `${ModelsSection_module_css_default["credentialDot"]} ${ModelsSection_module_css_default["credentialDotConfigured"]}`,
-												role: "img",
-												"aria-label": t("credentialConfigured"),
-												title: t("credentialConfigured")
-											}) : credentialMissing ? (0, react_jsx_runtime.jsx)("span", {
-												className: `${ModelsSection_module_css_default["credentialDot"]} ${ModelsSection_module_css_default["credentialDotMissing"]}`,
-												role: "img",
-												"aria-label": t("credentialMissing"),
-												title: t("credentialMissing")
-											}) : null
-										]
-									}), (0, react_jsx_runtime.jsxs)("span", {
-										className: ModelsSection_module_css_default["rowActions"],
-										children: [(0, react_jsx_runtime.jsx)("button", {
-											type: "button",
-											className: ModelsSection_module_css_default["secondaryButton"],
-											"aria-label": providerCopy(t("editProvider"), target),
-											onClick: () => {
-												setSavedTarget(void 0);
-												setDeclaring(false);
-												setAdding(false);
-												setEditing(open ? void 0 : target);
-											},
-											children: t("edit")
-										}), row.removable ? (0, react_jsx_runtime.jsx)("button", {
-											type: "button",
-											className: ModelsSection_module_css_default["dangerButton"],
-											"aria-label": providerCopy(t("removeProvider"), target),
-											disabled: !state.writable,
-											onClick: () => {
-												setSavedTarget(void 0);
-												setDeleteFailure(void 0);
-												setDeleteTarget(target);
-											},
-											children: t("remove")
-										}) : null]
-									})]
-								}), open ? renderProviderEditor({
-									target,
-									namespace,
-									schema,
-									api,
-									t,
-									readOnly: !state.writable,
-									onClose: (changed) => {
-										closeEditor(changed, target);
-									}
-								}) : null]
+								children: [
+									(0, react_jsx_runtime.jsxs)("div", {
+										className: ModelsSection_module_css_default["rowHead"],
+										children: [(0, react_jsx_runtime.jsxs)("span", {
+											className: ModelsSection_module_css_default["rowIdentity"],
+											children: [
+												(0, react_jsx_runtime.jsx)("span", {
+													className: ModelsSection_module_css_default["rowName"],
+													children: row.entry.displayName
+												}),
+												row.entry.declared === true ? (0, react_jsx_runtime.jsx)("span", {
+													className: ModelsSection_module_css_default["rowTag"],
+													children: t("customTag")
+												}) : null,
+												credentialConfigured ? (0, react_jsx_runtime.jsx)("span", {
+													className: `${ModelsSection_module_css_default["credentialDot"]} ${ModelsSection_module_css_default["credentialDotConfigured"]}`,
+													role: "img",
+													"aria-label": t("credentialConfigured"),
+													title: t("credentialConfigured")
+												}) : credentialMissing ? (0, react_jsx_runtime.jsx)("span", {
+													className: `${ModelsSection_module_css_default["credentialDot"]} ${ModelsSection_module_css_default["credentialDotMissing"]}`,
+													role: "img",
+													"aria-label": t("credentialMissing"),
+													title: t("credentialMissing")
+												}) : null
+											]
+										}), (0, react_jsx_runtime.jsxs)("span", {
+											className: ModelsSection_module_css_default["rowActions"],
+											children: [(0, react_jsx_runtime.jsx)("button", {
+												type: "button",
+												className: ModelsSection_module_css_default["secondaryButton"],
+												"aria-label": providerCopy(t("editProvider"), target),
+												onClick: () => {
+													setSavedTarget(void 0);
+													setDeclaring(false);
+													setAdding(false);
+													setEditing(open ? void 0 : target);
+												},
+												children: t("edit")
+											}), row.removable ? (0, react_jsx_runtime.jsx)("button", {
+												type: "button",
+												className: ModelsSection_module_css_default["dangerButton"],
+												"aria-label": providerCopy(t("removeProvider"), target),
+												disabled: !state.writable,
+												onClick: () => {
+													setSavedTarget(void 0);
+													setDeleteFailure(void 0);
+													setDeleteTarget(target);
+												},
+												children: t("remove")
+											}) : null]
+										})]
+									}),
+									renderSlot("settings.models.provider-card", {
+										provider: row.entry,
+										configured: row.configured,
+										keyConfigured: keyConfiguredOf(row)
+									}, { entryKey: row.entry.settingsNs }),
+									open ? renderProviderEditor({
+										target,
+										namespace,
+										schema,
+										operations,
+										t,
+										readOnly: !state.writable,
+										onClose: (changed) => {
+											closeEditor(changed, target);
+										}
+									}) : null
+								]
 							}, row.entry.provider);
 						})
 					}),
@@ -2253,40 +2851,48 @@ window.__ModuleLoader__.load({
 						className: ModelsSection_module_css_default["addBlock"],
 						children: addTarget !== void 0 && addNamespace !== void 0 ? (0, react_jsx_runtime.jsxs)("div", {
 							className: ModelsSection_module_css_default["addCard"],
-							children: [(0, react_jsx_runtime.jsxs)("div", {
-								className: ModelsSection_module_css_default["field"],
-								children: [(0, react_jsx_runtime.jsx)("span", {
-									className: ModelsSection_module_css_default["fieldLabel"],
-									children: t("provider")
-								}), (0, react_jsx_runtime.jsx)("select", {
-									className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`,
-									value: addTarget.provider,
-									"aria-label": t("provider"),
-									onChange: (event) => {
-										const row = addable.find((candidate) => candidate.entry.provider === event.target.value);
-										/* v8 ignore next -- the select only lists addable rows */
-										if (row === void 0) return;
-										setEditing(targetOf(row));
-									},
-									children: addable.map((row) => (0, react_jsx_runtime.jsx)("option", {
-										value: row.entry.provider,
-										children: row.entry.displayName
-									}, row.entry.provider))
-								})]
-							}), (0, react_jsx_runtime.jsx)(ProviderEditor, {
-								provider: addTarget.provider,
-								displayName: addTarget.displayName,
-								hideTitle: true,
-								namespace: addNamespace,
-								schema,
-								settingsPath: addTarget.settingsPath,
-								api,
-								t,
-								readOnly: !state.writable,
-								onClose: (changed) => {
-									closeEditor(changed, addTarget);
-								}
-							}, addTarget.provider)]
+							children: [
+								(0, react_jsx_runtime.jsxs)("div", {
+									className: ModelsSection_module_css_default["field"],
+									children: [(0, react_jsx_runtime.jsx)("span", {
+										className: ModelsSection_module_css_default["fieldLabel"],
+										children: t("provider")
+									}), (0, react_jsx_runtime.jsx)("select", {
+										className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`,
+										value: addTarget.provider,
+										"aria-label": t("provider"),
+										onChange: (event) => {
+											const row = addable.find((candidate) => candidate.entry.provider === event.target.value);
+											/* v8 ignore next -- the select only lists addable rows */
+											if (row === void 0) return;
+											setEditing(targetOf(row));
+										},
+										children: addable.map((row) => (0, react_jsx_runtime.jsx)("option", {
+											value: row.entry.provider,
+											children: row.entry.displayName
+										}, row.entry.provider))
+									})]
+								}),
+								(0, react_jsx_runtime.jsx)(ProviderEditor, {
+									provider: addTarget.provider,
+									displayName: addTarget.displayName,
+									hideTitle: true,
+									namespace: addNamespace,
+									schema,
+									settingsPath: addTarget.settingsPath,
+									operations,
+									t,
+									readOnly: !state.writable,
+									onClose: (changed) => {
+										closeEditor(changed, addTarget);
+									}
+								}, addTarget.provider),
+								addRow === void 0 ? null : renderSlot("settings.models.provider-card", {
+									provider: addRow.entry,
+									configured: addRow.configured,
+									keyConfigured: keyConfiguredOf(addRow)
+								}, { entryKey: addRow.entry.settingsNs })
+							]
 						}) : declaring ? (0, react_jsx_runtime.jsx)("div", {
 							className: ModelsSection_module_css_default["addCard"],
 							children: (0, react_jsx_runtime.jsx)(CustomProviderCard, {
@@ -2294,7 +2900,7 @@ window.__ModuleLoader__.load({
 								protocols,
 								/* v8 ignore next -- the card only opens from a button disabled without this namespace */
 								revision: state.namespaces.get("llm-pi-ai")?.revision ?? 0,
-								api,
+								operations,
 								t,
 								readOnly: !state.writable,
 								onClose: (changed) => {
@@ -2332,6 +2938,7 @@ window.__ModuleLoader__.load({
 							})]
 						})
 					}),
+					renderSlot("settings.models.footer", {}),
 					(0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Modal, {
 						open: deleteTarget !== void 0,
 						onClose: closeDelete,
@@ -2361,8 +2968,8 @@ window.__ModuleLoader__.load({
 			});
 		}
 		//#endregion
-		//#region \0dsh-css:/home/runner/work/deepseek-harness/deepseek-harness/packages/client/ui-settings-models/src/client/OnboardingModal.module.css.mjs
-		const css$2 = ".jLrgrW_dialog{width:min(600px,100%);padding:0}.jLrgrW_content{box-sizing:border-box;flex-direction:column;max-height:calc(100vh - 48px);padding:28px;display:flex;overflow-y:auto}.jLrgrW_title{color:var(--dsw-alias-label-primary);outline:none;margin:0;font-size:20px;font-weight:500;line-height:28px}.jLrgrW_body{margin-top:20px}@media (width<=560px){.jLrgrW_content{padding:24px}}";
+		//#region \0dsh-css:D:\Project\deepseek-harness-lab\.tmp\upstream-dsh-0.1.2-rc.1\packages\client\ui-settings-models\src\client\OnboardingModal.module.css.mjs
+		const css$2 = ".eqp2Sa_dialog{width:min(600px,100%);padding:0}.eqp2Sa_content{box-sizing:border-box;flex-direction:column;max-height:calc(100vh - 48px);padding:28px;display:flex;overflow-y:auto}.eqp2Sa_title{color:var(--dsw-alias-label-primary);outline:none;margin:0;font-size:20px;font-weight:500;line-height:28px}.eqp2Sa_body{margin-top:20px}@media (width<=560px){.eqp2Sa_content{padding:24px}}";
 		const tagId$2 = "@deepseek-ai/dsh-client-ui-settings-models/OnboardingModal.module.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId$2) + "]") === null) {
 			const tag = document.createElement("style");
@@ -2372,10 +2979,10 @@ window.__ModuleLoader__.load({
 			document.head.appendChild(tag);
 		}
 		var OnboardingModal_module_css_default = {
-			"body": "jLrgrW_body",
-			"content": "jLrgrW_content",
-			"dialog": "jLrgrW_dialog",
-			"title": "jLrgrW_title"
+			"body": "eqp2Sa_body",
+			"content": "eqp2Sa_content",
+			"dialog": "eqp2Sa_dialog",
+			"title": "eqp2Sa_title"
 		};
 		//#endregion
 		//#region lib/types/client/OnboardingModal.js
@@ -2423,8 +3030,8 @@ window.__ModuleLoader__.load({
 			});
 		}
 		//#endregion
-		//#region \0dsh-css:/home/runner/work/deepseek-harness/deepseek-harness/packages/client/ui-settings-models/src/client/DeepSeekOnboardingDialog.module.css.mjs
-		const css$1 = ".GL8Viq_description{color:var(--dsw-alias-label-secondary);margin:0;font-size:14px;line-height:24px}.GL8Viq_editor{margin-top:24px}@media (width<=560px){.GL8Viq_editor{margin-top:20px}}";
+		//#region \0dsh-css:D:\Project\deepseek-harness-lab\.tmp\upstream-dsh-0.1.2-rc.1\packages\client\ui-settings-models\src\client\DeepSeekOnboardingDialog.module.css.mjs
+		const css$1 = ".vqQorq_description{color:var(--dsw-alias-label-secondary);margin:0;font-size:14px;line-height:24px}.vqQorq_editor{margin-top:24px}@media (width<=560px){.vqQorq_editor{margin-top:20px}}";
 		const tagId$1 = "@deepseek-ai/dsh-client-ui-settings-models/DeepSeekOnboardingDialog.module.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId$1) + "]") === null) {
 			const tag = document.createElement("style");
@@ -2434,8 +3041,8 @@ window.__ModuleLoader__.load({
 			document.head.appendChild(tag);
 		}
 		var DeepSeekOnboardingDialog_module_css_default = {
-			"description": "GL8Viq_description",
-			"editor": "GL8Viq_editor"
+			"description": "vqQorq_description",
+			"editor": "vqQorq_editor"
 		};
 		//#endregion
 		//#region lib/types/client/DeepSeekOnboardingDialog.js
@@ -2457,7 +3064,7 @@ window.__ModuleLoader__.load({
 		* @returns the onboarding modal or null when onboarding needs no intervention.
 		*/
 		function DeepSeekOnboardingDialog(props) {
-			const { complete, controller, useModels, api, schema, t } = props;
+			const { complete, controller, useModels, operations, schema, t } = props;
 			const state = useModels((snapshot) => snapshot);
 			const readiness = onboardingReadiness(state);
 			(0, react.useEffect)(() => {
@@ -2499,24 +3106,24 @@ window.__ModuleLoader__.load({
 						namespace,
 						schema,
 						settingsPath: row.entry.settingsPath,
-						api,
+						operations,
 						t,
 						readOnly: false,
 						hideTitle: true,
 						credentialOnly: true,
 						credentialRequired: true,
 						autoFocusCredential: true,
-						cancelLabel: "onboardingLater",
-						submitLabel: "onboardingSave",
-						submitBusyLabel: "onboardingSaving",
+						cancelLabelKey: "onboardingLater",
+						submitLabelKey: "onboardingSave",
+						submitBusyLabelKey: "onboardingSaving",
 						onClose: finishCredential
 					})
 				})]
 			});
 		}
 		//#endregion
-		//#region \0dsh-css:/home/runner/work/deepseek-harness/deepseek-harness/packages/client/ui-settings-models/src/client/WelcomeNotice.module.css.mjs
-		const css = ".t1T8VW_copy{color:var(--dsw-alias-label-secondary);font-size:14px;line-height:24px}.t1T8VW_copy p{margin:0}.t1T8VW_copy p+p{margin-top:12px}.t1T8VW_error{color:var(--dsw-alias-state-error-primary);margin:16px 0 0;font-size:14px;line-height:22px}.t1T8VW_actions{justify-content:flex-end;margin-top:24px;display:flex}.t1T8VW_primary{min-width:120px}@media (width<=560px){.t1T8VW_primary{width:100%}}";
+		//#region \0dsh-css:D:\Project\deepseek-harness-lab\.tmp\upstream-dsh-0.1.2-rc.1\packages\client\ui-settings-models\src\client\WelcomeNotice.module.css.mjs
+		const css = ".bIq4da_copy{color:var(--dsw-alias-label-secondary);font-size:14px;line-height:24px}.bIq4da_copy p{margin:0}.bIq4da_copy p+p{margin-top:12px}.bIq4da_error{color:var(--dsw-alias-state-error-primary);margin:16px 0 0;font-size:14px;line-height:22px}.bIq4da_actions{justify-content:flex-end;margin-top:24px;display:flex}.bIq4da_primary{min-width:120px}@media (width<=560px){.bIq4da_primary{width:100%}}";
 		const tagId = "@deepseek-ai/dsh-client-ui-settings-models/WelcomeNotice.module.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId) + "]") === null) {
 			const tag = document.createElement("style");
@@ -2526,10 +3133,10 @@ window.__ModuleLoader__.load({
 			document.head.appendChild(tag);
 		}
 		var WelcomeNotice_module_css_default = {
-			"actions": "t1T8VW_actions",
-			"copy": "t1T8VW_copy",
-			"error": "t1T8VW_error",
-			"primary": "t1T8VW_primary"
+			"actions": "bIq4da_actions",
+			"copy": "bIq4da_copy",
+			"error": "bIq4da_error",
+			"primary": "bIq4da_primary"
 		};
 		//#endregion
 		//#region lib/types/client/WelcomeNotice.js
@@ -2598,19 +3205,6 @@ window.__ModuleLoader__.load({
 		* again. The acknowledgement is compared for exact equality.
 		*/
 		const WELCOME_NOTICE_VERSION = "2026-08-13.1";
-		/** The complete editable internal-testing notice in both supported GUI locales. */
-		const WELCOME_NOTICE_COPY = {
-			zh: {
-				title: "内测声明",
-				body: "DeepSeek Harness 目前的 0.1 版本仍处在面向 Harness 开发者进行测试的阶段，还有许多地方需要持续改进和打磨，希望听取广大开发者的反馈建议。预计 DeepSeek Harness 的核心插件以及基础 API 都会在接下来的一段时间内快速迭代、持续演化。\n\n我们期待与全球开发者一起，在开源、开放、可复用、可组合的基础设施之上，共同探索智能上限。欢迎全球 Harness 开发者加入 DSH 插件生态。",
-				continueLabel: "继续"
-			},
-			en: {
-				title: "Internal Testing Notice",
-				body: "DeepSeek Harness 0.1 remains in testing for Harness developers. Many areas need further improvement, and we welcome feedback from the developer community. DeepSeek Harness's core plugins and foundational APIs will continue to evolve rapidly over the coming months.\n\nWe look forward to exploring the limits of intelligence with developers around the world, building on open-source, open, reusable, and composable infrastructure. We welcome Harness developers everywhere to join the DSH plugin ecosystem.",
-				continueLabel: "Continue"
-			}
-		};
 		//#endregion
 		//#region lib/types/client/welcome-store.js
 		/**
@@ -2637,7 +3231,7 @@ window.__ModuleLoader__.load({
 		var WelcomeNoticeStore = class {
 			scope;
 			/** uSES-safe state source shared by the registered welcome step. */
-			store = (0, _deepseek_ai_dsh_client_runtime_client.createSnapshotStore)({
+			store = (0, _deepseek_ai_dsh_client_store.createSnapshotStore)({
 				status: "idle",
 				acknowledged: false,
 				error: null
@@ -2738,6 +3332,61 @@ window.__ModuleLoader__.load({
 			}
 		};
 		//#endregion
+		//#region lib/types/client/operations.js
+		/**
+		* The Host reads and writes the Models cards perform, as callbacks built in the
+		* plugin body. Cards receive these instead of a context: the outcomes name what
+		* a card renders — a stored view, a stale revision, a refusal message — so the
+		* failure codes and Remote namespaces stay in the apply world.
+		*/
+		/**
+		* Bind the page's Host operations to the plugin's own Remote namespaces.
+		* @param ctx - the page plugin's context, which declares `remote.credentials`,
+		* `remote.llm`, and `remote.settings` in its own `inject`.
+		* @returns the callbacks the section and its cards are injected with.
+		*/
+		function createModelsOperations(ctx) {
+			return {
+				describeCredential: async (ref) => {
+					const response = await ctx.remote.credentials.describe([ref]);
+					return response.ok ? response.value[ref] : void 0;
+				},
+				storeCredential: async (ref, value) => {
+					const response = await ctx.remote.credentials.set(ref, value);
+					return response.ok ? void 0 : response.error.message;
+				},
+				removeCredential: async (ref) => {
+					const response = await ctx.remote.credentials.unset(ref);
+					return response.ok ? void 0 : response.error.message;
+				},
+				writeSettings: async (ns, ops, expectedRevision) => {
+					const response = await ctx.remote.settings.mutate(ns, ops, expectedRevision);
+					if (response.ok) return {
+						kind: "written",
+						view: response.value
+					};
+					const { code, message } = response.error;
+					return code === "settings/conflict" ? {
+						kind: "conflict",
+						message
+					} : {
+						kind: "refused",
+						message
+					};
+				},
+				discoverModels: async (settingsNs, request) => {
+					const response = await ctx.remote.llm.discoverModels(settingsNs, request);
+					return response.ok ? {
+						kind: "found",
+						models: response.value
+					} : {
+						kind: "refused",
+						message: response.error.message
+					};
+				}
+			};
+		}
+		//#endregion
 		//#region lib/types/client/schema-operations.js
 		/**
 		* Hide the Cordis service identity behind bound schema callbacks.
@@ -2817,7 +3466,7 @@ window.__ModuleLoader__.load({
 			modelNameInvalid: "Display name cannot be empty.",
 			modelContextInvalid: "Context window must be a positive count, like 131072, 256K, or 1M.",
 			modelMaxTokensInvalid: "Max output tokens must be a positive count, like 8192, 64K, or 1M.",
-			advancedHint: "Less common transport and cache fields remain available in settings.yaml.",
+			advancedHint: "Other fields live in settings.yaml; edit that section directly.",
 			modelCapacityInvalid: "A capacity must be a number, optionally suffixed K or M.",
 			modelDuplicate: "Each model ID may appear once.",
 			modelContextWindow: "Context window",
@@ -2884,6 +3533,8 @@ window.__ModuleLoader__.load({
 			fetchEmpty: "The provider listed no models. Add them by hand.",
 			fetchTitle: "Choose models to add",
 			fetchDescription: "These are the models this provider has available. Choose the ones to add.",
+			fetchSearch: "Search models",
+			fetchNoMatches: "No matching models.",
 			fetchSelectAll: "Select all",
 			fetchDeselectAll: "Deselect all",
 			fetchAdopt: "Add selected",
@@ -2899,11 +3550,13 @@ window.__ModuleLoader__.load({
 			customApiUnset: "Not selected",
 			customNeedsBaseUrl: "A custom provider needs a base URL.",
 			customNeedsModels: "A custom provider needs at least one model.",
+			customBaseUrlPlaceholder: "https://gateway.example/v1",
+			settingsPathUnresolvable: "unresolvable settings path",
 			create: "Create provider",
 			creating: "Creating…",
-			welcomeTitle: WELCOME_NOTICE_COPY.en.title,
-			welcomeBody: WELCOME_NOTICE_COPY.en.body,
-			welcomeContinue: WELCOME_NOTICE_COPY.en.continueLabel,
+			welcomeTitle: "Internal Testing Notice",
+			welcomeBody: "DeepSeek Harness 0.1 remains in testing for Harness developers. Many areas need further improvement, and we welcome feedback from the developer community. DeepSeek Harness's core plugins and foundational APIs will continue to evolve rapidly over the coming months.\n\nWe look forward to exploring the limits of intelligence with developers around the world, building on open-source, open, reusable, and composable infrastructure. We welcome Harness developers everywhere to join the DSH plugin ecosystem.",
+			welcomeContinue: "Continue",
 			welcomeError: "The acknowledgement could not be saved. Please try again.",
 			onboardingTitle: "Add an API key to get started",
 			onboardingDescription: "Configure the official DeepSeek provider to start building.",
@@ -2971,7 +3624,7 @@ window.__ModuleLoader__.load({
 			modelNameInvalid: "显示名称不能为空。",
 			modelContextInvalid: "上下文窗口必须是正数，例如 131072、256K 或 1M。",
 			modelMaxTokensInvalid: "最大输出 token 数必须是正数，例如 8192、64K 或 1M。",
-			advancedHint: "少用的传输与缓存字段仍可在 settings.yaml 中配置。",
+			advancedHint: "其余字段在 settings.yaml 中，请直接编辑对应段。",
 			modelCapacityInvalid: "容量需为数字，可加 K 或 M 后缀。",
 			modelDuplicate: "每个模型 ID 只能出现一次。",
 			modelContextWindow: "上下文窗口",
@@ -3038,6 +3691,8 @@ window.__ModuleLoader__.load({
 			fetchEmpty: "该提供方没有列出任何模型，请手动添加。",
 			fetchTitle: "选择要添加的模型",
 			fetchDescription: "以下是模型提供方的可用模型，勾选要添加的模型。",
+			fetchSearch: "搜索模型",
+			fetchNoMatches: "没有匹配的模型。",
 			fetchSelectAll: "全选",
 			fetchDeselectAll: "取消全选",
 			fetchAdopt: "添加所选",
@@ -3053,11 +3708,13 @@ window.__ModuleLoader__.load({
 			customApiUnset: "未选择",
 			customNeedsBaseUrl: "自定义提供方需要填写 API 地址。",
 			customNeedsModels: "自定义提供方至少需要一个模型。",
+			customBaseUrlPlaceholder: "https://gateway.example/v1",
+			settingsPathUnresolvable: "无法解析设置路径",
 			create: "创建提供方",
 			creating: "创建中…",
-			welcomeTitle: WELCOME_NOTICE_COPY.zh.title,
-			welcomeBody: WELCOME_NOTICE_COPY.zh.body,
-			welcomeContinue: WELCOME_NOTICE_COPY.zh.continueLabel,
+			welcomeTitle: "内测声明",
+			welcomeBody: "DeepSeek Harness 目前的 0.1 版本仍处在面向 Harness 开发者进行测试的阶段，还有许多地方需要持续改进和打磨，希望听取广大开发者的反馈建议。预计 DeepSeek Harness 的核心插件以及基础 API 都会在接下来的一段时间内快速迭代、持续演化。\n\n我们期待与全球开发者一起，在开源、开放、可复用、可组合的基础设施之上，共同探索智能上限。欢迎全球 Harness 开发者加入 DSH 插件生态。",
+			welcomeContinue: "继续",
 			welcomeError: "暂时无法保存确认状态，请重试。",
 			onboardingTitle: "添加一个 API Key 开始使用",
 			onboardingDescription: "配置 DeepSeek 官方模型，即可开始使用。",
@@ -3087,8 +3744,10 @@ window.__ModuleLoader__.load({
 		const inject = [
 			"slots",
 			"locale",
-			"connection",
 			"remote",
+			"remote.credentials",
+			"remote.llm",
+			"remote.settings",
 			"settingsScope",
 			"settingsSchema"
 		];
@@ -3103,21 +3762,21 @@ window.__ModuleLoader__.load({
 				zh,
 				en
 			}), "ui-settings-models: copy dictionaries");
-			const connection = ctx.get("connection");
 			const schema = createSettingsSchemaOperations(ctx.settingsSchema);
-			const controller = new ModelsSettingsStore(connection.api, schema, ctx.settingsScope.describe());
+			const operations = createModelsOperations(ctx);
+			const controller = new ModelsSettingsStore(ctx, schema, ctx.settingsScope.describe());
 			const t = ctx.locale.bind(NS);
 			const injected = () => ({
 				controller,
 				hooks: { snapshot: controller.store },
-				api: connection.api,
+				operations,
 				schema,
 				t
 			});
 			const deepSeekOnboardingInjected = () => ({
 				controller,
 				hooks: { models: controller.store },
-				api: connection.api,
+				operations,
 				schema,
 				t
 			});
@@ -3152,7 +3811,17 @@ window.__ModuleLoader__.load({
 				id: "models",
 				order: 10,
 				label: () => t("nav"),
-				inject: injected
+				inject: injected,
+				children: {
+					"settings.models.provider-card": {
+						kind: "keyed",
+						scope: "root"
+					},
+					"settings.models.footer": {
+						kind: "list",
+						scope: "root"
+					}
+				}
 			}, ModelsSection));
 			ctx.slots.inject("settings.onboarding", () => ctx.slots.register({
 				name: "settings.onboarding",

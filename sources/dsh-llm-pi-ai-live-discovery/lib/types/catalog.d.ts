@@ -72,6 +72,7 @@ declare const COMPLETIONS_COMPAT_GATE: {
     readonly supportsDeveloperRole: "offer";
     readonly supportsReasoningEffort: "offer";
     readonly supportsUsageInStreaming: "offer";
+    readonly supportsFinishReason: "offer";
     readonly maxTokensField: "offer";
     readonly requiresToolResultName: "offer";
     readonly requiresAssistantAfterToolResult: "offer";
@@ -79,6 +80,8 @@ declare const COMPLETIONS_COMPAT_GATE: {
     readonly requiresReasoningContentOnAssistantMessages: "offer";
     readonly thinkingFormat: "offer";
     readonly chatTemplateKwargs: "offer";
+    readonly chatTemplateArgs: "offer";
+    readonly supportsThinkingTokenBudget: "offer";
     readonly supportsStrictMode: "offer";
     readonly cacheControlFormat: "offer";
     readonly supportsLongCacheRetention: "offer";
@@ -97,6 +100,7 @@ declare const RESPONSES_COMPAT_GATE: {
     readonly supportsLongCacheRetention: "offer";
     readonly sessionAffinityFormat: "withhold";
     readonly supportsOpenAIGrammarTools: "withhold";
+    readonly supportsAdditionalTools: "withhold";
     readonly supportsToolSearch: "withhold";
     readonly supportsExplicitPromptCacheMode: "withhold";
 };
@@ -153,6 +157,11 @@ export interface PiAiCompatProfile {
     supportsReasoningEffort?: boolean;
     /** Whether the endpoint accepts `stream_options: {include_usage: true}`; `openai-completions`. */
     supportsUsageInStreaming?: boolean;
+    /**
+     * Whether streams include `finish_reason`; `false` lets pi-ai infer the
+     * terminal reason when the stream ends; `openai-completions`.
+     */
+    supportsFinishReason?: boolean;
     /** Which output-cap field the endpoint reads; `openai-completions`. */
     maxTokensField?: NonNullable<OpenAICompletionsCompat['maxTokensField']>;
     /** Whether tool results must carry `name`; `openai-completions`. */
@@ -173,6 +182,10 @@ export interface PiAiCompatProfile {
      * can read, so kwargs set beside another format are sent nowhere.
      */
     chatTemplateKwargs?: NonNullable<OpenAICompletionsCompat['chatTemplateKwargs']>;
+    /** Arguments sent as `chat_template_args` under the `baseten` thinking format; `openai-completions`. */
+    chatTemplateArgs?: NonNullable<OpenAICompletionsCompat['chatTemplateArgs']>;
+    /** Whether the endpoint accepts `thinking_token_budget` to cap vLLM reasoning; `openai-completions`. */
+    supportsThinkingTokenBudget?: boolean;
     /**
      * Whether the endpoint accepts `strict` in tool definitions;
      * `openai-completions`, the three Responses protocols, `bedrock-converse-stream`.
@@ -185,7 +198,7 @@ export interface PiAiCompatProfile {
      * `openai-completions`, the three Responses protocols, `anthropic-messages`.
      */
     supportsLongCacheRetention?: boolean;
-    /** OpenRouter upstream routing policy sent in the request's `provider` field; `openai-completions`. */
+    /** OpenRouter upstream-provider selection and routing policy; `openai-completions`. */
     openRouterRouting?: NonNullable<OpenAICompletionsCompat['openRouterRouting']>;
     /** Whether the endpoint accepts per-tool `eager_input_streaming`; `anthropic-messages`. */
     supportsEagerToolInputStreaming?: boolean;
@@ -262,9 +275,9 @@ export interface PiAiModelProfile {
      * declares the offered levels and their wire spellings.
      */
     reasoningEfforts?: false | PiAiReasoningEfforts;
-    /** Default effort for this exact model; must be one of its configured or inherited efforts. */
+    /** Per-model default effort; when absent the route/provider default remains authoritative. */
     defaultReasoningEffort?: ModelThinkingLevel;
-    /** Configuration provenance shown by the Models UI; ignored by request dispatch. */
+    /** UI provenance only; ignored while materializing the provider model. */
     source?: 'manual' | 'discovered';
     /** pi-ai wire-compatibility switches for this model, winning over the route's per field; one its protocol does not declare is refused. */
     compat?: PiAiCompatProfile;

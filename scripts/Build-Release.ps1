@@ -100,7 +100,7 @@ finally {
     $env:PATH = $oldPath
 }
 
-foreach ($packageName in @('dsh-at-file', 'dsh-session-control', 'dsh-remote-control', 'dsh-subagent-code-agents')) {
+foreach ($packageName in @('dsh-at-file', 'dsh-local-service-control', 'dsh-session-control', 'dsh-remote-control', 'dsh-subagent-code-agents')) {
     if (-not (Test-Path -LiteralPath (Join-Path $profileRoot "node_modules\$packageName\package.json") -PathType Leaf)) {
         throw "构建 profile 缺少插件：$packageName"
     }
@@ -125,7 +125,7 @@ if ($LASTEXITCODE -ne 0 -or $appArchiveList -notcontains './node_modules/@deepse
     throw 'DSH app ZIP 缺少关键文件。'
 }
 $profileArchiveList = & tar.exe -tf $profileArchive
-if ($LASTEXITCODE -ne 0 -or $profileArchiveList -notcontains './node_modules/dsh-session-control/package.json' -or $profileArchiveList -notcontains './node_modules/dsh-subagent-code-agents/package.json') {
+if ($LASTEXITCODE -ne 0 -or $profileArchiveList -notcontains './node_modules/dsh-local-service-control/package.json' -or $profileArchiveList -notcontains './node_modules/dsh-session-control/package.json' -or $profileArchiveList -notcontains './node_modules/dsh-subagent-code-agents/package.json') {
     throw 'DSH profile ZIP 缺少关键插件。'
 }
 Copy-Item -LiteralPath $runtimeCache -Destination (Join-Path $runtimeOut $release.node.archive)

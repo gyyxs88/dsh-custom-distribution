@@ -1,7 +1,7 @@
 /**
  * One provider's editor card, hand-written per adapter family: the primary
  * field is a single write-only **API key** input (the page never asks for an
- * environment-variable name — a typed key stores through `credentials.set`
+ * environment-variable name — a typed key stores through `credentials/set`
  * under the profile's reference, deriving `<ROUTE>_API_KEY` when the profile
  * has none. The pi-ai profile records that derivation as `apiKeyEnv` only when
  * a key is entered; a blank key materializes a reference-free profile for
@@ -11,17 +11,16 @@
  * display name and wire protocol of a pi-ai route the adapter does not ship —
  * the two fields the create card asked that route for, editable here for the
  * same reason).
- * Reasoning effort is deliberately absent: it is a per-MODEL capability, and
- * the models under one provider disagree about it, so a provider-scoped
- * control can only be set to a value some of them reject. The composer's
- * model picker offers each model its own levels; `settings.yaml` keeps the
- * profile field for a deployment that knows its route. Everything else stays
- * owned by `settings.yaml`. Profile edits land as minimal `settings.mutate`
+ * Reasoning capability stays on each model row because models under one
+ * provider can disagree; the separate new-session default editor only offers
+ * levels supported by the selected model. Everything else stays owned by
+ * `settings.yaml`. Profile edits land as minimal `settings.mutate`
  * path ops against the stored section — the card names only the fields it can
  * see instead of rebuilding the whole subtree from a partial descriptor.
  */
 import type { ReactNode } from 'react';
-import type { IApiClient, SettingsNamespaceView, SettingsPathOpView } from '@deepseek-ai/dsh-api-remotes/client';
+import type { SettingsNamespaceView, SettingsPathOpView } from '@deepseek-ai/dsh-api-remotes/client';
+import type { ModelsOperations } from './operations.ts';
 import type { SettingsSchemaOperations } from './schema-operations.ts';
 import type { en } from './locales.ts';
 /** Props of {@link ProviderEditor}. */
@@ -46,8 +45,8 @@ export interface ProviderEditorProps {
     schema: SettingsSchemaOperations;
     /** Path from the section root to this provider's profile. */
     settingsPath: readonly string[];
-    /** Wire faces for writes and for interrogating a provider endpoint. */
-    api: Pick<IApiClient, 'settings' | 'credentials' | 'llm'>;
+    /** The Host operations this card writes and interrogates through. */
+    operations: ModelsOperations;
     /** Section copy. */
     t: (key: keyof typeof en) => string;
     /** Disable writes (read-only settings provider). */
@@ -59,11 +58,11 @@ export interface ProviderEditorProps {
     /** Give the credential field initial focus when this editor mounts. */
     autoFocusCredential?: boolean;
     /** Override the dismiss action copy. */
-    cancelLabel?: keyof typeof en;
+    cancelLabelKey?: keyof typeof en;
     /** Override the idle commit action copy. */
-    submitLabel?: keyof typeof en;
+    submitLabelKey?: keyof typeof en;
     /** Override the in-flight commit action copy. */
-    submitBusyLabel?: keyof typeof en;
+    submitBusyLabelKey?: keyof typeof en;
     /** Close the editor; `changed` reports whether an Apply committed. */
     onClose: (changed: boolean) => void;
 }

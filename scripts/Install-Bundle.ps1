@@ -148,7 +148,16 @@ try {
     $active = Set-ActiveVersion -InstallRoot $InstallRoot -Version $version -Port $Port -PreviousVersion $previousVersion
 
     $binRoot = Join-Path $InstallRoot 'bin'
-    foreach ($scriptName in @('Common.ps1', 'Start-DSH.ps1', 'Stop-DSH.ps1', 'Verify-DSH.ps1', 'Rollback-DSH.ps1', 'Update-DSH.ps1')) {
+    foreach ($scriptName in @(
+        'Common.ps1',
+        'Start-DSH.ps1',
+        'Stop-DSH.ps1',
+        'Verify-DSH.ps1',
+        'Rollback-DSH.ps1',
+        'Update-DSH.ps1',
+        'Service-Control-Launcher.ps1',
+        'Service-Control-Worker.ps1'
+    )) {
         Copy-Item -LiteralPath (Join-Path $PSScriptRoot $scriptName) -Destination (Join-Path $binRoot $scriptName) -Force
     }
     Copy-Item -LiteralPath (Join-Path $BundleRoot 'Install-DSH.ps1') -Destination (Join-Path $binRoot 'Install-DSH.ps1') -Force

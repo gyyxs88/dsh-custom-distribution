@@ -228,6 +228,12 @@ function Write-ProfileConfiguration {
     $lines.Add('    dshRecipeRoot: ' + (ConvertTo-YamlSingleQuoted $AppRoot))
     $lines.Add('    sessionControlPackageRoot: ' + (ConvertTo-YamlSingleQuoted (Join-Path $ProfileRoot 'node_modules\dsh-session-control')))
 
+    $lines.Add('- id: local-service-control')
+    $lines.Add('  config:')
+    $lines.Add('    projectRoot: ' + (ConvertTo-YamlSingleQuoted (Split-Path -Parent $DataRoot)))
+    $lines.Add('    launcherScript: ' + (ConvertTo-YamlSingleQuoted (Join-Path (Split-Path -Parent $DataRoot) 'bin\Service-Control-Launcher.ps1')))
+    $lines.Add('    powershellExecutable: powershell.exe')
+
     Write-Utf8NoBom -Value ($lines -join "`r`n") -Path (Join-Path $ProfileRoot 'cordis.patch.yml')
 }
 
