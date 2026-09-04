@@ -19,7 +19,7 @@ if (-not (Test-Path -LiteralPath $entrypoint -PathType Leaf)) { $failures.Add('D
 
 $plugins = [ordered]@{
     'dsh-at-file' = '0.6.7'
-    'dsh-session-control' = '0.7.2'
+    'dsh-session-control' = '0.7.3'
     'dsh-remote-control' = '0.2.6'
     'dsh-subagent-code-agents' = '0.1.8'
 }
