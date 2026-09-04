@@ -25,7 +25,7 @@ __export(index_exports, {
   inject: () => inject
 });
 module.exports = __toCommonJS(index_exports);
-var import_client = require("@deepseek-ai/dsh-client-runtime/client");
+var import_client = require("@deepseek-ai/dsh-client-store");
 
 // node_modules/zod/v4/classic/external.js
 var external_exports = {};

@@ -15,7 +15,7 @@
     "@deepseek-ai/dsh-anonymous-user-id": "0.1.2-rc.1",
     "@deepseek-ai/dsh-api-gateway": "0.1.2-rc.1",
     "@deepseek-ai/dsh-api-remotes": "file:.packages/dsh-api-remotes-0.1.2-rc.1-discovered-model-capabilities.2.tgz",
-    "@deepseek-ai/dsh-app-boot": "file:.packages/dsh-app-boot-0.1.2-rc.1-windows-module-fallback-proxy.1.tgz",
+    "@deepseek-ai/dsh-app-boot": "file:.packages/dsh-app-boot-0.1.2-rc.1-windows-module-fallback-proxy.2.tgz",
     "@deepseek-ai/dsh-atomic-write": "0.1.2-rc.1",
     "@deepseek-ai/dsh-authorization": "0.1.2-rc.1",
     "@deepseek-ai/dsh-bash-local": "0.1.2-rc.1",

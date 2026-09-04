@@ -23,7 +23,7 @@ foreach ($scriptName in @('Service-Control-Launcher.ps1', 'Service-Control-Worke
 }
 
 $plugins = [ordered]@{
-    'dsh-at-file' = '0.6.8'
+    'dsh-at-file' = '0.6.9'
     'dsh-local-service-control' = '0.2.0'
     'dsh-session-control' = '0.8.0'
     'dsh-remote-control' = '0.3.0'
@@ -54,6 +54,8 @@ if ($process) {
     if ($launchUri) {
         $curlExe = Join-Path $env:SystemRoot 'System32\curl.exe'
         $cookieFile = Join-Path $InstallRoot ('data\run\.verify-cookie-' + [guid]::NewGuid().ToString('N') + '.txt')
+        $htmlFile = Join-Path $InstallRoot ('data\run\.verify-html-' + [guid]::NewGuid().ToString('N') + '.html')
+        $clientBundleFile = Join-Path $InstallRoot ('data\run\.verify-client-' + [guid]::NewGuid().ToString('N') + '.js')
         try {
             if (-not (Test-Path -LiteralPath $curlExe -PathType Leaf)) { throw 'Windows curl.exe 不存在' }
             $originUri = [System.Uri]::new($launchUri.GetLeftPart([System.UriPartial]::Authority) + '/')
@@ -67,13 +69,39 @@ if ($process) {
             }
             else {
                 $responseStatus = & $curlExe --noproxy '*' --connect-timeout 5 --max-time 15 --silent --show-error `
-                    --output NUL --cookie $cookieFile --write-out '%{http_code}' -- $originUri.AbsoluteUri
+                    --output $htmlFile --cookie $cookieFile --write-out '%{http_code}' -- $originUri.AbsoluteUri
                 if ($LASTEXITCODE -ne 0 -or $responseStatus -ne '200') { $failures.Add("HTTP 状态异常：$responseStatus") }
+                else {
+                    $html = Get-Content -LiteralPath $htmlFile -Raw -Encoding UTF8
+                    $bootMatch = [System.Text.RegularExpressions.Regex]::Match($html, 'globalThis\["__DSH_BOOT__"\] = (?<json>\{.*?\})</script>')
+                    if (-not $bootMatch.Success) { $failures.Add('浏览器页面缺少客户端启动图') }
+                    else {
+                        $boot = $bootMatch.Groups['json'].Value | ConvertFrom-Json
+                        $clientIds = @($boot.entries | ForEach-Object { [string]$_.id })
+                        foreach ($requiredClientId in @('@deepseek-ai/dsh-client-modules', '@deepseek-ai/dsh-client-ui-chat', 'dsh-at-file', 'dsh-local-service-control')) {
+                            if ($clientIds -notcontains $requiredClientId) { $failures.Add("浏览器启动图缺少插件：$requiredClientId") }
+                        }
+                        $atFileEntry = @($boot.entries | Where-Object { $_.id -eq 'dsh-at-file' })
+                        if ($atFileEntry.Count -eq 1) {
+                            $clientBundleUri = [System.Uri]::new($originUri, [string]$atFileEntry[0].url)
+                            $clientBundleStatus = & $curlExe --noproxy '*' --connect-timeout 5 --max-time 15 --silent --show-error `
+                                --output $clientBundleFile --cookie $cookieFile --write-out '%{http_code}' -- $clientBundleUri.AbsoluteUri
+                            if ($LASTEXITCODE -ne 0 -or $clientBundleStatus -ne '200') { $failures.Add("dsh-at-file 浏览器包状态异常：$clientBundleStatus") }
+                            else {
+                                $clientBundle = Get-Content -LiteralPath $clientBundleFile -Raw -Encoding UTF8
+                                if ($clientBundle -notmatch 'require\("@deepseek-ai/dsh-client-store"\)') { $failures.Add('dsh-at-file 未使用 rc1 浏览器静态存储模块') }
+                                if ($clientBundle -match 'require\("@deepseek-ai/dsh-client-runtime/client"\)') { $failures.Add('dsh-at-file 仍引用旧的浏览器运行时入口') }
+                            }
+                        }
+                    }
+                }
             }
         }
         catch { $failures.Add("HTTP 验证失败：$($_.Exception.Message)") }
         finally {
             Remove-Item -LiteralPath $cookieFile -Force -ErrorAction SilentlyContinue
+            Remove-Item -LiteralPath $htmlFile -Force -ErrorAction SilentlyContinue
+            Remove-Item -LiteralPath $clientBundleFile -Force -ErrorAction SilentlyContinue
         }
     }
     $moduleProxyPath = Join-Path $InstallRoot 'data\profiles\node_modules\@deepseek-ai\dsh-client-ui-chat'
@@ -85,6 +113,15 @@ if ($process) {
         $moduleProxyManifest = Read-JsonFile -Path (Join-Path $moduleProxyPath 'package.json')
         if (-not $moduleProxyManifest.dsh.moduleFallback.targets) {
             $failures.Add('Windows profile 模块缺少受管 ESM proxy 记录')
+        }
+        if (-not $moduleProxyManifest.dsh.client) {
+            $failures.Add('Windows profile 客户端模块 proxy 缺少浏览器元数据')
+        }
+        $clientExport = [string]$moduleProxyManifest.exports.'./client'
+        $clientProxyPath = Join-Path $moduleProxyPath $clientExport.TrimStart('.', '/', '\')
+        $clientProxySource = Get-Content -LiteralPath $clientProxyPath -Raw -Encoding UTF8
+        if ($clientProxySource -notmatch 'window\.__ModuleLoader__\.load') {
+            $failures.Add('Windows profile 客户端模块 proxy 没有镜像浏览器包')
         }
     }
     catch { $failures.Add("Windows profile 模块 proxy 验证失败：$($_.Exception.Message)") }

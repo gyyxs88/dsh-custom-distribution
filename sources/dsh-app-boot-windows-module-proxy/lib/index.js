@@ -528,12 +528,14 @@ function packageProxySource(packageName, packageDir) {
 			const resolved = createRequire(join(packageDir, "package.json")).resolve(entry);
 			return {
 				version: manifest.version,
-				targets: { ".": pathToFileURL(resolved).href }
+				targets: { ".": pathToFileURL(resolved).href },
+				client: manifest.dsh?.client
 			};
 		} catch (error) {
 			if (main === void 0 && (manifest.bin !== void 0 || manifest.types !== void 0 || manifest.typings !== void 0)) return {
 				version: manifest.version,
-				targets: {}
+				targets: {},
+				client: manifest.dsh?.client
 			};
 			throw new Error(`dsh: installed package ${packageName} main entry is missing at ${entry}`, { cause: error });
 		}
@@ -546,7 +548,8 @@ function packageProxySource(packageName, packageDir) {
 	}
 	return {
 		version: manifest.version,
-		targets
+		targets,
+		client: manifest.dsh?.client
 	};
 }
 /**
@@ -555,14 +558,17 @@ function packageProxySource(packageName, packageDir) {
 * `/snapshot`, while an ESM re-export can import that URL and preserves the
 * executable's single module instance for out-of-tree plugin peers.
 */
-function ensureModuleProxy(link, packageName, version, targets) {
+function ensureModuleProxy(link, packageName, version, targets, client) {
 	const manifest = {
 		name: packageName,
 		version,
 		private: true,
 		type: "module",
 		exports: Object.fromEntries(Object.keys(targets).map((subpath, index) => [subpath, `./entry-${index}.js`])),
-		dsh: { moduleFallback: { targets } }
+		dsh: {
+			...client === void 0 ? {} : { client },
+			moduleFallback: { targets }
+		}
 	};
 	let stat;
 	try {
@@ -577,14 +583,22 @@ function ensureModuleProxy(link, packageName, version, targets) {
 	if (stat !== void 0) {
 		const existing = readModuleProxyRecord(link);
 		if (existing?.dsh?.moduleFallback?.targets === void 0) throw new Error(`dsh: ${link} exists and is not a dsh-managed module proxy; remove it so dsh can manage the installation fallback`);
-		if (existing.version === version && JSON.stringify(existing.dsh.moduleFallback.targets) === JSON.stringify(targets) && Object.keys(targets).every((_, index) => existsSync(join(link, `entry-${index}.js`)))) return;
+		if (existing.version === version && JSON.stringify(existing.dsh.moduleFallback.targets) === JSON.stringify(targets) && JSON.stringify(existing.dsh.client) === JSON.stringify(client) && Object.keys(targets).every((_, index) => existsSync(join(link, `entry-${index}.js`)))) return;
 		rmSync(link, { recursive: true });
 	}
 	mkdirSync(link, { recursive: true });
 	writeFileSync(join(link, "package.json"), JSON.stringify(manifest, void 0, 2) + "\n");
-	for (const [index, target] of Object.values(targets).entries()) {
+	for (const [index, [subpath, target]] of Object.entries(targets).entries()) {
+		const entryPath = join(link, `entry-${index}.js`);
+		if (subpath === "./client" && client !== void 0 && target.startsWith("file:")) {
+			const sourcePath = fileURLToPath(target);
+			writeFileSync(entryPath, readFileSync(sourcePath));
+			const sourceMapPath = sourcePath + ".map";
+			if (existsSync(sourceMapPath)) writeFileSync(entryPath + ".map", readFileSync(sourceMapPath));
+			continue;
+		}
 		const specifier = JSON.stringify(target);
-		writeFileSync(join(link, `entry-${index}.js`), `export * from ${specifier}\nimport * as target from ${specifier}\nexport default target.default\n`);
+		writeFileSync(entryPath, `export * from ${specifier}\nimport * as target from ${specifier}\nexport default target.default\n`);
 	}
 }
 /** Read one package manifest used while traversing a module-fallback dependency graph. */
@@ -629,7 +643,8 @@ function resolveModuleFallbackEntries(installAnchor) {
 				kind: "proxy",
 				packageName,
 				version: source.version,
-				targets: source.targets
+				targets: source.targets,
+				client: source.client
 			}];
 		}),
 		packageNames: new Set(links.keys())
@@ -643,7 +658,7 @@ function moduleFallbackEntryCurrent(modulesDir, entry) {
 		if (entry.kind === "symlink") return stat.isSymbolicLink() && readlinkSync(link) === entry.packageDir;
 		if (!stat.isDirectory()) return false;
 		const existing = readModuleProxyRecord(link);
-		return existing?.version === entry.version && JSON.stringify(existing.dsh?.moduleFallback?.targets) === JSON.stringify(entry.targets) && Object.keys(entry.targets).every((_, index) => existsSync(join(link, `entry-${index}.js`)));
+		return existing?.version === entry.version && JSON.stringify(existing.dsh?.moduleFallback?.targets) === JSON.stringify(entry.targets) && JSON.stringify(existing.dsh?.client) === JSON.stringify(entry.client) && Object.keys(entry.targets).every((_, index) => existsSync(join(link, `entry-${index}.js`)));
 	} catch {
 		return false;
 	}
@@ -680,7 +695,7 @@ function healProfilesModuleFallbackLocked(entries, modulesDir) {
 	for (const entry of entries) {
 		const link = join(modulesDir, entry.packageName);
 		mkdirSync(dirname(link), { recursive: true });
-		if (entry.kind === "proxy") ensureModuleProxy(link, entry.packageName, entry.version, entry.targets);
+		if (entry.kind === "proxy") ensureModuleProxy(link, entry.packageName, entry.version, entry.targets, entry.client);
 		else ensureSymlink(link, entry.packageDir);
 	}
 }

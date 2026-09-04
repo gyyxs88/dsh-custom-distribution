@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "distribution": {
     "name": "dsh-custom-distribution",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "platform": "win32",
     "architecture": "x64",
     "repository": "https://github.com/gyyxs88/dsh-custom-distribution"
@@ -40,12 +40,12 @@
   },
   "artifacts": [
     {
-      "file": "dsh-app-boot-0.1.2-rc.1-windows-module-fallback-proxy.1.tgz",
+      "file": "dsh-app-boot-0.1.2-rc.1-windows-module-fallback-proxy.2.tgz",
       "package": "@deepseek-ai/dsh-app-boot",
       "version": "0.1.2-rc.1",
       "license": "MIT",
       "placement": "app",
-      "sha256": "c27816fce5ca644d1b0b0271a0d62d518452852a566277f691487d6233f34275",
+      "sha256": "169c2818e0ec9d05dcb0e46c65d2ef70f1e871edccd8c96e1f5c2a3fa69fef22",
       "source": "sources/dsh-app-boot-windows-module-proxy"
     },
     {
@@ -94,14 +94,14 @@
       "source": "sources/dsh-client-ui-workspace-copy-session-id"
     },
     {
-      "file": "dsh-at-file-0.6.8.tgz",
+      "file": "dsh-at-file-0.6.9.tgz",
       "package": "dsh-at-file",
-      "version": "0.6.8",
+      "version": "0.6.9",
       "license": "MIT",
       "placement": "profile",
-      "sha256": "7fdd128bf1bcae562d0ad837c8bc586cbed0992eed8602e1991d76103e83039b",
+      "sha256": "b565608d3e42a4a3c5bb4e2de3dffaa0145b96d316a279feeb16fd6b41d1e6d4",
       "source": "sources/dsh-at-file-settings-rc1",
-      "sourceLimitation": "Upstream 0.6.7 declares no source repository. This reviewed 0.6.8 snapshot contains the exact MIT artifact with the DSH 0.1.2 settings namespace migration."
+      "sourceLimitation": "Upstream 0.6.7 declares no source repository. This reviewed 0.6.9 snapshot contains the MIT artifact with the DSH 0.1.2 settings namespace migration and rc1 browser static-module alignment."
     },
     {
       "file": "dsh-local-service-control-0.2.0.tgz",

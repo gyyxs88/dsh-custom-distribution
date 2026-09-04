@@ -16,7 +16,7 @@
 
 DSH `0.1.2-rc.1` 的访问地址带有一次启动期令牌。首次打开后，DSH 会把它换成绑定本机地址的浏览器 Cookie，并立即跳转到不含令牌的干净地址；重启沿用同一数据目录时，已有 Cookie 仍然有效。发行版只把启动入口保存在本机私有运行状态中，不写入仓库或 Release，服务重启日志也会隐藏该值。
 
-也可以下载 `dsh-custom-distribution-v0.3.0-win-x64.zip`，解压后运行：
+也可以下载 `dsh-custom-distribution-v0.3.1-win-x64.zip`，解压后运行：
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Install-Bundle.ps1

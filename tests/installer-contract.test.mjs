@@ -32,6 +32,9 @@ test("program versions and private state have separate durable roots", () => {
   assert.match(common, /id: action-advisor/u);
   assert.match(common, /executionPermission: read-only/u);
   assert.match(common, /backgroundOnly: true/u);
+  for (const runtime of ["codex", "claude", "grok", "opencode"]) {
+    assert.match(common, new RegExp(`runtimeOverrides\\.Contains\\('${runtime}'\\)`, "u"));
+  }
 });
 
 test("runtime channels use explicit existing executables and never PATH fallback", () => {

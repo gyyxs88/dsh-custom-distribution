@@ -33,7 +33,7 @@ test("app template and lockfile retain the exact DSH and local overrides", () =>
   }
   assert.equal(
     lock.packages["node_modules/@deepseek-ai/dsh-app-boot"].resolved,
-    "file:.packages/dsh-app-boot-0.1.2-rc.1-windows-module-fallback-proxy.1.tgz",
+    "file:.packages/dsh-app-boot-0.1.2-rc.1-windows-module-fallback-proxy.2.tgz",
   );
   assert.equal(lock.packages["node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-app-boot"], undefined);
   assert.equal(packageJson.engines.node, release.node.version);

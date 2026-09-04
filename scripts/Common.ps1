@@ -174,7 +174,7 @@ function Write-ProfileConfiguration {
     $lines.Add('        allowDelegation: false')
     $lines.Add("        instructions: '你是 Codex 行动顾问。只做只读研究、根因分析、方案设计和执行后审阅，不修改文件、不执行有副作用的操作。首次咨询以 PLAN 开头；收到执行报告后只以 APPROVED 或 RETRY 开头给出结论。不得委派其他 Agent；后台完成后直接回报主会话，不要求主会话轮询或等待。'")
 
-    if ($runtimeOverrides.codex) {
+    if ($runtimeOverrides.Contains('codex')) {
         $lines.Add('- id: coding-agent-codex')
         $lines.Add('  config:')
         $lines.Add('    channel: codex')
@@ -182,21 +182,21 @@ function Write-ProfileConfiguration {
         $lines.Add('    nodeExecutable: ' + (ConvertTo-YamlSingleQuoted $runtimeOverrides.codex.nodeExecutable))
         $lines.Add('    codexJs: ' + (ConvertTo-YamlSingleQuoted $runtimeOverrides.codex.codexJs))
     }
-    if ($runtimeOverrides.claude) {
+    if ($runtimeOverrides.Contains('claude')) {
         $lines.Add('- id: coding-agent-claude-code')
         $lines.Add('  config:')
         $lines.Add('    channel: claude-code')
         $lines.Add('    providerName: coding-agent/claude-code')
         $lines.Add('    claudeExecutable: ' + (ConvertTo-YamlSingleQuoted $runtimeOverrides.claude))
     }
-    if ($runtimeOverrides.grok) {
+    if ($runtimeOverrides.Contains('grok')) {
         $lines.Add('- id: coding-agent-grok-build')
         $lines.Add('  config:')
         $lines.Add('    channel: grok-build')
         $lines.Add('    providerName: coding-agent/grok-build')
         $lines.Add('    grokExecutable: ' + (ConvertTo-YamlSingleQuoted $runtimeOverrides.grok))
     }
-    if ($runtimeOverrides.opencode) {
+    if ($runtimeOverrides.Contains('opencode')) {
         $lines.Add('- insert:')
         $lines.Add('    - id: coding-agent-acp-opencode')
         $lines.Add("      name: 'dsh-subagent-code-agents'")

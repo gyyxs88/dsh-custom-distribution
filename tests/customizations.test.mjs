@@ -27,10 +27,13 @@ test("pi-ai package contains reviewed transport, discovery, capability, and rout
 });
 
 test("portable Windows startup uses the fail-closed DSH module proxy fallback", () => {
-  const source = archiveSource("dsh-app-boot-0.1.2-rc.1-windows-module-fallback-proxy.1.tgz", "lib/index.js");
+  const source = archiveSource("dsh-app-boot-0.1.2-rc.1-windows-module-fallback-proxy.2.tgz", "lib/index.js");
   assert.match(source, /DSH_MODULE_FALLBACK_MODE/u);
   assert.match(source, /must be "proxy" when set/u);
   assert.match(source, /mode === "proxy"/u);
+  assert.match(source, /client: manifest\.dsh\?\.client/u);
+  assert.match(source, /subpath === "\.\/client"/u);
+  assert.match(source, /writeFileSync\(entryPath, readFileSync\(sourcePath\)\)/u);
   const start = readFileSync(join(root, "scripts", "Start-DSH.ps1"), "utf8");
   assert.match(start, /\$env:DSH_MODULE_FALLBACK_MODE = 'proxy'/u);
 });
@@ -87,9 +90,12 @@ test("portable service control is bundled and retains PID and loopback gates", (
 });
 
 test("at-file uses the DSH 0.1.2 settings namespace contract", () => {
-  const host = archiveSource("dsh-at-file-0.6.8.tgz", "lib/index.js");
+  const host = archiveSource("dsh-at-file-0.6.9.tgz", "lib/index.js");
   assert.match(host, /AT_FILE_NAMESPACE = "at-file"/u);
   assert.doesNotMatch(host, /settingsNamespace/u);
+  const client = archiveSource("dsh-at-file-0.6.9.tgz", "lib/client.js");
+  assert.match(client, /require\("@deepseek-ai\/dsh-client-store"\)/u);
+  assert.doesNotMatch(client, /require\("@deepseek-ai\/dsh-client-runtime\/client"\)/u);
 });
 
 test("pinned control artifacts include durable asynchronous reports and their Skills", () => {
@@ -127,8 +133,8 @@ test("pinned control artifacts include durable asynchronous reports and their Sk
 
 test("source snapshots match their bundled artifacts", () => {
   const cases = [
-    ["dsh-app-boot-windows-module-proxy", "dsh-app-boot-0.1.2-rc.1-windows-module-fallback-proxy.1.tgz", "lib/index.js"],
-    ["dsh-at-file-settings-rc1", "dsh-at-file-0.6.8.tgz", "lib/index.js"],
+    ["dsh-app-boot-windows-module-proxy", "dsh-app-boot-0.1.2-rc.1-windows-module-fallback-proxy.2.tgz", "lib/index.js"],
+    ["dsh-at-file-settings-rc1", "dsh-at-file-0.6.9.tgz", "lib/index.js"],
     ["dsh-llm-model-discovery-capabilities", "dsh-llm-0.1.2-rc.1-discovered-model-capabilities.2.tgz", "lib/index.js"],
     ["dsh-api-remotes-model-discovery-capabilities", "dsh-api-remotes-0.1.2-rc.1-discovered-model-capabilities.2.tgz", "lib/client.js"],
     ["dsh-llm-pi-ai-live-discovery", "dsh-llm-pi-ai-0.1.2-rc.1-model-capability-routing.2.tgz", "lib/index.js"],

@@ -27,7 +27,7 @@
 import { createRequire } from 'node:module';
 import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, readlinkSync, realpathSync, rmSync, statSync, symlinkSync, unlinkSync, writeFileSync, } from 'node:fs';
 import { basename, dirname, join, relative, resolve } from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { withFileLock } from '@deepseek-ai/dsh-atomic-write';
 import { applyEntryPatches } from '@deepseek-ai/cordis-plugin-include';
 import { resolveDshHome } from '@deepseek-ai/dsh-home-paths';
@@ -296,12 +296,12 @@ function packageProxySource(packageName, packageDir) {
         const entry = join(packageDir, main ?? 'index');
         try {
             const resolved = createRequire(join(packageDir, 'package.json')).resolve(entry);
-            return { version: manifest.version, targets: { '.': pathToFileURL(resolved).href } };
+            return { version: manifest.version, targets: { '.': pathToFileURL(resolved).href }, client: manifest.dsh?.client };
         }
         catch (error) {
             if (main === undefined
                 && (manifest.bin !== undefined || manifest.types !== undefined || manifest.typings !== undefined)) {
-                return { version: manifest.version, targets: {} };
+                return { version: manifest.version, targets: {}, client: manifest.dsh?.client };
             }
             throw new Error(`dsh: installed package ${packageName} main entry is missing at ${entry}`, { cause: error });
         }
@@ -316,7 +316,7 @@ function packageProxySource(packageName, packageDir) {
         if (target !== undefined)
             targets[subpath] = target;
     }
-    return { version: manifest.version, targets };
+    return { version: manifest.version, targets, client: manifest.dsh?.client };
 }
 /**
  * Materialize a real package proxy whose exports retain pkg's virtual module
@@ -324,7 +324,7 @@ function packageProxySource(packageName, packageDir) {
  * `/snapshot`, while an ESM re-export can import that URL and preserves the
  * executable's single module instance for out-of-tree plugin peers.
  */
-function ensureModuleProxy(link, packageName, version, targets) {
+function ensureModuleProxy(link, packageName, version, targets, client) {
     const proxyExports = Object.fromEntries(Object.keys(targets).map((subpath, index) => [subpath, `./entry-${index}.js`]));
     const manifest = {
         name: packageName,
@@ -332,7 +332,10 @@ function ensureModuleProxy(link, packageName, version, targets) {
         private: true,
         type: 'module',
         exports: proxyExports,
-        dsh: { moduleFallback: { targets } },
+        dsh: {
+            ...(client === undefined ? {} : { client }),
+            moduleFallback: { targets },
+        },
     };
     let stat;
     try {
@@ -352,15 +355,25 @@ function ensureModuleProxy(link, packageName, version, targets) {
         }
         if (existing.version === version
             && JSON.stringify(existing.dsh.moduleFallback.targets) === JSON.stringify(targets)
+            && JSON.stringify(existing.dsh.client) === JSON.stringify(client)
             && Object.keys(targets).every((_, index) => existsSync(join(link, `entry-${index}.js`))))
             return;
         rmSync(link, { recursive: true });
     }
     mkdirSync(link, { recursive: true });
     writeFileSync(join(link, 'package.json'), JSON.stringify(manifest, undefined, 2) + '\n');
-    for (const [index, target] of Object.values(targets).entries()) {
+    for (const [index, [subpath, target]] of Object.entries(targets).entries()) {
+        const entryPath = join(link, `entry-${index}.js`);
+        if (subpath === './client' && client !== undefined && target.startsWith('file:')) {
+            const sourcePath = fileURLToPath(target);
+            writeFileSync(entryPath, readFileSync(sourcePath));
+            const sourceMapPath = sourcePath + '.map';
+            if (existsSync(sourceMapPath))
+                writeFileSync(entryPath + '.map', readFileSync(sourceMapPath));
+            continue;
+        }
         const specifier = JSON.stringify(target);
-        writeFileSync(join(link, `entry-${index}.js`), `export * from ${specifier}\nimport * as target from ${specifier}\nexport default target.default\n`);
+        writeFileSync(entryPath, `export * from ${specifier}\nimport * as target from ${specifier}\nexport default target.default\n`);
     }
 }
 /** Read one package manifest used while traversing a module-fallback dependency graph. */
@@ -405,7 +418,7 @@ function resolveModuleFallbackEntries(installAnchor) {
             const source = packageProxySource(packageName, packageDir);
             return Object.keys(source.targets).length === 0
                 ? []
-                : [{ kind: 'proxy', packageName, version: source.version, targets: source.targets }];
+                : [{ kind: 'proxy', packageName, version: source.version, targets: source.targets, client: source.client }];
         });
     return { entries, packageNames: new Set(links.keys()) };
 }
@@ -422,6 +435,7 @@ function moduleFallbackEntryCurrent(modulesDir, entry) {
         const existing = readModuleProxyRecord(link);
         return existing?.version === entry.version
             && JSON.stringify(existing.dsh?.moduleFallback?.targets) === JSON.stringify(entry.targets)
+            && JSON.stringify(existing.dsh?.client) === JSON.stringify(entry.client)
             && Object.keys(entry.targets).every((_, index) => existsSync(join(link, `entry-${index}.js`)));
     }
     catch {
@@ -466,7 +480,7 @@ function healProfilesModuleFallbackLocked(entries, modulesDir) {
         const link = join(modulesDir, entry.packageName);
         mkdirSync(dirname(link), { recursive: true });
         if (entry.kind === 'proxy') {
-            ensureModuleProxy(link, entry.packageName, entry.version, entry.targets);
+            ensureModuleProxy(link, entry.packageName, entry.version, entry.targets, entry.client);
         }
         else {
             ensureSymlink(link, entry.packageDir);
