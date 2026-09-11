@@ -15,7 +15,7 @@ assert.ok(files.includes("manifest/release-lock.json"));
 assert.ok(files.includes("scripts/Install-Bundle.ps1"));
 assert.ok(files.includes("Install-DSH.ps1"));
 
-const textExtensions = new Set([".md", ".json", ".mjs", ".ps1", ".yml", ".yaml", ".patch"]);
+const textExtensions = new Set([".md", ".json", ".map", ".mjs", ".js", ".ts", ".ps1", ".yml", ".yaml", ".patch"]);
 const forbidden = [
   new RegExp(String.raw`D:\\Project\\deepseek-` + "harness-lab", "iu"),
   new RegExp(String.raw`C:\\Users\\Admin` + "istrator", "iu"),
@@ -28,7 +28,7 @@ for (const file of files) {
   if (!statSync(full).isFile() || !textExtensions.has(extname(file).toLowerCase())) continue;
   const source = readFileSync(full, "utf8");
   for (const pattern of forbidden) {
-    assert.doesNotMatch(source, pattern, `${file} contains a machine-specific or private value`);
+    assert.ok(!pattern.test(source), `${file} contains a machine-specific or private value`);
   }
 }
 
@@ -42,7 +42,7 @@ for (const script of scripts) {
 
 const release = JSON.parse(readFileSync(join(root, "manifest", "release-lock.json"), "utf8"));
 assert.equal(release.distribution.version, JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version);
-assert.equal(release.artifacts.length, 11);
+assert.equal(release.artifacts.length, 14);
 assert.equal(new Set(release.artifacts.map((entry) => entry.file)).size, release.artifacts.length);
 assert.ok(release.artifacts.every((entry) => /^[a-f0-9]{64}$/u.test(entry.sha256)));
 

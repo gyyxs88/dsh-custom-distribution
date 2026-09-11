@@ -1,13 +1,13 @@
 {
   "name": "dsh-at-file",
   "description": "Codex-style @path references for the DeepSeek Harness web GUI: search workspace paths without injecting file content",
-  "version": "0.6.9",
+  "version": "0.6.10",
   "dshLocalPatch": {
-    "id": "settings-namespace-client-store-rc1.2",
+    "id": "settings-namespace-client-store-015rc2.1",
     "baseVersion": "0.6.7",
     "changes": [
-      "register the at-file namespace through the DSH 0.1.2 settings API",
-      "consume createSnapshotStore from the rc1 browser static module table"
+      "retain settings namespace and static client store",
+      "remove retired client runtime peer; verified with DSH 0.1.5-rc.2"
     ]
   },
   "license": "MIT",
@@ -60,7 +60,6 @@
     "@deepseek-ai/cordis": "^4.0.1-rc.1",
     "@deepseek-ai/dsh-agent": "*",
     "@deepseek-ai/dsh-typert-protocol": "*",
-    "@deepseek-ai/dsh-client-runtime": "*",
     "@deepseek-ai/dsh-client-store": "*",
     "@deepseek-ai/dsh-api-remotes": "*",
     "@deepseek-ai/dsh-client-ui-input-trigger": "*",
@@ -82,9 +81,6 @@
       "optional": true
     },
     "@deepseek-ai/dsh-typert-protocol": {
-      "optional": true
-    },
-    "@deepseek-ai/dsh-client-runtime": {
       "optional": true
     },
     "@deepseek-ai/dsh-client-store": {
@@ -133,7 +129,6 @@
     "@deepseek-ai/dsh-typert-protocol": "link:../deepseek-harness/packages/typert/protocol",
     "@deepseek-ai/dsh-invariants": "link:../deepseek-harness/packages/runtime-diagnostics/invariants",
     "@deepseek-ai/schemastery": "link:../deepseek-harness/vendor/schemastery",
-    "@deepseek-ai/dsh-client-runtime": "link:../deepseek-harness/packages/client/runtime",
     "@deepseek-ai/dsh-client-store": "link:../deepseek-harness/packages/client/store",
     "@deepseek-ai/dsh-api-remotes": "link:../deepseek-harness/packages/api/remotes",
     "@deepseek-ai/dsh-client-ui-input-trigger": "link:../deepseek-harness/packages/client/ui-input-trigger",

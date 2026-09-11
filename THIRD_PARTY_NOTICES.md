@@ -2,28 +2,27 @@
 
 本仓库是非官方社区发行层，不改变上游组件的所有权或许可证。
 
-| 组件 | 固定版本/提交 | 许可证 | 来源 |
-| --- | --- | --- | --- |
-| DeepSeek Harness | 0.1.2-rc.1 / a66e470 | MIT | https://github.com/deepseek-ai/deepseek-harness |
-| @deepseek-ai/dsh-app-boot | 0.1.2-rc.1 + windows-module-fallback-proxy.2 | MIT | 本仓库 `sources/dsh-app-boot-windows-module-proxy`；上游 https://github.com/deepseek-ai/deepseek-harness |
-| Node.js | 24.19.0 | Node.js 许可证集合 | https://nodejs.org/dist/v24.19.0/ |
-| dsh-genui | 1ca5da4eb9394972cce2c1ccacfedc22eec3166b | 以组件仓库为准 | https://github.com/omdsh-dev/dsh-genui |
-| dsh-local-service-control | 0.2.0 | MIT | 本仓库 `sources/dsh-local-service-control` |
-| dsh-session-control | 0.8.0 / a2b819c | MIT | https://github.com/gyyxs88/dsh-session-control |
-| dsh-remote-control | 0.3.0 / 495ecea | MIT | https://github.com/gyyxs88/dsh-remote-control |
-| dsh-subagent-code-agents | 0.2.0 / 82f8ed0 | MIT | https://github.com/gyyxs88/dsh-subagent-code-agents |
-| dsh-at-file | 0.6.9（基于 0.6.7） | MIT | 本仓库 `sources/dsh-at-file-settings-rc1` |
+DeepSeek Harness 0.1.5-rc.2 固定上游提交 fb2c4b9e698e30edb738bca4cf0618587db7d203，采用 MIT 许可证。Node.js 24.19.0 保留官方归档与许可证集合。
 
-`dsh-at-file@0.6.7` 的包元数据没有声明源码仓库，且该版本不在公开 npm registry 中。发行版保留其 MIT 制品内容，并在 `0.6.9` 快照中迁移 DSH `0.1.2` 删除的设置命名空间辅助函数，同时对齐 rc1 浏览器静态模块表；若后续找到正式源码仓库，应补齐来源并重新固定摘要。
+| 组件 | 版本 | 来源 |
+| --- | --- | --- |
+| @deepseek-ai/dsh-app-boot | 0.1.5-rc.2 | sources/dsh-app-boot-windows-module-proxy |
+| @deepseek-ai/dsh-llm | 0.1.5-rc.2 | sources/dsh-llm-model-discovery-capabilities |
+| @deepseek-ai/dsh-api-remotes | 0.1.5-rc.2 | sources/dsh-api-remotes-model-discovery-capabilities |
+| @deepseek-ai/dsh-llm-pi-ai | 0.1.5-rc.2 | sources/dsh-llm-pi-ai-live-discovery |
+| @deepseek-ai/dsh-client-ui-settings-models | 0.1.5-rc.2 | sources/dsh-client-ui-settings-models-image-modalities |
+| @deepseek-ai/dsh-client-ui-workspace | 0.1.5-rc.2 | sources/dsh-client-ui-workspace-copy-session-id |
+| @deepseek-ai/dsh-session-format-v0-to-v1 | 0.1.5-rc.2 | sources/dsh-session-format-v0-to-v1 |
+| @deepseek-ai/dsh-client-modules | 0.1.5-rc.2 | sources/dsh-client-modules |
+| dsh-at-file | 0.6.10 | sources/dsh-at-file-settings-rc1 |
+| dsh-local-service-control | 0.2.1 | sources/dsh-local-service-control |
+| @omdsh-dev/dsh-genui | 0.9.1-dsh015.1 | sources/dsh-genui / 1ca5da4eb9394972cce2c1ccacfedc22eec3166b |
+| dsh-remote-control | 0.3.1 | https://github.com/gyyxs88/dsh-remote-control / 15232e72df4ebfcd5e1bd60a0e86614a61eba05f |
+| dsh-session-control | 0.8.1 | https://github.com/gyyxs88/dsh-session-control / 077769e550cc52aafac2ff2fe1b7f9b3b502c5b9 |
+| dsh-subagent-code-agents | 0.2.1 | https://github.com/gyyxs88/dsh-subagent-code-agents / f66bcd51138dd09adaf29b82dedfd2fe70e8fcdb |
 
-六个 DeepSeek Harness 本地修订包均保留其包内 MIT LICENSE：
+上述组件的许可证均为 MIT，归档保留包内许可证和上游声明。GenUI 基于 1ca5da4eb9394972cce2c1ccacfedc22eec3166b，仅调整 rc2 兼容元数据。dsh-at-file 的上游 0.6.7 未声明源码仓库；保留已审阅制品，继续维护设置命名空间、浏览器静态存储及弃用依赖适配。
 
-- `@deepseek-ai/dsh-app-boot`：便携 Windows 启动器可显式选择 DSH 自身的 ESM module proxy，避免依赖安装卷的 Junction 遍历能力；
-- `@deepseek-ai/dsh-llm-pi-ai`：把供应商 `network_error` 归类为可重试的 `TRANSPORT`，并为明确登记的 OpenRouter/OpenCode 路由提供实时模型发现与安全静态回退；
-- `@deepseek-ai/dsh-llm` 与 `@deepseek-ai/dsh-api-remotes`：在核心服务与浏览器 RPC 中保留模型图片和思维能力；
-- `@deepseek-ai/dsh-client-ui-settings-models`：编辑模型能力、默认思维强度与 OpenRouter 上游路由；
-- `@deepseek-ai/dsh-client-ui-workspace`：会话菜单复制持久会话 ID。
+传递依赖各自遵守包内许可证。Claude Agent SDK 0.3.233 的许可标记为 `SEE LICENSE IN README.md`；其配套平台包固定为同一版本，保留上游声明。Node.js、SDK 和其他传递依赖不因本发行层采用 MIT 而变更许可。
 
-非用户消息来源显示由上游 DSH `0.1.2-rc.1` 的官方 Chat 投影提供，本发行不再覆盖该组件。
-
-完整文件名、版本、来源和 SHA-256 以 `manifest/release-lock.json` 为准。Node.js 运行时随 Release 打包时保持官方 zip 原样，并在安装前再次校验官方 SHA-256。
+八个官方修订包保留网络错误重试、实时模型发现、能力和路由设置、复制会话 ID、Windows 模块解析以及旧会话来源和描述符兼容。来源、正式插件提交和每个 SHA-256 以 manifest/release-lock.json 为准。

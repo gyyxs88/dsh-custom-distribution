@@ -54,7 +54,7 @@ window.__ModuleLoader__.load({
 			if (!LEGAL_API_KEY.test(value)) return "keyIllegalCharacters";
 		}
 		//#endregion
-		//#region \0dsh-css:D:\Project\deepseek-harness-lab\.tmp\upstream-dsh-0.1.2-rc.1\packages\client\ui-settings-models\src\client\ModelsSection.module.css.mjs
+		//#region \0dsh-css:upstream/packages\client\ui-settings-models\src\client\ModelsSection.module.css.mjs
 		const css$3 = ".CEkx3a_section{max-width:720px;color:var(--dsw-alias-label-primary);flex-direction:column;gap:12px;display:flex}.CEkx3a_title{color:var(--dsw-alias-label-primary);margin:0;font-size:16px;font-weight:500;line-height:24px}.CEkx3a_intro{color:var(--dsw-alias-label-tertiary);margin:0;font-size:14px;line-height:22px}.CEkx3a_notice{color:var(--dsw-alias-state-warn-label);margin:0;font-size:12px;line-height:18px}.CEkx3a_savedNotice{color:var(--dsw-alias-state-success-primary);margin:0;font-size:12px;line-height:18px}.CEkx3a_rows{flex-direction:column;gap:8px;margin:12px 0 0;padding:0;list-style:none;display:flex}.CEkx3a_rowCard{border:.5px solid var(--dsw-alias-border-l4);border-radius:16px;flex-direction:column;gap:12px;padding:12px 14px;display:flex}.CEkx3a_rowHead{align-items:center;gap:10px;display:flex}.CEkx3a_rowIdentity{align-items:center;gap:6px;min-width:0;display:inline-flex}.CEkx3a_rowName{color:var(--dsw-alias-label-primary);font-size:14px;font-weight:500;line-height:22px}.CEkx3a_rowTag{border:.5px solid var(--dsw-alias-border-l3);color:var(--dsw-alias-label-secondary);border-radius:4px;flex:none;padding:1px 6px;font-size:11px;line-height:16px}.CEkx3a_credentialDot{box-sizing:border-box;corner-shape:round;border-radius:50%;flex:none;width:8px;height:8px;display:inline-block}.CEkx3a_credentialDotConfigured{background:var(--dsw-alias-state-success-primary)}.CEkx3a_credentialDotMissing{background:var(--dsw-alias-state-error-primary)}.CEkx3a_rowActions{align-items:center;gap:4px;margin-left:auto;display:inline-flex}.CEkx3a_primaryButton,.CEkx3a_secondaryButton,.CEkx3a_addButton{box-sizing:border-box;height:36px;font:inherit;cursor:pointer;border:none;border-radius:18px;justify-content:center;align-items:center;gap:4px;padding:0 14px;font-size:14px;line-height:22px;display:inline-flex}.CEkx3a_primaryButton{background:var(--dsw-alias-button-primary-fill);color:var(--dsw-alias-label-primary-foreground)}.CEkx3a_primaryButton:hover:not(:disabled){background:var(--dsw-alias-button-primary-hover)}.CEkx3a_secondaryButton,.CEkx3a_addButton{border:.5px solid var(--dsw-alias-border-l3);color:var(--dsw-alias-label-primary);background:0 0}.CEkx3a_secondaryButton:hover:not(:disabled),.CEkx3a_addButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover)}.CEkx3a_secondaryButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover-solid)}.CEkx3a_dangerButton{box-sizing:border-box;height:36px;color:var(--dsw-alias-state-error-primary);font:inherit;cursor:pointer;background:0 0;border:none;border-radius:18px;justify-content:center;align-items:center;padding:0 14px;font-size:14px;line-height:22px;display:inline-flex}.CEkx3a_dangerButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover-danger)}.CEkx3a_rowActions .CEkx3a_secondaryButton,.CEkx3a_rowActions .CEkx3a_dangerButton{border-radius:14px;height:28px;padding:0 10px;font-size:12px;line-height:18px}.CEkx3a_primaryButton:disabled,.CEkx3a_secondaryButton:disabled,.CEkx3a_dangerButton:disabled,.CEkx3a_addButton:disabled,.CEkx3a_linkButton:disabled,.CEkx3a_addModelButton:disabled{opacity:.4;cursor:default}.CEkx3a_primaryButton:focus-visible,.CEkx3a_secondaryButton:focus-visible,.CEkx3a_dangerButton:focus-visible,.CEkx3a_addButton:focus-visible,.CEkx3a_linkButton:focus-visible,.CEkx3a_addModelButton:focus-visible,.CEkx3a_iconButton:focus-visible,.CEkx3a_customizedSummary:focus-visible{box-shadow:0 0 0 2px var(--dsw-alias-border-l3);outline:none}.CEkx3a_editor{background:var(--dsw-alias-bg-module-platform);border-radius:12px;flex-direction:column;gap:14px;padding:14px 16px;display:flex}.CEkx3a_editorHeader{align-items:baseline;gap:8px;display:flex}.CEkx3a_editorTitle{color:var(--dsw-alias-label-primary);font-size:14px;font-weight:500;line-height:22px}.CEkx3a_editorRoute{color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:18px}.CEkx3a_field{flex-direction:column;gap:6px;display:flex}.CEkx3a_fieldLabel{color:var(--dsw-alias-label-secondary);align-items:center;gap:10px;font-size:12px;font-weight:500;line-height:18px;display:inline-flex}.CEkx3a_linkButton{box-sizing:border-box;height:28px;color:var(--dsw-alias-label-tertiary);font:inherit;cursor:pointer;background:0 0;border:none;border-radius:14px;align-items:center;padding:0 10px;font-size:12px;line-height:18px;display:inline-flex}.CEkx3a_linkButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary)}.CEkx3a_advancedHint{color:var(--dsw-alias-label-tertiary);margin:0;font-size:12px;line-height:18px}.CEkx3a_editorActions{justify-content:flex-end;gap:8px;display:flex}.CEkx3a_addBlock{flex-direction:column;gap:12px;display:flex}.CEkx3a_addActions{flex-wrap:wrap;gap:10px;display:flex}.CEkx3a_addButton{border:1px dashed var(--dsw-alias-border-l3);border-radius:16px;flex:1 1 0;gap:6px;min-width:180px;height:44px}.CEkx3a_addCard,.CEkx3a_setupCard{background:var(--dsw-alias-bg-module-platform);border-radius:12px;flex-direction:column;gap:14px;padding:14px 16px;list-style:none;display:flex}.CEkx3a_addCard .CEkx3a_editor,.CEkx3a_setupCard .CEkx3a_editor{background:0 0;padding:0}.CEkx3a_customized{border-top:.5px solid var(--dsw-alias-border-l2);padding-top:10px}.CEkx3a_customizedSummary{cursor:pointer;width:fit-content;color:var(--dsw-alias-label-secondary);border-radius:6px;align-items:center;gap:6px;margin-left:-4px;padding:2px 4px;font-size:12px;font-weight:500;line-height:18px;list-style:none;display:flex}.CEkx3a_customizedSummary::-webkit-details-marker{display:none}.CEkx3a_customizedSummary:before{content:\"\";border-bottom:1.5px solid;border-right:1.5px solid;width:5px;height:5px;transition:transform .12s;transform:rotate(-45deg)translate(-1px,-1px)}.CEkx3a_customized[open]>.CEkx3a_customizedSummary:before{transform:rotate(45deg)translate(-1px,-1px)}.CEkx3a_customizedSummary:hover{color:var(--dsw-alias-label-primary)}.CEkx3a_customizedBody{flex-direction:column;gap:12px;padding-top:12px;display:flex}.CEkx3a_modelCatalog{border-top:.5px solid var(--dsw-alias-border-l2);flex-direction:column;gap:10px;padding-top:12px;display:flex}.CEkx3a_modelCatalogHeading{flex-direction:column;gap:2px;display:flex}.CEkx3a_modelCatalogTitle{color:var(--dsw-alias-label-secondary);font-size:12px;font-weight:500;line-height:18px}.CEkx3a_modelCatalogMeta,.CEkx3a_modelEmpty{color:var(--dsw-alias-label-tertiary);margin:0;font-size:12px;line-height:18px}.CEkx3a_modelList{flex-direction:column;gap:8px;display:flex}.CEkx3a_modelListHead{justify-content:space-between;align-items:flex-start;gap:12px;display:flex}.CEkx3a_modelEntry{border:.5px solid var(--dsw-alias-border-l4);border-radius:10px;padding:6px}.CEkx3a_modelRow{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) auto auto;align-items:center;gap:6px;display:grid}.CEkx3a_iconButton{box-sizing:border-box;width:28px;height:28px;color:var(--dsw-alias-label-tertiary);cursor:pointer;background:0 0;border:none;border-radius:6px;justify-content:center;align-items:center;display:inline-flex}.CEkx3a_iconButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}.CEkx3a_iconButton:disabled{cursor:default;opacity:.4}.CEkx3a_iconButtonDanger:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover-danger);color:var(--dsw-alias-state-error-primary)}.CEkx3a_modelAdvanced{grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;padding:8px 4px 2px;display:grid}.CEkx3a_modelField{flex-direction:column;gap:4px;display:flex}.CEkx3a_modelFieldLabel{color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:18px}.CEkx3a_modelEmpty{border:1px dashed var(--dsw-alias-border-l3);text-align:center;border-radius:8px;padding:12px}.CEkx3a_addModelButton{box-sizing:border-box;border:.5px solid var(--dsw-alias-border-l3);height:28px;color:var(--dsw-alias-label-primary);font:inherit;cursor:pointer;background:0 0;border-radius:14px;align-self:flex-start;align-items:center;gap:4px;padding:0 10px;font-size:12px;line-height:18px;display:inline-flex}.CEkx3a_addModelButton:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover)}.CEkx3a_input{box-sizing:border-box;border:.5px solid var(--dsw-alias-border-l4);width:100%;height:32px;font:inherit;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);border-radius:8px;padding:0 10px;font-size:14px;line-height:22px}select.CEkx3a_input{cursor:pointer;max-width:240px}.CEkx3a_input:focus{border-color:var(--dsw-alias-brand-primary);outline:none}.CEkx3a_input::placeholder{color:var(--dsw-alias-label-dimmed)}.CEkx3a_input:disabled{opacity:.6;cursor:default}.CEkx3a_selectInput{appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%2381858C' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\");background-position:right 12px center;background-repeat:no-repeat;background-size:12px 12px;padding-right:32px}.CEkx3a_error{color:var(--dsw-alias-state-error-primary);margin:0;font-size:12px;line-height:18px}.CEkx3a_deleteDialog{width:min(480px,100%)}.CEkx3a_deleteConfirm:not(:disabled){border-color:var(--dsw-alias-state-error-primary);color:var(--dsw-alias-state-error-primary)}.CEkx3a_deleteConfirm:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover-danger)}.CEkx3a_hiddenLabel{clip:rect(0 0 0 0);white-space:nowrap;width:1px;height:1px;position:absolute;overflow:hidden}@media (prefers-reduced-motion:reduce){.CEkx3a_customizedSummary:before,.CEkx3a_switchThumb{transition:none}}.CEkx3a_fetchDialog{--dsh-scrollbar-thumb:var(--dsw-alias-scrollbar-bg-l2);--dsh-scrollbar-thumb-hover:var(--dsw-alias-scrollbar-hover-l2);max-width:520px}.CEkx3a_candidateToolbar{align-items:center;gap:8px;margin-bottom:6px;display:flex}.CEkx3a_candidateSearch{flex:240px;min-width:0}.CEkx3a_candidateList{flex-direction:column;gap:2px;max-height:320px;margin:0;padding:0;list-style:none;display:flex;overflow-y:auto}.CEkx3a_candidate{border-radius:6px}.CEkx3a_candidateLabel{cursor:pointer;align-items:center;gap:8px;padding:6px 8px;display:flex}.CEkx3a_candidateId{font-family:var(--ds-font-family-code);overflow-wrap:anywhere;flex:auto;font-size:13px}.CEkx3a_candidateEmpty{color:var(--dsw-alias-label-secondary);text-align:center;margin:24px 0;font-size:13px;line-height:20px}";
 		const tagId$3 = "@deepseek-ai/dsh-client-ui-settings-models/ModelsSection.module.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId$3) + "]") === null) {
@@ -735,9 +735,9 @@ window.__ModuleLoader__.load({
 			const allVisibleCandidatesPicked = visibleCandidates.length > 0 && visibleCandidates.every((candidate) => picked.has(candidate.id));
 			const toggleVisibleCandidates = () => {
 				setPicked((current) => {
+					if (visibleCandidates.every((candidate) => current.has(candidate.id))) return /* @__PURE__ */ new Set();
 					const next = new Set(current);
-					if (visibleCandidates.every((candidate) => current.has(candidate.id))) for (const candidate of visibleCandidates) next.delete(candidate.id);
-					else for (const candidate of visibleCandidates) next.add(candidate.id);
+					for (const candidate of visibleCandidates) next.add(candidate.id);
 					return next;
 				});
 			};
@@ -1265,7 +1265,8 @@ window.__ModuleLoader__.load({
 				settingsNs: entry.settingsNs,
 				settingsPath: [...entry.settingsPath],
 				active: active.has(entry.provider),
-				...entry.declared === void 0 ? {} : { declared: entry.declared }
+				...entry.declared === void 0 ? {} : { declared: entry.declared },
+				...entry.error === void 0 ? {} : { error: entry.error }
 			}));
 			for (const provider of registered) {
 				if (declared.has(provider.id)) continue;
@@ -1518,6 +1519,14 @@ window.__ModuleLoader__.load({
 		* credential seam with a raw regular expression the user cannot act on.
 		*/
 		const ROUTE_PATTERN = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
+		function isHttpUrl(value) {
+			try {
+				const protocol = new URL(value).protocol;
+				return protocol === "http:" || protocol === "https:";
+			} catch {
+				return false;
+			}
+		}
 		/**
 		* Render the custom-provider creation card.
 		* @param props - existing routes, protocol choices, wire faces, and copy.
@@ -1545,11 +1554,13 @@ window.__ModuleLoader__.load({
 			const profileDisabled = disabled || committed;
 			const routeInvalid = route.length > 0 && !ROUTE_PATTERN.test(route);
 			const routeTaken = taken.includes(route);
+			const normalizedBaseURL = baseURL.trim();
+			const baseUrlInvalid = baseURL.length > 0 && !isHttpUrl(normalizedBaseURL);
 			const modelFailure = validateDeepSeekModels(models);
 			const keyFailure = apiKeyFailure(keyDraft);
 			const keyValue = keyDraft.trim();
-			const ready = route.length > 0 && !routeInvalid && !routeTaken && baseURL.length > 0 && models.length > 0 && modelFailure === void 0 && keyFailure === void 0;
-			const hint = failure !== void 0 || ready || keyFailure !== void 0 || route.length === 0 || routeInvalid || routeTaken ? void 0 : baseURL.length === 0 ? t("customNeedsBaseUrl") : modelFailure !== void 0 ? `${t("model")} ${String(modelFailure.index + 1)}: ${t(modelFailure.key)}` : t("customNeedsModels");
+			const ready = route.length > 0 && !routeInvalid && !routeTaken && normalizedBaseURL.length > 0 && !baseUrlInvalid && models.length > 0 && modelFailure === void 0 && keyFailure === void 0;
+			const hint = failure !== void 0 || ready || keyFailure !== void 0 || route.length === 0 || routeInvalid || routeTaken || baseUrlInvalid ? void 0 : normalizedBaseURL.length === 0 ? t("customNeedsBaseUrl") : modelFailure !== void 0 ? `${t("model")} ${String(modelFailure.index + 1)}: ${t(modelFailure.key)}` : t("customNeedsModels");
 			/** Perform the create, returning a failure message or undefined. */
 			const createOnce = async () => {
 				const keyRef = deriveKeyRef(route);
@@ -1559,7 +1570,7 @@ window.__ModuleLoader__.load({
 						...displayName.length === 0 ? {} : { displayName },
 						...storesKey ? { apiKeyEnv: keyRef } : {},
 						api: protocol,
-						baseURL,
+						baseURL: normalizedBaseURL,
 						models: models.map((model) => ({ ...model }))
 					};
 					const written = await operations.writeSettings(NS$1, [{
@@ -1651,12 +1662,17 @@ window.__ModuleLoader__.load({
 							value: baseURL,
 							placeholder: t("customBaseUrlPlaceholder"),
 							"aria-label": t("baseUrl"),
+							"aria-invalid": baseUrlInvalid,
 							disabled: profileDisabled,
 							onChange: (event) => {
 								setBaseURL(event.target.value);
 							}
 						})]
 					}),
+					baseUrlInvalid ? (0, react_jsx_runtime.jsx)("p", {
+						className: ModelsSection_module_css_default["error"],
+						children: t("customBaseUrlInvalid")
+					}) : null,
 					(0, react_jsx_runtime.jsxs)("div", {
 						className: ModelsSection_module_css_default["field"],
 						children: [(0, react_jsx_runtime.jsx)("span", {
@@ -1706,11 +1722,11 @@ window.__ModuleLoader__.load({
 						onChange: setModels,
 						probe: {
 							settingsNs: NS$1,
-							baseURL,
+							baseURL: normalizedBaseURL,
 							api: protocol,
 							...keyValue.length === 0 ? {} : { apiKey: keyValue }
 						},
-						probeBlocked: keyFailure === "keyBlank" ? "keyBlankNew" : keyFailure,
+						probeBlocked: baseUrlInvalid ? "customBaseUrlInvalid" : keyFailure === "keyBlank" ? "keyBlankNew" : keyFailure,
 						operations,
 						t,
 						disabled: profileDisabled
@@ -2705,7 +2721,8 @@ window.__ModuleLoader__.load({
 			};
 			const anyUsable = state.rows.some(providerUsable);
 			const configured = state.rows.filter((row) => row.configured);
-			const addable = state.rows.filter((row) => !row.configured && row.entry.settingsNs !== "");
+			const configurable = state.rows.filter((row) => state.namespaces.has(row.entry.settingsNs));
+			const addable = configurable.filter((row) => !row.configured);
 			const addTarget = adding ? editing : void 0;
 			const addNamespace = addTarget === void 0 ? void 0 : state.namespaces.get(addTarget.settingsNs);
 			const addRow = addTarget === void 0 ? void 0 : state.rows.find((row) => row.entry.provider === addTarget.provider);
@@ -2751,23 +2768,32 @@ window.__ModuleLoader__.load({
 							const namespace = state.namespaces.get(target.settingsNs);
 							/* v8 ignore next -- the join marks a row configured only when its namespace resolved */
 							if (namespace === void 0) return null;
+							const error = row.entry.error === void 0 ? null : (0, react_jsx_runtime.jsx)("p", {
+								role: "alert",
+								className: ModelsSection_module_css_default["error"],
+								children: row.entry.error
+							});
 							if (needsSetup(row, anyUsable) && !dismissedSetup.has(row.entry.provider)) return (0, react_jsx_runtime.jsxs)("li", {
 								className: ModelsSection_module_css_default["setupCard"],
-								children: [renderProviderEditor({
-									target,
-									namespace,
-									schema,
-									operations,
-									t,
-									readOnly: !state.writable,
-									onClose: (changed) => {
-										closeSetup(changed, target);
-									}
-								}), renderSlot("settings.models.provider-card", {
-									provider: row.entry,
-									configured: row.configured,
-									keyConfigured: keyConfiguredOf(row)
-								}, { entryKey: row.entry.settingsNs })]
+								children: [
+									error,
+									renderProviderEditor({
+										target,
+										namespace,
+										schema,
+										operations,
+										t,
+										readOnly: !state.writable,
+										onClose: (changed) => {
+											closeSetup(changed, target);
+										}
+									}),
+									renderSlot("settings.models.provider-card", {
+										provider: row.entry,
+										configured: row.configured,
+										keyConfigured: keyConfiguredOf(row)
+									}, { entryKey: row.entry.settingsNs })
+								]
 							}, row.entry.provider);
 							const open = !adding && editing?.provider === row.entry.provider;
 							const credentialConfigured = row.credential?.configured === true;
@@ -2827,6 +2853,7 @@ window.__ModuleLoader__.load({
 											}) : null]
 										})]
 									}),
+									error,
 									renderSlot("settings.models.provider-card", {
 										provider: row.entry,
 										configured: row.configured,
@@ -2910,7 +2937,7 @@ window.__ModuleLoader__.load({
 							})
 						}) : (0, react_jsx_runtime.jsxs)("div", {
 							className: ModelsSection_module_css_default["addActions"],
-							children: [(0, react_jsx_runtime.jsxs)("button", {
+							children: [configurable.length > 0 && (0, react_jsx_runtime.jsxs)("button", {
 								type: "button",
 								className: ModelsSection_module_css_default["addButton"],
 								disabled: addable.length === 0 || !state.writable,
@@ -2924,7 +2951,7 @@ window.__ModuleLoader__.load({
 									setEditing(targetOf(first));
 								},
 								children: [(0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconPlusOutline16, { size: 14 }), t("add")]
-							}), (0, react_jsx_runtime.jsxs)("button", {
+							}), state.namespaces.has("llm-pi-ai") && (0, react_jsx_runtime.jsxs)("button", {
 								type: "button",
 								className: ModelsSection_module_css_default["addButton"],
 								disabled: protocols.length === 0 || !state.writable,
@@ -2968,7 +2995,7 @@ window.__ModuleLoader__.load({
 			});
 		}
 		//#endregion
-		//#region \0dsh-css:D:\Project\deepseek-harness-lab\.tmp\upstream-dsh-0.1.2-rc.1\packages\client\ui-settings-models\src\client\OnboardingModal.module.css.mjs
+		//#region \0dsh-css:upstream/packages\client\ui-settings-models\src\client\OnboardingModal.module.css.mjs
 		const css$2 = ".eqp2Sa_dialog{width:min(600px,100%);padding:0}.eqp2Sa_content{box-sizing:border-box;flex-direction:column;max-height:calc(100vh - 48px);padding:28px;display:flex;overflow-y:auto}.eqp2Sa_title{color:var(--dsw-alias-label-primary);outline:none;margin:0;font-size:20px;font-weight:500;line-height:28px}.eqp2Sa_body{margin-top:20px}@media (width<=560px){.eqp2Sa_content{padding:24px}}";
 		const tagId$2 = "@deepseek-ai/dsh-client-ui-settings-models/OnboardingModal.module.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId$2) + "]") === null) {
@@ -3030,7 +3057,7 @@ window.__ModuleLoader__.load({
 			});
 		}
 		//#endregion
-		//#region \0dsh-css:D:\Project\deepseek-harness-lab\.tmp\upstream-dsh-0.1.2-rc.1\packages\client\ui-settings-models\src\client\DeepSeekOnboardingDialog.module.css.mjs
+		//#region \0dsh-css:upstream/packages\client\ui-settings-models\src\client\DeepSeekOnboardingDialog.module.css.mjs
 		const css$1 = ".vqQorq_description{color:var(--dsw-alias-label-secondary);margin:0;font-size:14px;line-height:24px}.vqQorq_editor{margin-top:24px}@media (width<=560px){.vqQorq_editor{margin-top:20px}}";
 		const tagId$1 = "@deepseek-ai/dsh-client-ui-settings-models/DeepSeekOnboardingDialog.module.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId$1) + "]") === null) {
@@ -3122,7 +3149,7 @@ window.__ModuleLoader__.load({
 			});
 		}
 		//#endregion
-		//#region \0dsh-css:D:\Project\deepseek-harness-lab\.tmp\upstream-dsh-0.1.2-rc.1\packages\client\ui-settings-models\src\client\WelcomeNotice.module.css.mjs
+		//#region \0dsh-css:upstream/packages\client\ui-settings-models\src\client\WelcomeNotice.module.css.mjs
 		const css = ".bIq4da_copy{color:var(--dsw-alias-label-secondary);font-size:14px;line-height:24px}.bIq4da_copy p{margin:0}.bIq4da_copy p+p{margin-top:12px}.bIq4da_error{color:var(--dsw-alias-state-error-primary);margin:16px 0 0;font-size:14px;line-height:22px}.bIq4da_actions{justify-content:flex-end;margin-top:24px;display:flex}.bIq4da_primary{min-width:120px}@media (width<=560px){.bIq4da_primary{width:100%}}";
 		const tagId = "@deepseek-ai/dsh-client-ui-settings-models/WelcomeNotice.module.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId) + "]") === null) {
@@ -3549,6 +3576,7 @@ window.__ModuleLoader__.load({
 			customApi: "API protocol",
 			customApiUnset: "Not selected",
 			customNeedsBaseUrl: "A custom provider needs a base URL.",
+			customBaseUrlInvalid: "Enter a valid HTTP or HTTPS URL.",
 			customNeedsModels: "A custom provider needs at least one model.",
 			customBaseUrlPlaceholder: "https://gateway.example/v1",
 			settingsPathUnresolvable: "unresolvable settings path",
@@ -3707,6 +3735,7 @@ window.__ModuleLoader__.load({
 			customApi: "API 协议",
 			customApiUnset: "未选择",
 			customNeedsBaseUrl: "自定义提供方需要填写 API 地址。",
+			customBaseUrlInvalid: "请输入有效的 HTTP 或 HTTPS 地址。",
 			customNeedsModels: "自定义提供方至少需要一个模型。",
 			customBaseUrlPlaceholder: "https://gateway.example/v1",
 			settingsPathUnresolvable: "无法解析设置路径",
@@ -3748,6 +3777,7 @@ window.__ModuleLoader__.load({
 			"remote.credentials",
 			"remote.llm",
 			"remote.settings",
+			"remote.session",
 			"settingsScope",
 			"settingsSchema"
 		];

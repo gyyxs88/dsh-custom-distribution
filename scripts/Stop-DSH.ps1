@@ -16,8 +16,8 @@ $text = (Get-Content -LiteralPath $pidFile -Raw -Encoding UTF8).Trim()
 if (-not [int]::TryParse($text, [ref]$savedPid)) { throw "PID 文件无效：$pidFile" }
 $process = Get-CimInstance Win32_Process -Filter "ProcessId = $savedPid" -ErrorAction SilentlyContinue
 if (-not $process) {
-    Remove-Item -LiteralPath $pidFile -Force
-    Remove-Item -LiteralPath $runStateFile -Force -ErrorAction SilentlyContinue
+    Remove-SafeTree -Parent (Split-Path -Parent $pidFile) -Path $pidFile
+    Remove-SafeTree -Parent (Split-Path -Parent $runStateFile) -Path $runStateFile
     Write-Output 'STATUS=NOT_RUNNING_STALE_PID_CLEANED'
     exit 0
 }
@@ -54,8 +54,8 @@ while ((@($stopOrder | Where-Object { Get-Process -Id $_ -ErrorAction SilentlyCo
 $remaining = @($stopOrder | Where-Object { Get-Process -Id $_ -ErrorAction SilentlyContinue })
 if ($remaining.Count -gt 0) { throw "DSH 进程树未在 10 秒内停止：$($remaining -join ', ')" }
 
-Remove-Item -LiteralPath $pidFile -Force
-Remove-Item -LiteralPath $runStateFile -Force -ErrorAction SilentlyContinue
+Remove-SafeTree -Parent (Split-Path -Parent $pidFile) -Path $pidFile
+Remove-SafeTree -Parent (Split-Path -Parent $runStateFile) -Path $runStateFile
 Write-Output 'STATUS=STOPPED'
 Write-Output "PID=$savedPid"
 Write-Output "DESCENDANTS_STOPPED=$($descendants.Count)"

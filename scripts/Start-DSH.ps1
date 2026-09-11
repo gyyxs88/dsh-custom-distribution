@@ -30,8 +30,8 @@ if ($existing) {
     Write-Output "URL=$($existingState.url)"
     exit 0
 }
-Remove-Item -LiteralPath $pidFile -Force -ErrorAction SilentlyContinue
-Remove-Item -LiteralPath $runStateFile -Force -ErrorAction SilentlyContinue
+Remove-SafeTree -Parent (Split-Path -Parent $pidFile) -Path $pidFile
+Remove-SafeTree -Parent (Split-Path -Parent $runStateFile) -Path $runStateFile
 
 function Test-PortListening([int]$Candidate) {
     return $null -ne (Get-NetTCPConnection -State Listen -LocalPort $Candidate -ErrorAction SilentlyContinue | Select-Object -First 1)
@@ -129,7 +129,7 @@ do {
     Start-Sleep -Milliseconds 250
     $process.Refresh()
     if ($process.HasExited) {
-        Remove-Item -LiteralPath $pidFile -Force -ErrorAction SilentlyContinue
+        Remove-SafeTree -Parent (Split-Path -Parent $pidFile) -Path $pidFile
         throw "DSH 启动失败，退出码 $($process.ExitCode)。请查看 $stderrLog"
     }
     $listener = Get-NetTCPConnection -State Listen -LocalPort $selectedPort -ErrorAction SilentlyContinue | Where-Object { $_.OwningProcess -eq $process.Id } | Select-Object -First 1
@@ -138,12 +138,12 @@ do {
 
 if (-not $listener) {
     Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
-    Remove-Item -LiteralPath $pidFile -Force -ErrorAction SilentlyContinue
+    Remove-SafeTree -Parent (Split-Path -Parent $pidFile) -Path $pidFile
     throw "DSH 在 60 秒内未监听 $bindAddress`:$selectedPort。请查看 $stderrLog"
 }
 if (-not $authenticatedUrl) {
     Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
-    Remove-Item -LiteralPath $pidFile -Force -ErrorAction SilentlyContinue
+    Remove-SafeTree -Parent (Split-Path -Parent $pidFile) -Path $pidFile
     throw "DSH 在 60 秒内没有发布可验证的浏览器认证入口。请查看 $stderrLog"
 }
 

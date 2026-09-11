@@ -16,7 +16,7 @@ function normalizeText(text) {
 }
 
 test("pi-ai package contains reviewed transport, discovery, capability, and routing policies", () => {
-  const source = archiveSource("dsh-llm-pi-ai-0.1.2-rc.1-model-capability-routing.2.tgz", "lib/index.js");
+  const source = archiveSource("deepseek-ai-dsh-llm-pi-ai-0.1.5-rc.2.tgz", "lib/index.js");
   assert.match(source, /network\(\?:_error\)\?/u);
   assert.match(source, /LIVE_CATALOG_DISCOVERY_POLICIES/u);
   assert.match(source, /\["openrouter", "configured-or-catalog"\]/u);
@@ -27,7 +27,7 @@ test("pi-ai package contains reviewed transport, discovery, capability, and rout
 });
 
 test("portable Windows startup uses the fail-closed DSH module proxy fallback", () => {
-  const source = archiveSource("dsh-app-boot-0.1.2-rc.1-windows-module-fallback-proxy.2.tgz", "lib/index.js");
+  const source = archiveSource("deepseek-ai-dsh-app-boot-0.1.5-rc.2.tgz", "lib/index.js");
   assert.match(source, /DSH_MODULE_FALLBACK_MODE/u);
   assert.match(source, /must be "proxy" when set/u);
   assert.match(source, /mode === "proxy"/u);
@@ -39,28 +39,28 @@ test("portable Windows startup uses the fail-closed DSH module proxy fallback", 
 });
 
 test("discovered capabilities survive the core service, remote API, and browser editor", () => {
-  const llm = archiveSource("dsh-llm-0.1.2-rc.1-discovered-model-capabilities.2.tgz", "lib/index.js");
+  const llm = archiveSource("deepseek-ai-dsh-llm-0.1.5-rc.2.tgz", "lib/index.js");
   assert.match(llm, /rawReasoningEfforts/u);
   assert.match(llm, /defaultReasoningEffort in reasoningEfforts/u);
-  const typert = archiveSource("dsh-llm-0.1.2-rc.1-discovered-model-capabilities.2.tgz", "lib/typert.host.js");
+  const typert = archiveSource("deepseek-ai-dsh-llm-0.1.5-rc.2.tgz", "lib/typert.host.js");
   assert.match(typert, /'input': z\.array/u);
   assert.match(typert, /'reasoningEfforts': z\.union/u);
   assert.match(typert, /'defaultReasoningEffort': z\.union/u);
 
-  const remotes = archiveSource("dsh-api-remotes-0.1.2-rc.1-discovered-model-capabilities.2.tgz", "lib/client.js");
+  const remotes = archiveSource("deepseek-ai-dsh-api-remotes-0.1.5-rc.2.tgz", "lib/client.js");
   assert.match(remotes, /defaultReasoningEffort/u);
   assert.match(remotes, /input.*literal\("image"\)/su);
 
-  const settings = archiveSource("dsh-client-ui-settings-models-0.1.2-rc.1-model-capability-editor.2.tgz", "lib/client.js");
+  const settings = archiveSource("deepseek-ai-dsh-client-ui-settings-models-0.1.5-rc.2.tgz", "lib/client.js");
   assert.match(settings, /candidate\.input === void 0 \? \{\} : \{ input: \[\.\.\.candidate\.input\] \}/u);
   assert.match(settings, /function OpenRouterRoutingEditor/u);
   assert.match(settings, /function DefaultModelEditor/u);
   assert.match(settings, /reasoningSelectionUnavailable/u);
 });
 
-test("the rc1 official conversation UI owns message provenance", () => {
+test("the rc2 official conversation UI owns message provenance", () => {
   const app = JSON.parse(readFileSync(join(root, "templates", "app", "package.json"), "utf8"));
-  assert.equal(app.dependencies["@deepseek-ai/dsh-client-ui-conversation"], "0.1.2-rc.1");
+  assert.equal(app.dependencies["@deepseek-ai/dsh-client-ui-conversation"], "0.1.5-rc.2");
   assert.equal(Object.keys(app.dependencies).some(name => name.includes("message-provenance")), false);
   assert.equal(Object.values(app.dependencies).some(value => String(value).includes("message-provenance")), false);
 });
@@ -73,7 +73,7 @@ test("session menu copies the durable session ID", () => {
 });
 
 test("portable service control is bundled and retains PID and loopback gates", () => {
-  const host = archiveSource("dsh-local-service-control-0.2.0.tgz", "lib/index.js");
+  const host = archiveSource("dsh-local-service-control-0.2.1.tgz", "lib/index.js");
   assert.match(host, /isLoopbackAddress/u);
   assert.match(host, /isSameOrigin/u);
   assert.match(host, /'-InstallRoot'/u);
@@ -90,16 +90,16 @@ test("portable service control is bundled and retains PID and loopback gates", (
 });
 
 test("at-file uses the DSH 0.1.2 settings namespace contract", () => {
-  const host = archiveSource("dsh-at-file-0.6.9.tgz", "lib/index.js");
+  const host = archiveSource("dsh-at-file-0.6.10.tgz", "lib/index.js");
   assert.match(host, /AT_FILE_NAMESPACE = "at-file"/u);
   assert.doesNotMatch(host, /settingsNamespace/u);
-  const client = archiveSource("dsh-at-file-0.6.9.tgz", "lib/client.js");
+  const client = archiveSource("dsh-at-file-0.6.10.tgz", "lib/client.js");
   assert.match(client, /require\("@deepseek-ai\/dsh-client-store"\)/u);
   assert.doesNotMatch(client, /require\("@deepseek-ai\/dsh-client-runtime\/client"\)/u);
 });
 
 test("pinned control artifacts include durable asynchronous reports and their Skills", () => {
-  const sessionFile = "dsh-session-control-0.8.0.tgz";
+  const sessionFile = "dsh-session-control-0.8.1.tgz";
   const sessionNotifier = archiveSource(sessionFile, "lib/operation-notifier.js");
   const sessionSkill = archiveSource(sessionFile, "skills/dsh-session-control/SKILL.md");
   const sessionSecurity = archiveSource(sessionFile, "lib/security.js");
@@ -112,10 +112,10 @@ test("pinned control artifacts include durable asynchronous reports and their Sk
   assert.match(sessionSecurity, /data\?\.message\?\.source\?\.callId/u);
   assert.match(sessionEvents, /snapshotEvents/u);
 
-  const remotePackage = JSON.parse(archiveSource("dsh-remote-control-0.3.0.tgz", "package.json"));
+  const remotePackage = JSON.parse(archiveSource("dsh-remote-control-0.3.1.tgz", "package.json"));
   assert.equal(remotePackage.peerDependencies["dsh-session-control"], ">=0.8.0 <0.9.0");
 
-  const subagentFile = "dsh-subagent-code-agents-0.2.0.tgz";
+  const subagentFile = "dsh-subagent-code-agents-0.2.1.tgz";
   const runNotifier = archiveSource(subagentFile, "packages/plugin/lib/run-notifier.js");
   const subagentSkill = archiveSource(subagentFile, "packages/plugin/skills/dsh-code-agents/SKILL.md");
   const subagentTool = archiveSource(subagentFile, "packages/plugin/lib/tool.js");
@@ -133,14 +133,17 @@ test("pinned control artifacts include durable asynchronous reports and their Sk
 
 test("source snapshots match their bundled artifacts", () => {
   const cases = [
-    ["dsh-app-boot-windows-module-proxy", "dsh-app-boot-0.1.2-rc.1-windows-module-fallback-proxy.2.tgz", "lib/index.js"],
-    ["dsh-at-file-settings-rc1", "dsh-at-file-0.6.9.tgz", "lib/index.js"],
-    ["dsh-llm-model-discovery-capabilities", "dsh-llm-0.1.2-rc.1-discovered-model-capabilities.2.tgz", "lib/index.js"],
-    ["dsh-api-remotes-model-discovery-capabilities", "dsh-api-remotes-0.1.2-rc.1-discovered-model-capabilities.2.tgz", "lib/client.js"],
-    ["dsh-llm-pi-ai-live-discovery", "dsh-llm-pi-ai-0.1.2-rc.1-model-capability-routing.2.tgz", "lib/index.js"],
-    ["dsh-client-ui-settings-models-image-modalities", "dsh-client-ui-settings-models-0.1.2-rc.1-model-capability-editor.2.tgz", "lib/client.js"],
-    ["dsh-client-ui-workspace-copy-session-id", "dsh-client-ui-workspace-0.1.2-rc.1-copy-session-id.2.tgz", "lib/client.js"],
-    ["dsh-local-service-control", "dsh-local-service-control-0.2.0.tgz", "lib/index.js"],
+    ["dsh-app-boot-windows-module-proxy", "deepseek-ai-dsh-app-boot-0.1.5-rc.2.tgz", "lib/index.js"],
+    ["dsh-at-file-settings-rc1", "dsh-at-file-0.6.10.tgz", "lib/index.js"],
+    ["dsh-llm-model-discovery-capabilities", "deepseek-ai-dsh-llm-0.1.5-rc.2.tgz", "lib/index.js"],
+    ["dsh-api-remotes-model-discovery-capabilities", "deepseek-ai-dsh-api-remotes-0.1.5-rc.2.tgz", "lib/client.js"],
+    ["dsh-llm-pi-ai-live-discovery", "deepseek-ai-dsh-llm-pi-ai-0.1.5-rc.2.tgz", "lib/index.js"],
+    ["dsh-client-ui-settings-models-image-modalities", "deepseek-ai-dsh-client-ui-settings-models-0.1.5-rc.2.tgz", "lib/client.js"],
+    ["dsh-client-ui-workspace-copy-session-id", "deepseek-ai-dsh-client-ui-workspace-0.1.5-rc.2.tgz", "lib/client.js"],
+    ["dsh-local-service-control", "dsh-local-service-control-0.2.1.tgz", "lib/index.js"],
+    ["dsh-session-format-v0-to-v1", "deepseek-ai-dsh-session-format-v0-to-v1-0.1.5-rc.2.tgz", "lib/index.js"],
+    ["dsh-client-modules", "deepseek-ai-dsh-client-modules-0.1.5-rc.2.tgz", "lib/index.js"],
+    ["dsh-genui", "omdsh-dev-dsh-genui-0.9.1-dsh015.1.tgz", "lib/client.js"],
   ];
   for (const [sourceName, archiveName, mainFile] of cases) {
     const temp = mkdtempSync(join(tmpdir(), "dsh-distro-source-"));

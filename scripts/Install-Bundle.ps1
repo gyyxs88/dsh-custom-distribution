@@ -8,6 +8,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'Common.ps1')
+. (Join-Path $PSScriptRoot 'Upgrade-State.ps1')
 
 $BundleRoot = Get-FullPath -Path $BundleRoot
 $InstallRoot = Get-FullPath -Path $InstallRoot
@@ -122,6 +123,7 @@ try {
                 installedAt = (Get-Date).ToString('o')
             }
             foreach ($artifact in @($release.artifacts)) { $receipt.artifactSha256[$artifact.file] = $artifact.sha256 }
+            Copy-Item -LiteralPath $releaseLockPath -Destination (Join-Path $versionRoot 'release-lock.json')
             Write-JsonAtomic -Value $receipt -Path (Join-Path $versionRoot 'install-receipt.json')
         }
         catch {
@@ -145,11 +147,17 @@ try {
     }
 
     New-Item -ItemType Directory -Force -Path (Join-Path $InstallRoot 'data'), (Join-Path $InstallRoot 'bin') | Out-Null
+    if ($previousVersion -and $oldState.version -ne $version) {
+        $oldReceipt = Read-JsonFile -Path (Join-Path $oldState.versionRoot 'install-receipt.json')
+        if ([version](([string]$oldReceipt.dshVersion -split '-')[0]) -gt [version](([string]$release.base.version -split '-')[0])) { throw '降级必须使用 Rollback-DSH.ps1 恢复对应的数据快照。' }
+        New-UpgradeSnapshot -InstallRoot $InstallRoot -FromVersion ([string]$oldState.version) -ToVersion $version | Out-Null
+    }
     $active = Set-ActiveVersion -InstallRoot $InstallRoot -Version $version -Port $Port -PreviousVersion $previousVersion
 
     $binRoot = Join-Path $InstallRoot 'bin'
     foreach ($scriptName in @(
         'Common.ps1',
+        'Upgrade-State.ps1',
         'Start-DSH.ps1',
         'Stop-DSH.ps1',
         'Verify-DSH.ps1',

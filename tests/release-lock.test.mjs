@@ -33,7 +33,7 @@ test("app template and lockfile retain the exact DSH and local overrides", () =>
   }
   assert.equal(
     lock.packages["node_modules/@deepseek-ai/dsh-app-boot"].resolved,
-    "file:.packages/dsh-app-boot-0.1.2-rc.1-windows-module-fallback-proxy.2.tgz",
+    "file:.packages/deepseek-ai-dsh-app-boot-0.1.5-rc.2.tgz",
   );
   assert.equal(lock.packages["node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-app-boot"], undefined);
   assert.equal(packageJson.engines.node, release.node.version);
@@ -43,6 +43,24 @@ test("all source-based profile components pin immutable commits", () => {
   assert.match(release.profile.genui.commit, /^[a-f0-9]{40}$/u);
   for (const artifact of release.artifacts.filter((entry) => entry.commit)) {
     assert.match(artifact.commit, /^[a-f0-9]{40}$/u, artifact.package);
+  }
+});
+
+test("all application dependencies are exact and every override is single-instance", () => {
+  const app = JSON.parse(readFileSync(join(root, "templates/app/package.json"), "utf8"));
+  const lock = JSON.parse(readFileSync(join(root, "templates/app/package-lock.json"), "utf8"));
+  for (const [name, version] of Object.entries(app.dependencies)) {
+    assert.match(version, /^(?:\d+\.\d+\.\d+(?:-[\w.-]+)?|file:\.packages\/[^/]+\.tgz)$/u, name);
+    assert.equal(lock.packages[''].dependencies[name], version, name);
+  }
+  for (const artifact of release.artifacts) {
+    assert.equal(app.dependencies[artifact.package], `file:.packages/${artifact.file}`);
+    const copies=Object.keys(lock.packages).filter(p=>p.endsWith(`node_modules/${artifact.package}`));
+    assert.deepEqual(copies, [`node_modules/${artifact.package}`], artifact.package);
+    assert.equal(lock.packages[copies[0]].version, artifact.version);
+  }
+  for (const [name, pkg] of Object.entries(lock.packages)) {
+    if (/node_modules\/@deepseek-ai\/dsh(?:-[^/]+)?$/u.test(name)) assert.equal(pkg.version, release.base.version, name);
   }
 });
 

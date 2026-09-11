@@ -1,6 +1,6 @@
 {
   "name": "dsh-custom-distribution",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "private": true,
   "description": "Reproducible Windows distribution for the customized DeepSeek Harness stack",
   "type": "module",
@@ -9,9 +9,20 @@
   },
   "scripts": {
     "check": "node scripts/check.mjs",
-    "test": "node --test tests/release-lock.test.mjs tests/customizations.test.mjs tests/installer-contract.test.mjs",
+    "test": "node --test tests/*.test.mjs",
     "build": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Build-Release.ps1",
     "acceptance": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Test-Release.ps1"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@deepseek-ai/cordis": "4.0.2",
+    "@deepseek-ai/dsh-brand": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-session-format": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-timeout": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-typert-protocol": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-util-crypto": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-util-values": "0.1.5-rc.2",
+    "@deepseek-ai/schemastery": "3.18.2",
+    "zod": "4.4.3"
+  }
 }

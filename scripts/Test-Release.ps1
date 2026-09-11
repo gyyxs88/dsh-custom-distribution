@@ -87,7 +87,7 @@ function Test-ServiceControlRestart {
         return [int]$newState.pid
     }
     finally {
-        if ([System.IO.File]::Exists($cookieFile)) { [System.IO.File]::Delete($cookieFile) }
+        if ([System.IO.File]::Exists($cookieFile)) { Remove-SafeTree -Parent (Split-Path -Parent $cookieFile) -Path $cookieFile }
     }
 }
 

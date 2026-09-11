@@ -14,9 +14,9 @@
 4. 创建独立的数据目录，并启动 `127.0.0.1:3080`；
 5. 输出实际访问地址和验证结果。
 
-DSH `0.1.2-rc.1` 的访问地址带有一次启动期令牌。首次打开后，DSH 会把它换成绑定本机地址的浏览器 Cookie，并立即跳转到不含令牌的干净地址；重启沿用同一数据目录时，已有 Cookie 仍然有效。发行版只把启动入口保存在本机私有运行状态中，不写入仓库或 Release，服务重启日志也会隐藏该值。
+DSH `0.1.5-rc.2` 的访问地址带有一次启动期令牌。首次打开后，DSH 会把它换成绑定本机地址的浏览器 Cookie，并立即跳转到不含令牌的干净地址；重启沿用同一数据目录时，已有 Cookie 仍然有效。发行版只把启动入口保存在本机私有运行状态中，不写入仓库或 Release，服务重启日志也会隐藏该值。
 
-也可以下载 `dsh-custom-distribution-v0.3.1-win-x64.zip`，解压后运行：
+也可以下载 `dsh-custom-distribution-v0.4.0-win-x64.zip`，解压后运行：
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Install-Bundle.ps1
@@ -32,11 +32,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Install-Bundle.ps1
 
 ## 包含的定制
 
-- DSH `0.1.2-rc.1` 与固定 Node.js `24.19.0`；
+- DSH `0.1.5-rc.2` 与固定 Node.js `24.19.0`；
 - `network_error` 可重试分类、OpenRouter/OpenCode 实时模型目录与安全静态回退；模型设置可编辑文本／图片能力、思维档位及请求值、模型默认强度、协议兼容和 OpenRouter 上游路由，新会话默认模型／思维强度也可持久设置；
 - Node 环境代理自动启用，回环 UI、Gateway、Runtime Manager 与 Session Control 保持直连；
 - Windows profile 模块解析使用 DSH 官方格式的 ESM proxy，不依赖安装卷是否能正确遍历 NTFS Junction；未知 fallback 模式会拒绝启动；
-- 采用官方 rc1 的非用户消息来源标识；
+- 采用官方 rc2 的非用户消息来源标识；
 - 会话菜单复制会话 ID；
 - 设置页的一键重启／关闭服务，安装路径由发行版自动注入；
 - `@file` 文件引用；
@@ -51,7 +51,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Install-Bundle.ps1
 
 下列内容永远不会进入本仓库或 Release：
 
-- `.credentials.yaml`、API key、OAuth token、Cookie；其中 rc1 首次启动会在本机创建仅用于浏览器 Cookie 签名的内部 grant，但发行包不会预置、读取或上传它；
+- `.credentials.yaml`、API key、OAuth token、Cookie；其中 rc2 首次启动会在本机创建仅用于浏览器 Cookie 签名的内部 grant，但发行包不会预置、读取或上传它；
 - 会话历史、工作区登记、审批和定时任务状态；
 - SSH 私钥、known_hosts、远程主机与项目登记；
 - 日志、PID、备份和用户自己的 `settings.yaml`。
@@ -63,6 +63,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Install-Bundle.ps1
 版本事实源是 [release-lock.json](manifest/release-lock.json)。所有内置 tgz、Node 运行时和上游提交均固定版本与 SHA-256。构建命令只在维护发行版时使用：
 
 ```powershell
+npm ci --ignore-scripts
 npm run check
 npm test
 npm run build

@@ -16,7 +16,7 @@ Windows Release zip 内包含：
 - 安装、启停、验证、升级和回滚脚本；
 - 版本锁、模板、许可证和公开文档。
 
-外层 zip 有独立 `.sha256`。安装器先校验外层包，再校验 Node、app、profile 和七个定制 tgz；任何摘要或包身份漂移都会停止安装。
+外层 zip 有独立 `.sha256`。安装器先校验外层包，再校验 Node、app、profile 和十四个定制 tgz；任何摘要或包身份漂移都会停止安装。
 
 ## 安装布局
 
@@ -46,6 +46,6 @@ DSH-Custom/
 
 ## Runtime 与认证边界
 
-Codex、Claude Code、Grok Build 和 OpenCode/ACP 不随本发行包复制。安装器只检查当前用户目录中已知的绝对可执行入口，并把实际存在的入口写入 profile。不存在时保持 fail-closed。
+发行版不复制本机已登录的 Codex、Claude Code、Grok Build 或 OpenCode/ACP。安装器只检查当前用户目录中已知的绝对入口，并把实际存在的入口写入 profile。Claude Agent SDK 及其 Windows 平台配套包按固定版本安装，不包含本机工具的账户或登录状态。
 
-发行版不读取或复制这些工具的登录目录，也不读取 DSH 的凭据文件。远端 Runtime 仍由 `dsh-remote-control` 的受信制品和认证流程管理。
+发行版不读取或复制这些工具的登录目录。升级快照只在本机复制 DSH 持久数据，不解析或输出凭据内容；快照不会打包或上传。远端 Runtime 仍由 `dsh-remote-control` 的受信制品和认证流程管理。

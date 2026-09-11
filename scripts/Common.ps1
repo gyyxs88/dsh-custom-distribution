@@ -26,7 +26,14 @@ function Remove-SafeTree {
     )
     $safePath = Assert-ChildPath -Parent $Parent -Child $Path
     if (Test-Path -LiteralPath $safePath) {
-        Remove-Item -LiteralPath $safePath -Recurse -Force
+        if ($safePath.StartsWith('\\') -or ([IO.DriveInfo]::new([IO.Path]::GetPathRoot($safePath))).DriveType -ne 'Fixed') { throw '目标不支持本地回收站；保留原项。' }
+        Add-Type -AssemblyName Microsoft.VisualBasic
+        if (Test-Path -LiteralPath $safePath -PathType Container) {
+            [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteDirectory($safePath, 'OnlyErrorDialogs', 'SendToRecycleBin', 'ThrowException')
+        } else {
+            [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteFile($safePath, 'OnlyErrorDialogs', 'SendToRecycleBin', 'ThrowException')
+        }
+        if (Test-Path -LiteralPath $safePath) { throw '回收未完成；停止操作。' }
     }
 }
 
@@ -279,6 +286,13 @@ function Set-ActiveVersion {
     }
 
     $profilesRoot = Join-Path $InstallRoot 'data\profiles'
+    $proxyRoot = Join-Path $profilesRoot 'node_modules'
+    if (Test-Path -LiteralPath $proxyRoot) {
+        $proxyBackup = Assert-ChildPath -Parent $InstallRoot -Child (Join-Path $InstallRoot ('data\backups\proxies-' + [guid]::NewGuid().ToString('N')))
+        Assert-ChildPath -Parent $InstallRoot -Child $proxyRoot | Out-Null
+        New-Item -ItemType Directory -Force -Path (Split-Path -Parent $proxyBackup) | Out-Null
+        Move-Item -LiteralPath $proxyRoot -Destination $proxyBackup
+    }
     $activeProfile = Join-Path $profilesRoot 'web'
     $stagingProfile = Join-Path $profilesRoot ('.web-staging-' + [guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Force -Path $profilesRoot | Out-Null

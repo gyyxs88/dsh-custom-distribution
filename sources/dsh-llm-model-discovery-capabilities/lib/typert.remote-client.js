@@ -31,6 +31,7 @@ const _deepseek_ai_dsh_llm_llm_listConfigurableProviders_result$schema = z.array
   'settingsNs': z.string(),
   'settingsPath': z.array(z.string()),
   'declared': z.boolean().optional(),
+  'error': z.string().optional(),
 }))
 const _deepseek_ai_dsh_llm_llm_listProviders_result$schema = z.array(z.object({
   'id': z.string(),
@@ -75,7 +76,7 @@ export const TYPERT_REMOTE = {
         typeSymbol: '@deepseek-ai/dsh-llm#llm/discoverModels:result',
         schema: _deepseek_ai_dsh_llm_llm_discoverModels_result$schema,
       },
-      sourceLocation: {"file":"packages/llm/llm/src/index.ts","line":641,"column":9},
+      sourceLocation: {"file":"packages/llm/llm/src/index.ts","line":628,"column":9},
     },
     {
       id: '@deepseek-ai/dsh-llm#llm/listConfigurableProviders',
@@ -90,7 +91,7 @@ export const TYPERT_REMOTE = {
         typeSymbol: '@deepseek-ai/dsh-llm#llm/listConfigurableProviders:result',
         schema: _deepseek_ai_dsh_llm_llm_listConfigurableProviders_result$schema,
       },
-      sourceLocation: {"file":"packages/llm/llm/src/index.ts","line":534,"column":3},
+      sourceLocation: {"file":"packages/llm/llm/src/index.ts","line":541,"column":3},
     },
     {
       id: '@deepseek-ai/dsh-llm#llm/listProviders',
@@ -105,7 +106,7 @@ export const TYPERT_REMOTE = {
         typeSymbol: '@deepseek-ai/dsh-llm#llm/listProviders:result',
         schema: _deepseek_ai_dsh_llm_llm_listProviders_result$schema,
       },
-      sourceLocation: {"file":"packages/llm/llm/src/index.ts","line":462,"column":3},
+      sourceLocation: {"file":"packages/llm/llm/src/index.ts","line":469,"column":3},
     },
   ],
 }

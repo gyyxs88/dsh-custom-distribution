@@ -26,6 +26,8 @@ try {
     Write-Output 'UPDATE_STATUS=COMPLETED'
 }
 catch {
+    $failedState = Get-InstallState -InstallRoot $InstallRoot
+    if ($failedState.version -ne $current.version) { & (Join-Path $PSScriptRoot 'Rollback-DSH.ps1') -InstallRoot $InstallRoot -Version ([string]$current.version) }
     if ($wasRunning -and -not (Test-RecordedDshProcess -InstallRoot $InstallRoot)) {
         try { & (Join-Path $PSScriptRoot 'Start-DSH.ps1') -InstallRoot $InstallRoot -Port ([int]$current.port) } catch { }
     }
