@@ -27,6 +27,7 @@ window.__ModuleLoader__.load({
 			workspaces;
 			sessions;
 			connecting = /* @__PURE__ */ new Map();
+			lifetime = new AbortController();
 			/**
 			* @param ctx - Client root Context.
 			* @param directoryPicker - the directory-picking Remote namespace.
@@ -57,6 +58,26 @@ window.__ModuleLoader__.load({
 				this.connecting.set(workspaceId, attempt);
 				return attempt;
 			}
+			openSession(sessionId) {
+				this.sessions.open(sessionId);
+				this.ctx.layout.selectPanel(null);
+			}
+			async openWorkspace(workspaceId, beforeOpen) {
+				const navigation = AbortSignal.any([this.ctx.layout.beginNavigation(), this.lifetime.signal]);
+				const isCurrent = () => !navigation.aborted;
+				const sessionId = await this.connectWorkspace(workspaceId);
+				if (!isCurrent()) return;
+				beforeOpen?.(sessionId);
+				if (isCurrent()) this.openSession(sessionId);
+			}
+			async forkSession(sessionId) {
+				const navigation = AbortSignal.any([this.ctx.layout.beginNavigation(), this.lifetime.signal]);
+				const childId = await this.sessions.fork({
+					sessionId,
+					increaseTitle: true
+				});
+				if (!navigation.aborted) this.openSession(childId);
+			}
 			startSession(workspaceId) {
 				const workspace = this.workspaces.list.getSnapshot();
 				const sessions = this.sessions.list.getSnapshot();
@@ -66,11 +87,10 @@ window.__ModuleLoader__.load({
 				const target = workspaceId ?? currentWorkspaceId ?? recent;
 				if (target === void 0) {
 					this.sessions.clear();
+					this.ctx.layout.selectPanel(null);
 					return;
 				}
-				this.connectWorkspace(target).then((sessionId) => {
-					this.sessions.open(sessionId);
-				}, (reason) => {
+				this.openWorkspace(target).catch((reason) => {
 					console.warn("new session failed:", reason);
 				});
 			}
@@ -94,9 +114,8 @@ window.__ModuleLoader__.load({
 			}
 			watchNavigation() {
 				let initial = "waiting";
-				let disposed = false;
 				const reconcile = () => {
-					if (disposed) return;
+					if (this.lifetime.signal.aborted) return;
 					if (this.clearArchivedCurrent()) return;
 					if (initial !== "waiting") return;
 					const workspace = this.workspaces.list.getSnapshot();
@@ -113,11 +132,11 @@ window.__ModuleLoader__.load({
 					}
 					initial = "connecting";
 					this.connectWorkspace(target).then((sessionId) => {
-						if (disposed) return;
+						if (this.lifetime.signal.aborted) return;
 						if (this.sessions.list.getSnapshot().current === void 0) this.sessions.open(sessionId);
 						initial = "done";
 					}, (reason) => {
-						if (disposed) return;
+						if (this.lifetime.signal.aborted) return;
 						initial = "waiting";
 						console.warn("initial workspace selection failed:", reason);
 					});
@@ -126,7 +145,7 @@ window.__ModuleLoader__.load({
 				const disposeSessions = this.sessions.list.subscribe(reconcile);
 				reconcile();
 				return () => {
-					disposed = true;
+					this.lifetime.abort();
 					disposeSessions();
 					disposeWorkspaces();
 				};
@@ -225,10 +244,6 @@ window.__ModuleLoader__.load({
 		}
 		//#endregion
 		//#region ../../util/workspace-path/src/index.ts
-		/**
-		* Browser-safe Workspace path and display helpers.
-		* @module @deepseek-ai/dsh-util-workspace-path
-		*/
 		/** Whether a path uses a Windows drive or UNC prefix. */
 		function isWindowsStylePath(value) {
 			return /^[A-Za-z]:[/\\]/.test(value) || value.startsWith("\\\\");
@@ -288,6 +303,15 @@ window.__ModuleLoader__.load({
 				}
 			}
 			return indexed;
+		}
+		/**
+		* Resolve the Workspace browser group that owns one Session.
+		* @param workspaces - authoritative Workspace membership.
+		* @param sessionId - Session whose browser group is required.
+		* @returns owning Workspace id, or {@link UNGROUPED_KEY} when no Workspace accounts for it.
+		*/
+		function owningGroupKey(workspaces, sessionId) {
+			return workspaces.find((workspace) => workspace.sessionIds.includes(sessionId))?.workspaceId ?? "";
 		}
 		/**
 		* Directory display label: basename of the path (both separators accepted).
@@ -422,7 +446,7 @@ window.__ModuleLoader__.load({
 			const archived = new Set(archivedSessionIds);
 			const expandedGroups = new Set(view.expandedGroups);
 			const descendants = indexSubagentDescendants(list.byId);
-			const currentGroup = list.current === void 0 ? void 0 : workspaces.find((w) => w.sessionIds.includes(list.current))?.workspaceId ?? "";
+			const currentGroup = list.current === void 0 ? void 0 : owningGroupKey(workspaces, list.current);
 			const groups = [];
 			for (const g of groupByWorkspace(list, workspaces, archived, view.ungroupedOrder)) {
 				const expanded = expandedGroups.has(g.key);
@@ -527,7 +551,7 @@ window.__ModuleLoader__.load({
 			};
 		}
 		//#endregion
-		//#region \0dsh-css:D:\Project\deepseek-harness-lab\.tmp\upstream-dsh-0.1.2-rc.1\packages\client\ui-workspace\src\client\rows\Rows.module.css.mjs
+		//#region \0dsh-css:upstream/packages\client\ui-workspace\src\client\rows\Rows.module.css.mjs
 		const css$2 = "._9fDfVq_projectRow,._9fDfVq_sessionRow{cursor:pointer;user-select:none;color:var(--dsw-alias-label-primary);border-radius:8px;align-items:center;gap:6px;padding:0 8px;display:flex}._9fDfVq_projectRow:hover,._9fDfVq_sessionRow:hover,._9fDfVq_sessionRow._9fDfVq_selected{background:var(--dsw-alias-interactive-bg-hover)}._9fDfVq_searchResultRow{box-sizing:border-box;cursor:pointer;text-align:left;width:100%;min-height:48px;color:var(--dsw-alias-label-primary);background:0 0;border:none;border-radius:8px;flex-direction:column;align-items:stretch;padding:4px 8px;display:flex}._9fDfVq_searchResultRow:hover,._9fDfVq_searchResultRow._9fDfVq_selected{background:var(--dsw-alias-interactive-bg-hover)}._9fDfVq_searchResultHeading{align-items:center;min-width:0;display:flex}._9fDfVq_searchResultTitle{text-overflow:ellipsis;white-space:nowrap;flex:0 auto;min-width:0;margin-left:4px;font-size:14px;line-height:20px;overflow:hidden}._9fDfVq_searchResultMeta{align-items:center;gap:6px;min-width:0;margin-left:20px;display:flex}._9fDfVq_searchResultWorkspace,._9fDfVq_searchResultSnippet{text-overflow:ellipsis;white-space:nowrap;font-size:12px;line-height:17px;overflow:hidden}._9fDfVq_searchResultWorkspace{max-width:40%;color:var(--dsw-alias-label-tertiary);flex:none}._9fDfVq_searchResultSnippet{min-width:0;color:var(--dsw-alias-label-secondary);flex:1}._9fDfVq_projectRow{box-sizing:border-box;align-items:center;height:34px}._9fDfVq_projectRow ._9fDfVq_rowActions{height:20px}._9fDfVq_sessionRow{height:32px;animation:_9fDfVq_row-in .15s var(--ds-ease-in-out);gap:0}._9fDfVq_sessionRow ._9fDfVq_title{margin:0 6px 0 4px}._9fDfVq_flatSessionRowWithoutStatus ._9fDfVq_title{margin-left:0}@keyframes _9fDfVq_row-in{0%{opacity:0}}._9fDfVq_slot{width:16px;height:20px;color:var(--dsw-alias-label-tertiary);flex:none;justify-content:center;align-items:center;display:inline-flex}._9fDfVq_visuallyHidden{clip:rect(0 0 0 0);white-space:nowrap;width:1px;height:1px;position:absolute;overflow:hidden}._9fDfVq_folderActive{color:var(--dsw-alias-state-business-primary)}._9fDfVq_projectRow ._9fDfVq_chevron{display:none}._9fDfVq_projectRow:hover ._9fDfVq_chevron{display:inline-flex}._9fDfVq_projectRow:hover ._9fDfVq_folder{display:none}._9fDfVq_arrow{transition:transform .15s var(--ds-ease-in-out)}._9fDfVq_arrowOpen{transform:rotate(90deg)}._9fDfVq_projectText{flex-direction:column;flex:1;gap:2px;min-width:0;display:flex}._9fDfVq_title{text-overflow:ellipsis;white-space:nowrap;min-width:0;font-size:14px;line-height:20px;overflow:hidden}._9fDfVq_renameInput{border:.5px solid var(--dsw-alias-border-l4);background:var(--dsw-alias-button-elevated-fill);min-width:0;color:inherit;border-radius:4px;outline:none;padding:0 2px;font-size:14px;line-height:20px}._9fDfVq_sessionRow ._9fDfVq_title{flex:1}._9fDfVq_meta{text-overflow:ellipsis;white-space:nowrap;color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:20px;overflow:hidden}._9fDfVq_time{color:var(--dsw-alias-label-tertiary);flex:none;font-size:12px;line-height:20px}._9fDfVq_scheduleIndicator{width:16px;height:20px;color:var(--dsw-alias-label-tertiary);flex:none;justify-content:center;align-items:center;margin-right:6px;display:inline-flex}._9fDfVq_searchScheduleIndicator{margin-left:4px;margin-right:0}._9fDfVq_dot{flex:none}._9fDfVq_rowActions{flex:none;align-items:center;gap:12px;display:none}._9fDfVq_projectRow:hover ._9fDfVq_rowActions,._9fDfVq_sessionRow:hover ._9fDfVq_rowActions,._9fDfVq_projectRow._9fDfVq_menuOpen ._9fDfVq_rowActions,._9fDfVq_sessionRow._9fDfVq_menuOpen ._9fDfVq_rowActions{display:inline-flex}._9fDfVq_sessionRow:hover ._9fDfVq_time,._9fDfVq_sessionRow._9fDfVq_menuOpen ._9fDfVq_time{display:none}._9fDfVq_projectRow._9fDfVq_menuOpen,._9fDfVq_sessionRow._9fDfVq_menuOpen{background:var(--dsw-alias-interactive-bg-hover)}._9fDfVq_sessionRow._9fDfVq_dropBefore,._9fDfVq_sessionRow._9fDfVq_dropAfter{position:relative}._9fDfVq_sessionRow._9fDfVq_dropBefore:before,._9fDfVq_sessionRow._9fDfVq_dropAfter:after{content:\"\";z-index:1;background:linear-gradient(55deg, transparent calc(50% - 1px), var(--dsw-alias-state-business-primary) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)) 0 0 / 5px 7px no-repeat, linear-gradient(125deg, transparent calc(50% - 1px), var(--dsw-alias-state-business-primary) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)) 0 5px / 5px 7px no-repeat, linear-gradient(var(--dsw-alias-state-business-primary) 0 0) 4px 5px / calc(100% - 4px) 2px no-repeat;pointer-events:none;height:12px;position:absolute;left:0;right:4px}._9fDfVq_sessionRow._9fDfVq_dropBefore:before{top:-7px}._9fDfVq_sessionRow._9fDfVq_dropAfter:after{bottom:-7px}._9fDfVq_hoverContent{flex-direction:column;gap:8px;display:flex}._9fDfVq_hoverTitle{color:#fff;overflow-wrap:break-word;font-size:14px;line-height:20px}._9fDfVq_hoverPath{color:#cfd3d6;word-break:break-all;font-size:12px;line-height:16px}._9fDfVq_hoverTime{color:#cfd3d6;font-size:12px;line-height:16px}._9fDfVq_hoverStatus{color:#adb2b8;align-items:center;gap:8px;font-size:12px;line-height:20px;display:flex}._9fDfVq_iconButton{cursor:pointer;width:16px;height:16px;color:var(--dsw-alias-label-tertiary);background:0 0;border:none;border-radius:4px;flex:none;justify-content:center;align-items:center;padding:0;display:inline-flex}._9fDfVq_iconButton:hover{color:var(--dsw-alias-label-primary)}._9fDfVq_chevron{color:var(--dsw-alias-label-caption)}@media (prefers-reduced-motion:reduce){._9fDfVq_sessionRow,._9fDfVq_arrow{transition:none;animation:none}}";
 		const tagId$2 = "@deepseek-ai/dsh-client-ui-workspace/Rows.module.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId$2) + "]") === null) {
@@ -902,18 +926,25 @@ window.__ModuleLoader__.load({
 		* @param props.onRename - open the session rename dialog (id + current title).
 		* @param props.onFork - fork a session at its last completed turn.
 		* @param props.onArchive - archive a session by id.
+		* @param props.onReveal - scroll this row into view after search navigation, then acknowledge it.
 		* @param props.drag - optional draggable-row wiring.
 		* @param props.flat - omit the empty status slot in the hierarchy-free flat list.
 		* @param props.t - the browser root's locale seat.
 		* @returns the session row.
 		*/
-		function SessionNodeItem({ node, currentId, now, onOpen, onRename, onFork, onArchive, drag, flat = false, t }) {
+		function SessionNodeItem({ node, currentId, now, onOpen, onRename, onFork, onArchive, onReveal, drag, flat = false, t }) {
 			const row = node;
 			const title = displayTitle(node, t);
 			const selected = node.id === currentId;
 			const statuses = sessionStatuses(node, t);
 			const showStatus = statuses[0].state !== "done" || row.completed;
 			const [menuOpen, setMenuOpen] = (0, react.useState)(false);
+			const rowRef = (0, react.useRef)(null);
+			(0, react.useEffect)(() => {
+				if (onReveal === void 0) return;
+				rowRef.current?.scrollIntoView({ block: "nearest" });
+				onReveal();
+			}, [onReveal]);
 			const [copyStatus, setCopyStatus] = (0, react.useState)(null);
 			const copyAnchor = (0, react.useRef)(null);
 			const copyEpoch = (0, react.useRef)(0);
@@ -944,6 +975,7 @@ window.__ModuleLoader__.load({
 			];
 			return (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.HoverCard, {
 				anchor: (0, react_jsx_runtime.jsxs)("div", {
+					ref: rowRef,
 					className: clsx(Rows_module_css_default.sessionRow, selected && Rows_module_css_default.selected, menuOpen && Rows_module_css_default.menuOpen, flat && !showStatus && Rows_module_css_default.flatSessionRowWithoutStatus, drag?.marker === "before" && Rows_module_css_default.dropBefore, drag?.marker === "after" && Rows_module_css_default.dropAfter),
 					role: "treeitem",
 					"aria-selected": selected,
@@ -1042,7 +1074,7 @@ window.__ModuleLoader__.load({
 			});
 		}
 		//#endregion
-		//#region \0dsh-css:D:\Project\deepseek-harness-lab\.tmp\upstream-dsh-0.1.2-rc.1\packages\client\ui-workspace\src\client\WorkspacePicker.module.css.mjs
+		//#region \0dsh-css:upstream/packages\client\ui-workspace\src\client\WorkspacePicker.module.css.mjs
 		const css$1 = ".lW9Eca_modalAction{min-width:72px}.lW9Eca_modalError,.lW9Eca_menuStatus{margin-top:8px;font-size:12px;line-height:18px}.lW9Eca_modalError{color:var(--dsw-alias-state-error-primary)}.lW9Eca_menuStatus{color:var(--dsw-alias-label-secondary)}";
 		const tagId$1 = "@deepseek-ai/dsh-client-ui-workspace/WorkspacePicker.module.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId$1) + "]") === null) {
@@ -1212,7 +1244,7 @@ window.__ModuleLoader__.load({
 			});
 		}
 		//#endregion
-		//#region \0dsh-css:D:\Project\deepseek-harness-lab\.tmp\upstream-dsh-0.1.2-rc.1\packages\client\ui-workspace\src\client\rows\WorkspaceBrowser.module.css.mjs
+		//#region \0dsh-css:upstream/packages\client\ui-workspace\src\client\rows\WorkspaceBrowser.module.css.mjs
 		const css = ".NLtsuW_root{--dsh-session-list-edge-inset:var(--dsh-sidebar-inline-padding);--dsh-session-list-scrollbar-width:8px;--dsh-session-list-scrollbar-offset:2px;box-sizing:border-box;min-height:0;padding-right:var(--dsh-session-list-edge-inset);flex-direction:column;flex:1;display:flex}.NLtsuW_root.NLtsuW_rail{padding-right:0}.NLtsuW_iconButton{corner-shape:round;cursor:pointer;width:28px;height:28px;color:var(--dsw-alias-label-secondary);background:0 0;border:none;border-radius:50%;flex:none;justify-content:center;align-items:center;padding:0;display:inline-flex}.NLtsuW_iconButton:hover{background:var(--dsw-alias-interactive-bg-hover)}.NLtsuW_sectionHeader{box-sizing:border-box;height:36px;color:var(--dsw-alias-label-tertiary);border-radius:12px;flex:none;justify-content:flex-end;align-items:center;gap:4px;margin-bottom:4px;padding-left:4px;display:flex;overflow:hidden}.NLtsuW_root:not(.NLtsuW_rail) .NLtsuW_sectionHeader{margin-top:2px;margin-right:-4px}.NLtsuW_sectionLabel{white-space:nowrap;opacity:1;visibility:visible;min-width:0;max-width:45%;transition:max-width .18s var(--ds-ease-in-out), margin-right .18s var(--ds-ease-in-out), opacity .12s var(--ds-ease-in-out), transform .18s var(--ds-ease-in-out), visibility 0s linear;flex:none;line-height:20px;overflow:hidden}.NLtsuW_sectionLabelHidden{opacity:0;visibility:hidden;max-width:0;margin-right:-4px;transition-delay:0s,0s,0s,0s,.18s;transform:translate(-4px)}.NLtsuW_searchSlot{box-sizing:border-box;min-width:0;max-width:28px;transition:max-width .18s var(--ds-ease-in-out), padding-left .18s var(--ds-ease-in-out);flex:1;align-items:center;margin-left:auto;padding-left:0;display:flex}.NLtsuW_searchSlotExpanded{max-width:100%;padding-left:0}.NLtsuW_headerActions{opacity:1;visibility:visible;max-width:60px;transition:max-width .18s var(--ds-ease-in-out), opacity .12s var(--ds-ease-in-out), transform .18s var(--ds-ease-in-out), visibility 0s linear;flex:none;align-items:center;gap:4px;display:flex;overflow:hidden}.NLtsuW_headerActionsHidden{opacity:0;visibility:hidden;pointer-events:none;max-width:0;transition-delay:0s,0s,0s,.18s;transform:translate(4px)}.NLtsuW_search{box-sizing:border-box;corner-shape:round;cursor:text;width:100%;height:28px;color:var(--dsw-alias-label-secondary);transition:width .18s var(--ds-ease-in-out), padding .18s var(--ds-ease-in-out), border-color .18s var(--ds-ease-in-out), background-color .18s var(--ds-ease-in-out);background:0 0;border:none;border-radius:50%;flex:none;align-items:center;gap:0;margin:0;padding:0;display:flex;overflow:hidden}.NLtsuW_searchExpanded{border:.5px solid var(--dsw-alias-border-l4);width:calc(100% + 4px);height:30px;color:var(--dsw-alias-label-caption);background:0 0;border-radius:10px;margin-inline:-2px;padding:0 4px 0 0}.NLtsuW_searchButton{corner-shape:round;cursor:pointer;width:28px;height:28px;color:inherit;background:0 0;border:none;border-radius:50%;flex:none;justify-content:center;align-items:center;padding:0;display:inline-flex}.NLtsuW_searchExpanded .NLtsuW_searchButton{width:28px;height:30px}.NLtsuW_searchButton:hover{background:var(--dsw-alias-interactive-bg-hover)}.NLtsuW_searchExpanded .NLtsuW_searchButton:hover{background:0 0}.NLtsuW_searchInput{opacity:0;pointer-events:none;width:0;min-width:0;color:var(--dsw-alias-label-primary);transition:opacity .12s var(--ds-ease-in-out);background:0 0;border:none;outline:none;flex:1;font-size:13px;line-height:18px}.NLtsuW_searchExpanded .NLtsuW_searchInput{opacity:1;pointer-events:auto;margin-left:-2px}.NLtsuW_searchInput::placeholder{color:var(--dsw-alias-label-tertiary)}.NLtsuW_clearButton{corner-shape:round;cursor:pointer;width:24px;height:24px;color:var(--dsw-alias-label-secondary);background:0 0;border:none;border-radius:50%;flex:none;justify-content:center;align-items:center;padding:0;display:inline-flex}.NLtsuW_clearButton:hover{background:var(--dsw-alias-interactive-bg-hover)}.NLtsuW_rail .NLtsuW_sectionHeader{justify-content:flex-start;gap:0;margin-bottom:12px;padding-left:0}.NLtsuW_rail .NLtsuW_headerActions{max-width:none}.NLtsuW_rail .NLtsuW_iconButton{width:36px;height:36px;color:var(--dsw-alias-label-primary)}.NLtsuW_rail .NLtsuW_search{background:0 0;border-color:#0000;gap:0;width:36px;height:36px;margin:0 0 12px;padding:0}.NLtsuW_rail .NLtsuW_searchButton{width:36px;height:36px;color:var(--dsw-alias-label-primary)}.NLtsuW_rail .NLtsuW_searchButton:hover{background:var(--dsw-alias-interactive-bg-hover)}.NLtsuW_listArea{min-height:0;margin-left:-4px;margin-right:calc(-1 * var(--dsh-session-list-edge-inset));flex-direction:column;flex:1;padding-left:4px;display:flex;overflow:visible}.NLtsuW_rail .NLtsuW_listArea{margin-left:0;margin-right:0;padding-left:0}.NLtsuW_treeBody{flex-direction:column;flex:1;min-height:0;display:flex;position:relative}.NLtsuW_fade{left:0;right:var(--dsh-session-list-edge-inset);background:linear-gradient(to bottom, transparent, var(--dsw-specific-sidebar-fill));pointer-events:none;height:24px;position:absolute;bottom:0}.NLtsuW_wide{animation:NLtsuW_wide-in .2s var(--ds-ease-in-out)}@keyframes NLtsuW_wide-in{0%{opacity:0}}.NLtsuW_list{min-height:0;margin-left:-4px;margin-right:var(--dsh-session-list-scrollbar-offset);padding-left:4px;padding-right:calc(var(--dsh-session-list-edge-inset) - var(--dsh-session-list-scrollbar-width) - var(--dsh-session-list-scrollbar-offset));scrollbar-gutter:stable;flex:1;padding-bottom:16px;overflow-y:auto}.NLtsuW_flatList>*+*,.NLtsuW_searchTree>[role=treeitem]+[role=treeitem],.NLtsuW_groupSection>*+*{margin-top:2px}.NLtsuW_searchStatus,.NLtsuW_searchWarning{color:var(--dsw-alias-label-tertiary);padding:10px 12px;font-size:12px;line-height:18px}.NLtsuW_searchWarning{color:var(--dsw-alias-label-secondary)}.NLtsuW_groupSection{position:relative}.NLtsuW_groupSection+.NLtsuW_groupSection{margin-top:4px}.NLtsuW_listTopDropIndicator,.NLtsuW_workspaceDropBefore:before,.NLtsuW_workspaceDropAfter:after{content:\"\";z-index:1;background:linear-gradient(55deg, transparent calc(50% - 1px), var(--dsw-alias-state-business-primary) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)) 0 0 / 5px 7px no-repeat, linear-gradient(125deg, transparent calc(50% - 1px), var(--dsw-alias-state-business-primary) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)) 0 5px / 5px 7px no-repeat, linear-gradient(var(--dsw-alias-state-business-primary) 0 0) 4px 5px / calc(100% - 4px) 2px no-repeat;pointer-events:none;height:12px;position:absolute;left:0;right:0}.NLtsuW_listTopDropIndicator{top:-8px;left:0;right:var(--dsh-session-list-edge-inset)}.NLtsuW_listTopDropActive>.NLtsuW_workspaceDropBefore:first-child:before{display:none}.NLtsuW_workspaceDropBefore:before{top:-8px}.NLtsuW_workspaceDropAfter:after{bottom:-8px}.NLtsuW_sessionOverflowButton{cursor:pointer;text-align:left;width:100%;height:28px;color:var(--dsw-alias-label-tertiary);background:0 0;border:none;border-radius:8px;padding:0 12px 0 28px;font-size:12px}.NLtsuW_groupSection>.NLtsuW_sessionOverflowButton{margin-top:0}.NLtsuW_sessionOverflowButton:hover{color:var(--dsw-alias-label-secondary);background:0 0}.NLtsuW_empty{color:var(--dsw-alias-label-tertiary);padding:16px 12px;font-size:13px}.NLtsuW_renameInput{box-sizing:border-box;border:.5px solid var(--dsw-alias-border-l4);width:100%;height:44px;color:var(--dsw-alias-label-primary);background:0 0;border-radius:22px;outline:none;padding:7px 14px;font-size:14px;font-weight:400;line-height:22px}.NLtsuW_renameInput:disabled{color:var(--dsw-alias-label-dimmed)}.NLtsuW_renameError{color:var(--dsw-alias-state-error-primary);margin-top:8px;font-size:12px;line-height:18px}.NLtsuW_deleteAction:not(:disabled){color:var(--dsw-alias-state-error-primary)}.NLtsuW_deleteStatus{color:var(--dsw-alias-label-secondary);font-size:12px;line-height:18px}@media (prefers-reduced-motion:reduce){.NLtsuW_wide{animation:none}.NLtsuW_search,.NLtsuW_sectionLabel,.NLtsuW_searchSlot,.NLtsuW_searchInput,.NLtsuW_headerActions{transition:none}}";
 		const tagId = "@deepseek-ai/dsh-client-ui-workspace/WorkspaceBrowser.module.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId) + "]") === null) {
@@ -1458,10 +1490,12 @@ window.__ModuleLoader__.load({
 			return e.clientY < rect.top + rect.height / 2 ? "before" : "after";
 		}
 		/** The scrolling session tree; unmounting drops the sessions subscription and expand-all state. */
-		function SessionTree({ useSessions, useSessionPendingInteraction, startSession, open, forkSession, workspaces, archivedSessionIds, onRenameRequest, onDeleteRequest, onSessionRename, onSessionArchive, insertWorkspaceBefore, insertSessionBefore, orderBy, groupExpansion, setGroupExpanded, sessionOrderByAccount, sessionUpdatedAtByAccount, syncSessionOrderAccount, setSessionOrder, home, t }) {
+		function SessionTree({ useSessions, useSessionPendingInteraction, startSession, open, forkSession, workspaces, archivedSessionIds, workspaceReady, usePanelInfo, onRenameRequest, onDeleteRequest, onSessionRename, onSessionArchive, insertWorkspaceBefore, insertSessionBefore, orderBy, groupExpansion, setGroupExpanded, sessionOrderByAccount, sessionUpdatedAtByAccount, syncSessionOrderAccount, setSessionOrder, home, t, revealSessionId, onSessionRevealed }) {
+			const panelActive = usePanelInfo((info) => info.activePanelId !== null);
 			const list = useSessions((s) => s);
 			const pendingInteractions = useSessionPendingInteraction((s) => s);
-			const current = list.current;
+			const current = panelActive ? void 0 : list.current;
+			const revealGroup = revealSessionId === void 0 || !workspaceReady ? void 0 : owningGroupKey(workspaces, revealSessionId);
 			const [expandedSessionGroups, setExpandedSessionGroups] = (0, react.useState)([]);
 			const [drag, setDrag] = (0, react.useState)(null);
 			const sessionDropCommitted = (0, react.useRef)(false);
@@ -1469,7 +1503,7 @@ window.__ModuleLoader__.load({
 			const workspaceDropCommitted = (0, react.useRef)(false);
 			const previousOrderBy = (0, react.useRef)(orderBy);
 			useNativeDragAcceptance(drag !== null || workspaceDrag !== null);
-			const currentGroup = current === void 0 ? void 0 : workspaces.find((w) => w.sessionIds.includes(current))?.workspaceId ?? "";
+			const currentGroup = current === void 0 || !workspaceReady ? void 0 : owningGroupKey(workspaces, current);
 			(0, react.useEffect)(() => {
 				if (current === void 0 || currentGroup === void 0 || Object.hasOwn(groupExpansion, currentGroup)) return;
 				setGroupExpanded(currentGroup, true);
@@ -1537,6 +1571,25 @@ window.__ModuleLoader__.load({
 				pendingInteractions,
 				expandedGroups,
 				sessionOrderByAccount
+			]);
+			(0, react.useEffect)(() => {
+				if (revealGroup === void 0 || groupExpansion[revealGroup] === true) return;
+				setGroupExpanded(revealGroup, true);
+			}, [
+				groupExpansion,
+				revealGroup,
+				setGroupExpanded
+			]);
+			(0, react.useEffect)(() => {
+				if (revealSessionId === void 0 || revealGroup === void 0) return;
+				const group = groups.find((candidate) => candidate.key === revealGroup);
+				if (group === void 0 || !group.expanded || !group.sessions.some((row) => row.id === revealSessionId)) return;
+				if (collapsedSessionRows(group.sessions).rows.some((row) => row.id === revealSessionId)) return;
+				setExpandedSessionGroups((keys) => keys.includes(revealGroup) ? keys : [...keys, revealGroup]);
+			}, [
+				groups,
+				revealGroup,
+				revealSessionId
 			]);
 			const now = Date.now();
 			const commitSessionDrag = (activeDrag, over) => {
@@ -1690,6 +1743,41 @@ window.__ModuleLoader__.load({
 									}),
 									(sessionsExpanded ? group.sessions : collapsed.rows).map((node) => {
 										const sameGroupDrag = drag !== null && drag.accountKey === group.key;
+										const dragProps = {
+											start: () => {
+												sessionDropCommitted.current = false;
+												setDrag({
+													accountKey: group.key,
+													sessionId: node.id,
+													over: null
+												});
+											},
+											active: sameGroupDrag,
+											marker: sameGroupDrag && drag.over?.id === node.id ? drag.over.half : null,
+											hover: (half) => {
+												/* v8 ignore next -- narrowing guard: Rows gates hover on `active`, which is false while the drag state is null. */
+												setDrag((d) => d === null ? d : {
+													...d,
+													over: {
+														id: node.id,
+														half
+													}
+												});
+											},
+											drop: (half) => {
+												/* v8 ignore next -- narrowing guard: Rows gates drop on `active`, which is false while the drag state is null. */
+												if (drag === null) return;
+												commitSessionDrag(drag, {
+													id: node.id,
+													half
+												});
+											},
+											end: () => {
+												if (drag?.over !== null && drag?.over !== void 0) commitSessionDrag(drag, drag.over);
+												else setDrag(null);
+												sessionDropCommitted.current = false;
+											}
+										};
 										return (0, react_jsx_runtime.jsx)(SessionNodeItem, {
 											node,
 											currentId: current,
@@ -1698,41 +1786,10 @@ window.__ModuleLoader__.load({
 											onRename: onSessionRename,
 											onFork: forkSession,
 											onArchive: onSessionArchive,
-											drag: {
-												start: () => {
-													sessionDropCommitted.current = false;
-													setDrag({
-														accountKey: group.key,
-														sessionId: node.id,
-														over: null
-													});
-												},
-												active: sameGroupDrag,
-												marker: sameGroupDrag && drag.over?.id === node.id ? drag.over.half : null,
-												hover: (half) => {
-													/* v8 ignore next -- narrowing guard: Rows gates hover on `active`, which is false while the drag state is null. */
-													setDrag((d) => d === null ? d : {
-														...d,
-														over: {
-															id: node.id,
-															half
-														}
-													});
-												},
-												drop: (half) => {
-													/* v8 ignore next -- narrowing guard: Rows gates drop on `active`, which is false while the drag state is null. */
-													if (drag === null) return;
-													commitSessionDrag(drag, {
-														id: node.id,
-														half
-													});
-												},
-												end: () => {
-													if (drag?.over !== null && drag?.over !== void 0) commitSessionDrag(drag, drag.over);
-													else setDrag(null);
-													sessionDropCommitted.current = false;
-												}
-											},
+											onReveal: node.id === revealSessionId && group.key === revealGroup ? () => {
+												onSessionRevealed(node.id);
+											} : void 0,
+											drag: dragProps,
 											t
 										}, node.id);
 									}),
@@ -1754,7 +1811,8 @@ window.__ModuleLoader__.load({
 			});
 		}
 		/** The flat "In one list" body: every session is one draggable top-level row. */
-		function FlatList({ useSessions, useSessionPendingInteraction, open, forkSession, onSessionRename, onSessionArchive, archivedSessionIds, orderBy, sessionOrderByAccount, sessionUpdatedAtByAccount, syncSessionOrderAccount, setSessionOrder, t }) {
+		function FlatList({ useSessions, useSessionPendingInteraction, open, forkSession, onSessionRename, onSessionArchive, archivedSessionIds, usePanelInfo, orderBy, sessionOrderByAccount, sessionUpdatedAtByAccount, syncSessionOrderAccount, setSessionOrder, revealSessionId, onSessionRevealed, t }) {
+			const panelActive = usePanelInfo((info) => info.activePanelId !== null);
 			const list = useSessions((s) => s);
 			const pendingInteractions = useSessionPendingInteraction((s) => s);
 			const baseRows = (0, react.useMemo)(() => deriveFlat(list, archivedSessionIds, pendingInteractions), [
@@ -1831,12 +1889,15 @@ window.__ModuleLoader__.load({
 						const active = drag !== null;
 						return (0, react_jsx_runtime.jsx)(SessionNodeItem, {
 							node,
-							currentId: list.current,
+							currentId: panelActive ? void 0 : list.current,
 							now,
 							onOpen: open,
 							onRename: onSessionRename,
 							onFork: forkSession,
 							onArchive: onSessionArchive,
+							onReveal: node.id === revealSessionId ? () => {
+								onSessionRevealed(node.id);
+							} : void 0,
 							flat: true,
 							drag: {
 								start: () => {
@@ -1877,7 +1938,8 @@ window.__ModuleLoader__.load({
 			});
 		}
 		/** Flat search body: local metadata matches plus the current Host result page. */
-		function SearchResults({ useSessions, useSessionPendingInteraction, open, workspaces, archivedSessionIds, query, remote, resultLimit, t }) {
+		function SearchResults({ useSessions, useSessionPendingInteraction, open, workspaces, archivedSessionIds, query, remote, resultLimit, usePanelInfo, t }) {
+			const panelActive = usePanelInfo((info) => info.activePanelId !== null);
 			const list = useSessions((s) => s);
 			const pendingInteractions = useSessionPendingInteraction((s) => s);
 			const currentRemote = remote.query === query ? remote : {
@@ -1908,7 +1970,7 @@ window.__ModuleLoader__.load({
 							"aria-label": t("search.results.aria"),
 							children: results.items.map((result) => (0, react_jsx_runtime.jsx)(SearchResultItem, {
 								result,
-								currentId: list.current,
+								currentId: panelActive ? void 0 : list.current,
 								onOpen: open,
 								t
 							}, result.id))
@@ -1940,10 +2002,11 @@ window.__ModuleLoader__.load({
 		* @param props - composed slot props (shell owner share + store + injected actions).
 		* @returns the region element tree.
 		*/
-		function WorkspaceBrowser({ wide, expandSidebar, useSessions, useSessionPendingInteraction, useWorkspaces, useStore, actions, startSession, open, renameSession, forkSession, renameWorkspace, deleteWorkspace, insertWorkspaceBefore, archiveSession, insertSessionBefore, createWorkspace, searchSessions, searchResultLimit, useDirectoryFlow, useHostInfo, renderSlot, t }) {
+		function WorkspaceBrowser({ wide, usePanelInfo, expandSidebar, useSessions, useSessionPendingInteraction, useWorkspaces, useStore, actions, startSession, open, renameSession, forkSession, renameWorkspace, deleteWorkspace, insertWorkspaceBefore, archiveSession, insertSessionBefore, createWorkspace, searchSessions, searchResultLimit, useDirectoryFlow, useHostInfo, renderSlot, t }) {
 			const home = useHostInfo((info) => info.home);
 			const workspaces = useWorkspaces((state) => state.items);
 			const workspacePhase = useWorkspaces((state) => state.phase);
+			const workspaceStreamState = useWorkspaces((state) => state.state);
 			const archivedSessionIds = useWorkspaces((state) => state.archivedSessionIds);
 			const directoryFlowAvailable = useDirectoryFlow((occupied) => occupied);
 			const groupBy = useStore((s) => s.groupBy);
@@ -1955,7 +2018,7 @@ window.__ModuleLoader__.load({
 				const current = state.current;
 				return current !== void 0 && state.byId[current]?.blank === true ? current : void 0;
 			});
-			const currentBlankAccount = currentBlankSessionId === void 0 ? void 0 : workspaces.find((workspace) => workspace.sessionIds.includes(currentBlankSessionId))?.workspaceId ?? "";
+			const currentBlankAccount = currentBlankSessionId === void 0 || workspacePhase !== "ready" ? void 0 : owningGroupKey(workspaces, currentBlankSessionId);
 			const promotedBlank = (0, react.useRef)(void 0);
 			(0, react.useEffect)(() => {
 				if (currentBlankSessionId === void 0 || currentBlankAccount === void 0) {
@@ -1992,6 +2055,7 @@ window.__ModuleLoader__.load({
 			]);
 			const [query, setQuery] = (0, react.useState)("");
 			const [searchExpanded, setSearchExpanded] = (0, react.useState)(false);
+			const [revealSessionId, setRevealSessionId] = (0, react.useState)(void 0);
 			const normalizedQuery = sanitizeSearchQuery(query).trim();
 			const [remoteSearch, setRemoteSearch] = (0, react.useState)({
 				query: "",
@@ -2004,6 +2068,18 @@ window.__ModuleLoader__.load({
 			const [wsPickerOpen, setWsPickerOpen] = (0, react.useState)(false);
 			const wsPlusRef = (0, react.useRef)(null);
 			const composingRef = (0, react.useRef)(false);
+			const openSearchResult = (sessionId) => {
+				setRevealSessionId(sessionId);
+				setQuery("");
+				setSearchExpanded(false);
+				open(sessionId);
+			};
+			const acknowledgeSessionReveal = (sessionId) => {
+				setRevealSessionId((current) => current === sessionId ? void 0 : current);
+			};
+			(0, react.useEffect)(() => {
+				if (normalizedQuery !== "") setRevealSessionId(void 0);
+			}, [normalizedQuery]);
 			const [searchOnExpand, setSearchOnExpand] = (0, react.useState)(false);
 			(0, react.useEffect)(() => {
 				if (wide && searchOnExpand) {
@@ -2308,9 +2384,10 @@ window.__ModuleLoader__.load({
 					(0, react_jsx_runtime.jsx)("div", {
 						className: WorkspaceBrowser_module_css_default.listArea,
 						children: wide && (normalizedQuery !== "" ? (0, react_jsx_runtime.jsx)(SearchResults, {
+							usePanelInfo,
 							useSessions,
 							useSessionPendingInteraction,
-							open,
+							open: openSearchResult,
 							workspaces,
 							archivedSessionIds,
 							query: normalizedQuery,
@@ -2318,6 +2395,7 @@ window.__ModuleLoader__.load({
 							resultLimit: searchResultLimit,
 							t
 						}) : groupBy === "flat" ? (0, react_jsx_runtime.jsx)(FlatList, {
+							usePanelInfo,
 							useSessions,
 							useSessionPendingInteraction,
 							open,
@@ -2330,14 +2408,18 @@ window.__ModuleLoader__.load({
 							sessionUpdatedAtByAccount,
 							syncSessionOrderAccount: actions.syncSessionOrderAccount,
 							setSessionOrder: actions.setSessionOrder,
+							revealSessionId,
+							onSessionRevealed: acknowledgeSessionReveal,
 							t
 						}) : (0, react_jsx_runtime.jsx)(SessionTree, {
+							usePanelInfo,
 							useSessions,
 							useSessionPendingInteraction,
 							onSessionRename,
 							onSessionArchive,
 							forkSession,
 							workspaces,
+							workspaceReady: workspacePhase === "ready" && workspaceStreamState !== "loading",
 							groupExpansion,
 							setGroupExpanded: actions.setGroupExpanded,
 							sessionOrderByAccount,
@@ -2350,6 +2432,8 @@ window.__ModuleLoader__.load({
 							insertWorkspaceBefore,
 							insertSessionBefore,
 							orderBy,
+							revealSessionId,
+							onSessionRevealed: acknowledgeSessionReveal,
 							home,
 							t,
 							onRenameRequest: (workspaceId, currentTitle) => {
@@ -2665,7 +2749,8 @@ window.__ModuleLoader__.load({
 			"workspaces",
 			"locale",
 			"remote",
-			"remote.directoryPicker"
+			"remote.directoryPicker",
+			"layout"
 		];
 		/**
 		* Register the browser and picker once their slot declarations are on the
@@ -2697,13 +2782,14 @@ window.__ModuleLoader__.load({
 				subscribe: (listener) => ctx.on("connection/reset", listener)
 			};
 			const pickerFlowSource = flowSource("conversation.hero.workspace.directoryFlow");
+			const openSession = (sessionId) => {
+				uiWorkspace.openSession(sessionId);
+			};
 			const browserInjected = () => ({
 				startSession: (workspaceId) => {
 					uiWorkspace.startSession(workspaceId);
 				},
-				open: (sessionId) => {
-					sessions.open(sessionId);
-				},
+				open: openSession,
 				searchSessions,
 				searchResultLimit: sessions.searchResultLimit,
 				renameSession: async (sessionId, title) => {
@@ -2713,12 +2799,7 @@ window.__ModuleLoader__.load({
 					if (!result.ok) throw new Error(result.error.message);
 				},
 				forkSession: (sessionId) => {
-					sessions.fork({
-						sessionId,
-						increaseTitle: true
-					}).then((childId) => {
-						sessions.open(childId);
-					}).catch(() => {});
+					uiWorkspace.forkSession(sessionId).catch(() => {});
 				},
 				renameWorkspace: async (workspaceId, title) => {
 					await workspaces.rename(workspaceId, title);

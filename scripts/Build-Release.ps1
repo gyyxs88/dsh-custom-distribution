@@ -26,7 +26,7 @@ foreach ($artifact in @($release.artifacts)) {
 
 $runtimeCache = Join-Path $cacheRoot ([string]$release.node.archive)
 if (-not (Test-Path -LiteralPath $runtimeCache -PathType Leaf) -or (Get-Sha256 $runtimeCache) -ne [string]$release.node.sha256) {
-    if (Test-Path -LiteralPath $runtimeCache) { Remove-Item -LiteralPath $runtimeCache -Force }
+    if (Test-Path -LiteralPath $runtimeCache) { Remove-SafeTree -Parent (Split-Path -Parent $runtimeCache) -Path $runtimeCache }
     Write-Output "DOWNLOAD_NODE=$($release.node.url)"
     Invoke-WebRequest -Uri $release.node.url -OutFile $runtimeCache -UseBasicParsing
 }
@@ -57,7 +57,7 @@ try {
     $env:npm_config_cache = Join-Path $cacheRoot 'npm'
     Push-Location $appRoot
     try {
-        & $nodeExe $npmCli ci --no-audit --no-fund
+        & $nodeExe $npmCli ci --ignore-scripts --no-audit --no-fund
         if ($LASTEXITCODE -ne 0) { throw "npm ci 失败，退出码 $LASTEXITCODE" }
     }
     finally { Pop-Location }
@@ -80,24 +80,13 @@ Copy-Item -LiteralPath (Join-Path $distributionRoot 'templates\cordis.yml') -Des
 Copy-Item -LiteralPath (Join-Path $distributionRoot 'templates\pnpm-workspace.yaml') -Destination (Join-Path $profileRoot 'pnpm-workspace.yaml')
 Write-Utf8NoBom -Value '[]' -Path (Join-Path $profileRoot 'cordis.patch.yml')
 
-$dshEntrypoint = Join-Path $appRoot 'node_modules\@deepseek-ai\dsh\lib\bin.js'
-$oldDshHome = $env:DSH_HOME
-$oldPath = $env:PATH
-try {
-    $env:DSH_HOME = $profileHome
-    $env:PATH = "$runtimeRoot;$oldPath"
-    Push-Location $appRoot
-    try {
-        & $nodeExe $dshEntrypoint plugin --profile web install --force --ignore-scripts --frozen-lockfile=false
-        if ($LASTEXITCODE -ne 0) { throw "DSH profile 安装失败，退出码 $LASTEXITCODE" }
-        & $nodeExe $dshEntrypoint --profile web --dump-config | Out-Null
-        if ($LASTEXITCODE -ne 0) { throw 'DSH profile 组合验证失败。' }
-    }
-    finally { Pop-Location }
-}
-finally {
-    $env:DSH_HOME = $oldDshHome
-    $env:PATH = $oldPath
+# Copy the six reviewed plugins from the single locked application closure.
+# Profile peers resolve through the relocated application's managed module proxies.
+foreach ($artifact in @($release.artifacts | Where-Object { $_.placement -eq 'profile' })) {
+    $source = Join-Path $appRoot ('node_modules\' + $artifact.package)
+    $destination = Join-Path $profileRoot ('node_modules\' + $artifact.package)
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destination) | Out-Null
+    Copy-Item -LiteralPath $source -Destination $destination -Recurse -Force
 }
 
 foreach ($packageName in @('dsh-at-file', 'dsh-local-service-control', 'dsh-session-control', 'dsh-remote-control', 'dsh-subagent-code-agents')) {

@@ -141,6 +141,7 @@ export declare const en: {
     customApi: string;
     customApiUnset: string;
     customNeedsBaseUrl: string;
+    customBaseUrlInvalid: string;
     customNeedsModels: string;
     customBaseUrlPlaceholder: string;
     settingsPathUnresolvable: string;

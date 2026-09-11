@@ -33,6 +33,9 @@ window.__ModuleLoader__.load({
         try {
           const current = await readStatus();
           if (current.pid !== previousPid) {
+            // The control route can mount before the authenticated SPA fallback.
+            const ready = await fetch("/", { cache: "no-store", credentials: "same-origin" });
+            if (!ready.ok || !ready.headers.get("content-type")?.includes("text/html")) continue;
             window.location.reload();
             return;
           }

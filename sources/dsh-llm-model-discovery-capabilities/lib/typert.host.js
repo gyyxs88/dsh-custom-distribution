@@ -31,6 +31,7 @@ const _deepseek_ai_dsh_llm_llm_listConfigurableProviders_result$schema = z.array
   'settingsNs': z.string(),
   'settingsPath': z.array(z.string()),
   'declared': z.boolean().optional(),
+  'error': z.string().optional(),
 }))
 const _deepseek_ai_dsh_llm_llm_listProviders_result$schema = z.array(z.object({
   'id': z.string(),
@@ -78,7 +79,7 @@ export const TYPERT = {
         typeSymbol: '@deepseek-ai/dsh-llm#llm/discoverModels:result',
         schema: _deepseek_ai_dsh_llm_llm_discoverModels_result$schema,
       },
-      sourceLocation: {"file":"packages/llm/llm/src/index.ts","line":641,"column":9},
+      sourceLocation: {"file":"packages/llm/llm/src/index.ts","line":628,"column":9},
     },
     {
       id: '@deepseek-ai/dsh-llm#llm/listConfigurableProviders',
@@ -93,7 +94,7 @@ export const TYPERT = {
         typeSymbol: '@deepseek-ai/dsh-llm#llm/listConfigurableProviders:result',
         schema: _deepseek_ai_dsh_llm_llm_listConfigurableProviders_result$schema,
       },
-      sourceLocation: {"file":"packages/llm/llm/src/index.ts","line":534,"column":3},
+      sourceLocation: {"file":"packages/llm/llm/src/index.ts","line":541,"column":3},
     },
     {
       id: '@deepseek-ai/dsh-llm#llm/listProviders',
@@ -108,7 +109,7 @@ export const TYPERT = {
         typeSymbol: '@deepseek-ai/dsh-llm#llm/listProviders:result',
         schema: _deepseek_ai_dsh_llm_llm_listProviders_result$schema,
       },
-      sourceLocation: {"file":"packages/llm/llm/src/index.ts","line":462,"column":3},
+      sourceLocation: {"file":"packages/llm/llm/src/index.ts","line":469,"column":3},
     },
   ],
   model: {
@@ -186,6 +187,13 @@ export const TYPERT = {
           },
           {
             "kind": "method",
+            "name": "fileRequestText",
+            "signature": "fileRequestText(ref: FileAttachmentRef): string",
+            "summary": "Resolve the exact text one durable file occurrence contributes to every provider request in the current execution environment.",
+            "jsDoc": "/**\n * Resolve the exact text one durable file occurrence contributes to every\n * provider request in the current execution environment.\n * @param ref - durable verbatim file reference from model history.\n * @returns the same deterministic handle text used at adapter dispatch.\n */"
+          },
+          {
+            "kind": "method",
             "name": "listModels",
             "signature": "async listModels(provider: string): Promise<LlmModelInfo[]>",
             "summary": "Discover models advertised by one registered provider.",
@@ -251,7 +259,7 @@ export const TYPERT = {
           },
           {
             "name": "ContentBlockMap",
-            "declaration": "export interface ContentBlockMap {\n    text: TextBlock;\n    reasoning: ReasoningBlock;\n    image: ImageBlock;\n    'tool-call': ToolCallBlock;\n    'tool-result': ToolResultBlock;\n}"
+            "declaration": "export interface ContentBlockMap {\n    text: TextBlock;\n    reasoning: ReasoningBlock;\n    image: ImageBlock;\n    file: FileBlock;\n    'tool-call': ToolCallBlock;\n    'tool-result': ToolResultBlock;\n}"
           },
           {
             "name": "ContentBlockType",
@@ -268,6 +276,14 @@ export const TYPERT = {
           {
             "name": "DirectoryRegistrationHandle",
             "declaration": "export interface DirectoryRegistrationHandle {\n    (): void;\n    replace(entries: readonly LlmConfigurableProvider[]): void;\n}"
+          },
+          {
+            "name": "FileAttachmentRef",
+            "declaration": "export interface FileAttachmentRef {\n    attachmentId: AttachmentId;\n    name: string;\n    bytes: number;\n}"
+          },
+          {
+            "name": "FileBlock",
+            "declaration": "export interface FileBlock {\n    type: 'file';\n    attachment: FileAttachmentRef;\n}"
           },
           {
             "name": "FinishReason",
@@ -315,7 +331,7 @@ export const TYPERT = {
           },
           {
             "name": "LlmConfigurableProvider",
-            "declaration": "export interface LlmConfigurableProvider {\n    provider: string;\n    displayName: string;\n    settingsNs: string;\n    settingsPath: readonly string[];\n    declared?: boolean;\n}"
+            "declaration": "export interface LlmConfigurableProvider {\n    provider: string;\n    displayName: string;\n    settingsNs: string;\n    settingsPath: readonly string[];\n    declared?: boolean;\n    error?: string;\n}"
           },
           {
             "name": "LlmDiscoveredModel",
@@ -359,7 +375,7 @@ export const TYPERT = {
           },
           {
             "name": "LlmResolvedModelInfo",
-            "declaration": "export interface LlmResolvedModelInfo extends LlmModelInfo {\n    context?: LlmModelContext;\n    defaultMaxTokens?: number;\n    reasoning?: LlmModelReasoningInfo;\n}"
+            "declaration": "export interface LlmResolvedModelInfo extends LlmModelInfo {\n    context?: LlmModelContext;\n    defaultMaxTokens?: number;\n    reasoning?: LlmModelReasoningInfo;\n    systemPromptUpdate?: SystemPromptUpdate;\n}"
           },
           {
             "name": "Message",
@@ -399,7 +415,7 @@ export const TYPERT = {
           },
           {
             "name": "PreparedLlmCall",
-            "declaration": "export interface PreparedLlmCall {\n    readonly config: LlmCallConfig;\n    readonly retryPolicy: ResolvedRetryPolicy;\n    readonly context?: LlmModelContext;\n    readonly inputModalities?: readonly ModelModality[];\n    readonly adapterDefaults: LlmCallConfigAdapterDefaults;\n    stream(options: GenerateOptions): AsyncIterable<StreamChunk>;\n}"
+            "declaration": "export interface PreparedLlmCall {\n    readonly config: LlmCallConfig;\n    readonly retryPolicy: ResolvedRetryPolicy;\n    readonly context?: LlmModelContext;\n    readonly inputModalities?: readonly ModelModality[];\n    readonly systemPromptUpdate?: SystemPromptUpdate;\n    readonly adapterDefaults: LlmCallConfigAdapterDefaults;\n    stream(options: GenerateOptions): AsyncIterable<StreamChunk>;\n}"
           },
           {
             "name": "ProviderRequestId",
@@ -439,7 +455,7 @@ export const TYPERT = {
           },
           {
             "name": "SessionReferenceSource",
-            "declaration": "export interface SessionReferenceSource {\n    kind: 'session-reference';\n    form: 'recall';\n    version: 1;\n    references: { sessionId: string; label: string; capturedThroughSeq: OptionalSessionSeq; compacted: boolean; originalMessages: number; retainedMessages: number; omittedMessages: number; omittedBytes: number; truncated: boolean; inputIndex: number; }[];\n}"
+            "declaration": "export interface SessionReferenceSource {\n    kind: 'session-reference';\n    form: 'recall';\n    version: 1;\n    references: { sessionId: string; label: string; capturedFormatVersion?: number; capturedThroughSeq: OptionalSessionSeq; compacted: boolean; originalMessages: number; retainedMessages: number; omittedMessages: number; omittedBytes: number; truncated: boolean; inputIndex: number; }[];\n}"
           },
           {
             "name": "SessionRequestId",
@@ -460,6 +476,10 @@ export const TYPERT = {
           {
             "name": "SubagentSettledMessageSource",
             "declaration": "export interface SubagentSettledMessageSource {\n    readonly kind: 'subagent-settled';\n    readonly form: 'notice';\n    readonly summary: string;\n    readonly senderSessionId: SessionId;\n}"
+          },
+          {
+            "name": "SystemPromptUpdate",
+            "declaration": "export type SystemPromptUpdate = 'in-history';"
           },
           {
             "name": "TeamId",

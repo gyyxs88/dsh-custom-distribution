@@ -55,5 +55,12 @@ try {
     if ($LASTEXITCODE -ne 0) { throw '内部安装器返回失败。' }
 }
 finally {
-    if (Test-Path -LiteralPath $temporaryRoot) { Remove-Item -LiteralPath $temporaryRoot -Recurse -Force }
+    if (Test-Path -LiteralPath $temporaryRoot) {
+        $full = [IO.Path]::GetFullPath($temporaryRoot)
+        $parent = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\') + '\'
+        if (-not $full.StartsWith($parent, [StringComparison]::OrdinalIgnoreCase) -or $full.StartsWith('\\')) { throw '拒绝清理临时目录之外的路径。' }
+        Add-Type -AssemblyName Microsoft.VisualBasic
+        [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteDirectory($full, 'OnlyErrorDialogs', 'SendToRecycleBin', 'ThrowException')
+        if (Test-Path -LiteralPath $full) { throw '临时目录回收失败。' }
+    }
 }

@@ -2,9 +2,9 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 
-const appRoot = process.argv[2];
+const appRoot = process.argv[2] && resolve(process.argv[2]);
 if (!appRoot) throw new Error("app root is required");
 const resolveFromApp = createRequire(join(appRoot, "package.json")).resolve;
 const load = async name => import(pathToFileURL(resolveFromApp(name)).href);
@@ -32,6 +32,7 @@ try {
   const live = await ctx.llm.discoverModels("llm-pi-ai", { provider: "openrouter" });
   assert.deepEqual(live, [{
     id: "acceptance/vision-model",
+    name: "acceptance/vision-model",
     input: ["text", "image"],
     reasoningEfforts: { off: null, low: "low", high: "high" },
     defaultReasoningEffort: "high",

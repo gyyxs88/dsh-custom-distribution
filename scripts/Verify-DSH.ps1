@@ -22,12 +22,22 @@ foreach ($scriptName in @('Service-Control-Launcher.ps1', 'Service-Control-Worke
     }
 }
 
-$plugins = [ordered]@{
-    'dsh-at-file' = '0.6.9'
-    'dsh-local-service-control' = '0.2.0'
-    'dsh-session-control' = '0.8.0'
-    'dsh-remote-control' = '0.3.0'
-    'dsh-subagent-code-agents' = '0.2.0'
+$plugins = [ordered]@{}
+$versionLockPath = Join-Path $state.versionRoot 'release-lock.json'
+if (Test-Path -LiteralPath $versionLockPath) {
+    $versionLock = Read-JsonFile -Path $versionLockPath
+    foreach ($artifact in @($versionLock.artifacts | Where-Object { $_.placement -eq 'profile' })) { $plugins[[string]$artifact.package] = [string]$artifact.version }
+} else {
+    # Older receipts identify every artifact by a hash; inspect those immutable package manifests.
+    foreach ($artifactName in @($receipt.artifactSha256.PSObject.Properties.Name)) {
+        $archivePath = Join-Path $state.appRoot ('.packages\' + $artifactName)
+        Assert-FileHash -Path $archivePath -Expected ([string]$receipt.artifactSha256.$artifactName)
+        $manifestText = & tar.exe -xOf $archivePath 'package/package.json'
+        if ($LASTEXITCODE -ne 0) { throw '旧版本插件包无法读取。' }
+        $manifest = ($manifestText -join "
+") | ConvertFrom-Json
+        if (-not ([string]$manifest.name).StartsWith('@deepseek-ai/')) { $plugins[[string]$manifest.name] = [string]$manifest.version }
+    }
 }
 foreach ($entry in $plugins.GetEnumerator()) {
     $path = Join-Path $InstallRoot "data\profiles\web\node_modules\$($entry.Key)\package.json"
@@ -99,9 +109,9 @@ if ($process) {
         }
         catch { $failures.Add("HTTP 验证失败：$($_.Exception.Message)") }
         finally {
-            Remove-Item -LiteralPath $cookieFile -Force -ErrorAction SilentlyContinue
-            Remove-Item -LiteralPath $htmlFile -Force -ErrorAction SilentlyContinue
-            Remove-Item -LiteralPath $clientBundleFile -Force -ErrorAction SilentlyContinue
+            Remove-SafeTree -Parent (Split-Path -Parent $cookieFile) -Path $cookieFile
+            Remove-SafeTree -Parent (Split-Path -Parent $htmlFile) -Path $htmlFile
+            Remove-SafeTree -Parent (Split-Path -Parent $clientBundleFile) -Path $clientBundleFile
         }
     }
     $moduleProxyPath = Join-Path $InstallRoot 'data\profiles\node_modules\@deepseek-ai\dsh-client-ui-chat'
