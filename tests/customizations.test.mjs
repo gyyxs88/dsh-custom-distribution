@@ -99,7 +99,7 @@ test("at-file uses the DSH 0.1.2 settings namespace contract", () => {
 });
 
 test("pinned control artifacts include durable asynchronous reports and their Skills", () => {
-  const sessionFile = "dsh-session-control-0.8.1.tgz";
+  const sessionFile = "dsh-session-control-0.8.2.tgz";
   const sessionNotifier = archiveSource(sessionFile, "lib/operation-notifier.js");
   const sessionSkill = archiveSource(sessionFile, "skills/dsh-session-control/SKILL.md");
   const sessionSecurity = archiveSource(sessionFile, "lib/security.js");
@@ -115,7 +115,7 @@ test("pinned control artifacts include durable asynchronous reports and their Sk
   const remotePackage = JSON.parse(archiveSource("dsh-remote-control-0.3.1.tgz", "package.json"));
   assert.equal(remotePackage.peerDependencies["dsh-session-control"], ">=0.8.0 <0.9.0");
 
-  const subagentFile = "dsh-subagent-code-agents-0.2.1.tgz";
+  const subagentFile = "dsh-subagent-code-agents-0.2.2.tgz";
   const runNotifier = archiveSource(subagentFile, "packages/plugin/lib/run-notifier.js");
   const subagentSkill = archiveSource(subagentFile, "packages/plugin/skills/dsh-code-agents/SKILL.md");
   const subagentTool = archiveSource(subagentFile, "packages/plugin/lib/tool.js");

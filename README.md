@@ -16,7 +16,7 @@
 
 DSH `0.1.5-rc.2` 的访问地址带有一次启动期令牌。首次打开后，DSH 会把它换成绑定本机地址的浏览器 Cookie，并立即跳转到不含令牌的干净地址；重启沿用同一数据目录时，已有 Cookie 仍然有效。发行版只把启动入口保存在本机私有运行状态中，不写入仓库或 Release，服务重启日志也会隐藏该值。
 
-也可以下载 `dsh-custom-distribution-v0.4.0-win-x64.zip`，解压后运行：
+也可以下载 `dsh-custom-distribution-v0.5.0-win-x64.zip`，解压后运行：
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Install-Bundle.ps1
@@ -30,16 +30,20 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Install-Bundle.ps1
 - `Update-DSH.ps1`：安装新的发行包并保留旧版本；
 - `Rollback-DSH.ps1`：切回上一个已安装版本。
 
+## 官方优先，插件补充
+
+官方已提供且满足权限与行为要求的功能，由官方实现拥有默认入口。插件只填具体缺口，不再并行维护重复界面或基础服务。现役边界及下一次升级的退役条件见 [官方优先策略](docs/OFFICIAL_FIRST.md)。
+
 ## 包含的定制
 
 - DSH `0.1.5-rc.2` 与固定 Node.js `24.19.0`；
 - `network_error` 可重试分类、OpenRouter/OpenCode 实时模型目录与安全静态回退；模型设置可编辑文本／图片能力、思维档位及请求值、模型默认强度、协议兼容和 OpenRouter 上游路由，新会话默认模型／思维强度也可持久设置；
-- Node 环境代理自动启用，回环 UI、Gateway、Runtime Manager 与 Session Control 保持直连；
+- 网络代理由官方 dsh-http-proxy 统一处理；发行版不再注入 NODE_USE_ENV_PROXY 或改写 NO_PROXY；
 - Windows profile 模块解析使用 DSH 官方格式的 ESM proxy，不依赖安装卷是否能正确遍历 NTFS Junction；未知 fallback 模式会拒绝启动；
 - 采用官方 rc2 的非用户消息来源标识；
 - 会话菜单复制会话 ID；
 - 设置页的一键重启／关闭服务，安装路径由发行版自动注入；
-- `@file` 文件引用；
+- 文件／目录引用使用官方 @file 界面；旧 dsh-at-file 默认停用，历史设置与制品保留；
 - 会话控制、审批、定时任务、无损分页读取 live/cold 会话历史；指定会话 ID 的状态查询自动兼容 cold，不依赖模型额外传参；子会话终态/需关注时对来源会话持久自动回报；
 - 多 Agent 的 Codex / Claude Code / Grok Build / ACP 渠道；默认后台 run、持久自动回报、无重复 jobs 通知，以及全局 Read Only `action-advisor`；
 - SSH 远程项目、远端插件和 Runtime 管理；

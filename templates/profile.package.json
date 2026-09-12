@@ -7,7 +7,6 @@
       "bundles": [
         "@deepseek-ai/dsh-base",
         "@deepseek-ai/dsh-web-app",
-        "dsh-at-file",
         "@omdsh-dev/dsh-genui",
         "dsh-local-service-control",
         "dsh-session-control",

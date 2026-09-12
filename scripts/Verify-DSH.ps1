@@ -88,21 +88,10 @@ if ($process) {
                     else {
                         $boot = $bootMatch.Groups['json'].Value | ConvertFrom-Json
                         $clientIds = @($boot.entries | ForEach-Object { [string]$_.id })
-                        foreach ($requiredClientId in @('@deepseek-ai/dsh-client-modules', '@deepseek-ai/dsh-client-ui-chat', 'dsh-at-file', 'dsh-local-service-control')) {
+                        foreach ($requiredClientId in @('@deepseek-ai/dsh-client-modules', '@deepseek-ai/dsh-client-ui-chat', '@deepseek-ai/dsh-client-ui-reference', 'dsh-local-service-control')) {
                             if ($clientIds -notcontains $requiredClientId) { $failures.Add("浏览器启动图缺少插件：$requiredClientId") }
                         }
-                        $atFileEntry = @($boot.entries | Where-Object { $_.id -eq 'dsh-at-file' })
-                        if ($atFileEntry.Count -eq 1) {
-                            $clientBundleUri = [System.Uri]::new($originUri, [string]$atFileEntry[0].url)
-                            $clientBundleStatus = & $curlExe --noproxy '*' --connect-timeout 5 --max-time 15 --silent --show-error `
-                                --output $clientBundleFile --cookie $cookieFile --write-out '%{http_code}' -- $clientBundleUri.AbsoluteUri
-                            if ($LASTEXITCODE -ne 0 -or $clientBundleStatus -ne '200') { $failures.Add("dsh-at-file 浏览器包状态异常：$clientBundleStatus") }
-                            else {
-                                $clientBundle = Get-Content -LiteralPath $clientBundleFile -Raw -Encoding UTF8
-                                if ($clientBundle -notmatch 'require\("@deepseek-ai/dsh-client-store"\)') { $failures.Add('dsh-at-file 未使用 rc1 浏览器静态存储模块') }
-                                if ($clientBundle -match 'require\("@deepseek-ai/dsh-client-runtime/client"\)') { $failures.Add('dsh-at-file 仍引用旧的浏览器运行时入口') }
-                            }
-                        }
+                        if ($clientIds -contains 'dsh-at-file') { $failures.Add('默认 profile 不应激活旧文件引用插件') }
                     }
                 }
             }

@@ -251,8 +251,8 @@
     "dsh-at-file": "file:.packages/dsh-at-file-0.6.10.tgz",
     "dsh-local-service-control": "file:.packages/dsh-local-service-control-0.2.1.tgz",
     "dsh-remote-control": "file:.packages/dsh-remote-control-0.3.1.tgz",
-    "dsh-session-control": "file:.packages/dsh-session-control-0.8.1.tgz",
-    "dsh-subagent-code-agents": "file:.packages/dsh-subagent-code-agents-0.2.1.tgz",
+    "dsh-session-control": "file:.packages/dsh-session-control-0.8.2.tgz",
+    "dsh-subagent-code-agents": "file:.packages/dsh-subagent-code-agents-0.2.2.tgz",
     "@omdsh-dev/dsh-genui": "file:.packages/omdsh-dev-dsh-genui-0.9.1-dsh015.1.tgz"
   },
   "optionalDependencies": {
