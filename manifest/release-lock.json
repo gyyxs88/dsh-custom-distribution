@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "distribution": {
     "name": "dsh-custom-distribution",
-    "version": "0.4.0",
+    "version": "0.5.0",
     "platform": "win32",
     "architecture": "x64",
     "repository": "https://github.com/gyyxs88/dsh-custom-distribution"
@@ -30,7 +30,6 @@
     "bundles": [
       "@deepseek-ai/dsh-base",
       "@deepseek-ai/dsh-web-app",
-      "dsh-at-file",
       "@omdsh-dev/dsh-genui",
       "dsh-local-service-control",
       "dsh-session-control",
@@ -119,7 +118,8 @@
       "placement": "profile",
       "sha256": "d7bc17e2f8831614850dc8b497fd9958ce1f969c2670fbf93127cb8d91602a3b",
       "source": "sources/dsh-at-file-settings-rc1",
-      "sourceLimitation": "Upstream 0.6.7 declares no source repository. Reviewed MIT snapshot retains the settings namespace and static browser store, with the retired runtime peer removed."
+      "sourceLimitation": "Upstream 0.6.7 declares no source repository. Reviewed MIT snapshot retains the settings namespace and static browser store, with the retired runtime peer removed.",
+      "activation": "opt-in-legacy"
     },
     {
       "file": "dsh-local-service-control-0.2.1.tgz",
@@ -151,24 +151,24 @@
       "commit": "15232e72df4ebfcd5e1bd60a0e86614a61eba05f"
     },
     {
-      "file": "dsh-session-control-0.8.1.tgz",
+      "file": "dsh-session-control-0.8.2.tgz",
       "package": "dsh-session-control",
-      "version": "0.8.1",
+      "version": "0.8.2",
       "license": "MIT",
       "placement": "profile",
-      "sha256": "a68d3ec57b8a22cf81aa6547d11ef40edad4a053a87f91852863088632335888",
+      "sha256": "9fd901a2d65453eb81a1938fbf87578db37feae1a19d7dabb96e16398aa59cba",
       "source": "https://github.com/gyyxs88/dsh-session-control",
-      "commit": "077769e550cc52aafac2ff2fe1b7f9b3b502c5b9"
+      "commit": "a930e8a74534083c90b26246f3f9e83cd37e3389"
     },
     {
-      "file": "dsh-subagent-code-agents-0.2.1.tgz",
+      "file": "dsh-subagent-code-agents-0.2.2.tgz",
       "package": "dsh-subagent-code-agents",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "license": "MIT",
       "placement": "profile",
-      "sha256": "4ccf1bb623d8d10e724a6de8eed0f98df40a0ed9dc5919dc7221f112020b71ee",
+      "sha256": "1faa3a942ec70d939b23f3a9bde961cdc5710de245eb2581609aa19f735b8810",
       "source": "https://github.com/gyyxs88/dsh-subagent-code-agents",
-      "commit": "f66bcd51138dd09adaf29b82dedfd2fe70e8fcdb"
+      "commit": "1ec62f5398565721b1b467f1f535439c8afdcd00"
     }
   ],
   "privateState": [

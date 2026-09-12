@@ -47,10 +47,7 @@ test("runtime channels use explicit existing executables and never PATH fallback
 test("start and stop bind to loopback and validate the exact recorded process", () => {
   assert.match(start, /\$bindAddress = '127\.0\.0\.1'/u);
   assert.match(start, /--no-open/u);
-  assert.match(start, /\$env:NODE_USE_ENV_PROXY = '1'/u);
-  assert.match(start, /@\('127\.0\.0\.1', 'localhost', '::1'\)/u);
-  assert.match(start, /\$env:NODE_USE_ENV_PROXY = \$oldNodeUseEnvProxy/u);
-  assert.match(start, /\$env:NO_PROXY = \$oldNoProxy/u);
+  assert.doesNotMatch(start, /\$env:(?:NODE_USE_ENV_PROXY|NO_PROXY)\s*=/u);
   assert.match(start, /\$env:DSH_MODULE_FALLBACK_MODE = 'proxy'/u);
   assert.match(start, /\$env:DSH_MODULE_FALLBACK_MODE = \$oldModuleFallbackMode/u);
   assert.match(start, /\^dsh web: \(\?<url>http:\/\/127\\\.0\\\.0\\\.1:/u);

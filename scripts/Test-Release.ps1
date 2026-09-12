@@ -14,10 +14,9 @@ if (-not (Test-Path -LiteralPath $bundlePath -PathType Leaf)) { throw '请先运
 $expected = ((Get-Content -LiteralPath $sidecar -Raw -Encoding UTF8).Trim() -split '\s+')[0]
 Assert-FileHash -Path $bundlePath -Expected $expected
 
-$testParent = Join-Path $distributionRoot '.install-test'
+$testParent = Join-Path $distributionRoot ('.install-test\acceptance-' + [guid]::NewGuid().ToString('N'))
 $installRoot = Join-Path $testParent 'DSH-Custom'
 $expanded = Join-Path $testParent 'bundle'
-if (Test-Path -LiteralPath $testParent) { Remove-SafeTree -Parent $distributionRoot -Path $testParent }
 New-Item -ItemType Directory -Force -Path $testParent | Out-Null
 
 function Get-ProductionSnapshot {
@@ -111,6 +110,8 @@ try {
 
     $current = Read-JsonFile -Path (Join-Path $installRoot 'current.json')
     $node = Join-Path ([string]$current.runtimeRoot) 'node.exe'
+    & $node (Join-Path $PSScriptRoot 'Test-OfficialFirst.mjs') ([string]$current.appRoot)
+    if ($LASTEXITCODE -ne 0) { throw '官方文件引用和代理接管验证失败。' }
     & $node (Join-Path $PSScriptRoot 'Test-ModelDiscovery.mjs') ([string]$current.appRoot)
     if ($LASTEXITCODE -ne 0) { throw '隔离模型能力发现验证失败。' }
 
