@@ -16,7 +16,7 @@ function normalizeText(text) {
 }
 
 test("pi-ai package contains reviewed transport, discovery, capability, and routing policies", () => {
-  const source = archiveSource("deepseek-ai-dsh-llm-pi-ai-0.1.5-rc.2.tgz", "lib/index.js");
+  const source = archiveSource("deepseek-ai-dsh-llm-pi-ai-0.1.5-rc.2-opencode-session.1.tgz", "lib/index.js");
   assert.match(source, /network\(\?:_error\)\?/u);
   assert.match(source, /LIVE_CATALOG_DISCOVERY_POLICIES/u);
   assert.match(source, /\["openrouter", "configured-or-catalog"\]/u);
@@ -137,7 +137,7 @@ test("source snapshots match their bundled artifacts", () => {
     ["dsh-at-file-settings-rc1", "dsh-at-file-0.6.10.tgz", "lib/index.js"],
     ["dsh-llm-model-discovery-capabilities", "deepseek-ai-dsh-llm-0.1.5-rc.2.tgz", "lib/index.js"],
     ["dsh-api-remotes-model-discovery-capabilities", "deepseek-ai-dsh-api-remotes-0.1.5-rc.2.tgz", "lib/client.js"],
-    ["dsh-llm-pi-ai-live-discovery", "deepseek-ai-dsh-llm-pi-ai-0.1.5-rc.2.tgz", "lib/index.js"],
+    ["dsh-llm-pi-ai-live-discovery", "deepseek-ai-dsh-llm-pi-ai-0.1.5-rc.2-opencode-session.1.tgz", "lib/index.js"],
     ["dsh-client-ui-settings-models-image-modalities", "deepseek-ai-dsh-client-ui-settings-models-0.1.5-rc.2.tgz", "lib/client.js"],
     ["dsh-client-ui-workspace-copy-session-id", "deepseek-ai-dsh-client-ui-workspace-0.1.5-rc.2.tgz", "lib/client.js"],
     ["dsh-local-service-control", "dsh-local-service-control-0.2.1.tgz", "lib/index.js"],
