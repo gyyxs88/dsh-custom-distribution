@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "distribution": {
     "name": "dsh-custom-distribution",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "platform": "win32",
     "architecture": "x64",
     "repository": "https://github.com/gyyxs88/dsh-custom-distribution"
@@ -66,12 +66,12 @@
       "source": "sources/dsh-api-remotes-model-discovery-capabilities"
     },
     {
-      "file": "deepseek-ai-dsh-llm-pi-ai-0.1.5-rc.2.tgz",
+      "file": "deepseek-ai-dsh-llm-pi-ai-0.1.5-rc.2-opencode-session.1.tgz",
       "package": "@deepseek-ai/dsh-llm-pi-ai",
       "version": "0.1.5-rc.2",
       "license": "MIT",
       "placement": "app",
-      "sha256": "6d8a998356cc75b8439fd1715885a83c945e6de7906a9b51ed931ffab4148000",
+      "sha256": "f60c2f02f080db28474cf9fe3286f728bd063d242e1e21765a6d506e0514aa54",
       "source": "sources/dsh-llm-pi-ai-live-discovery"
     },
     {

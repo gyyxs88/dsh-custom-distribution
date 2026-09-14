@@ -110,6 +110,8 @@ try {
 
     $current = Read-JsonFile -Path (Join-Path $installRoot 'current.json')
     $node = Join-Path ([string]$current.runtimeRoot) 'node.exe'
+    & $node (Join-Path $PSScriptRoot 'Test-SessionHeaders.mjs') ([string]$current.appRoot)
+    if ($LASTEXITCODE -ne 0) { throw '会话标识请求头验证失败。' }
     & $node (Join-Path $PSScriptRoot 'Test-OfficialFirst.mjs') ([string]$current.appRoot)
     if ($LASTEXITCODE -ne 0) { throw '官方文件引用和代理接管验证失败。' }
     & $node (Join-Path $PSScriptRoot 'Test-ModelDiscovery.mjs') ([string]$current.appRoot)

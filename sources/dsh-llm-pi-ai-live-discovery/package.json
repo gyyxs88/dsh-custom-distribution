@@ -57,7 +57,7 @@
     "@deepseek-ai/dsh-launch-environment": "^0.1.5-rc.2"
   },
   "dshLocalPatch": {
-    "id": "upgrade-015rc2.1",
+    "id": "upgrade-015rc2.opencode-session.1",
     "baseVersion": "0.1.5-rc.2"
   }
 }

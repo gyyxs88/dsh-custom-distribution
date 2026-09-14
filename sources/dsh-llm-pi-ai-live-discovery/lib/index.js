@@ -1775,12 +1775,16 @@ function reasoningInfo(model, defaultLevel) {
 	} };
 }
 /** Merge deployment headers while removing case-insensitive attribution collisions. */
-function requestHeaders(headers) {
+function requestHeaders(headers, sessionId, provider) {
 	const attribution = attributionHeaders();
-	const reserved = new Set(Object.keys(attribution).map((name) => name.toLowerCase()));
+	const sessionHeader = "x-deepseek-harness-session-id";
+	const openCodeHeader = "x-opencode-session";
+	const isOpenCodeGo = provider === "opencode-go";
+	const reserved = new Set([...Object.keys(attribution).map((name) => name.toLowerCase()), sessionHeader, ...isOpenCodeGo ? [openCodeHeader] : []]);
 	return {
 		...Object.fromEntries(Object.entries(headers ?? {}).filter(([name]) => !reserved.has(name.toLowerCase()))),
-		...attribution
+		...attribution,
+		...sessionId === void 0 ? {} : { [sessionHeader]: String(sessionId), ...isOpenCodeGo ? { [openCodeHeader]: String(sessionId) } : {} }
 	};
 }
 /**
@@ -1925,7 +1929,7 @@ var PiAiAdapter = class extends LlmAdapter {
 					...options.maxTokens === void 0 ? {} : { maxTokens: options.maxTokens },
 					...options.sessionId === void 0 ? {} : { sessionId: String(options.sessionId) },
 					signal: watchdog.signal,
-					headers: requestHeaders(profile.headers)
+					headers: requestHeaders(profile.headers, options.sessionId, options.provider)
 				}), model.contextWindow, options.signal, model.id)[Symbol.asyncIterator]();
 				let exhausted = false;
 				try {
