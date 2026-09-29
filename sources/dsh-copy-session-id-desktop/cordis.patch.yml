@@ -1,0 +1,3 @@
+- insert:
+    - id: copy-session-id
+      name: dsh-copy-session-id
