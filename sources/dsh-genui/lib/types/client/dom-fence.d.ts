@@ -1,6 +1,6 @@
 import { type Root } from 'react-dom/client';
 import type { Context } from '@deepseek-ai/cordis';
-import type { SessionId } from '@deepseek-ai/dsh-client-runtime/client';
+import type { SessionId } from '@deepseek-ai/dsh-session/types';
 /** Override the React root factory (tests / tuning). */
 export declare function setDomRootFactory(factory: (container: HTMLElement) => Root): void;
 /**

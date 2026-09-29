@@ -89,7 +89,12 @@ export const PlotNode = memo(function PlotNode({ plot }: { plot: GenuiPlot }) {
 
 /** Diff: 收编 dsh DiffBlock (same path/oldText/newText shape as DiffHunk). */
 export const DiffNode = memo(function DiffNode({ node }: { node: GenuiDiff }) {
-  return <DiffBlock diffs={node.diffs} />
+  return <DiffBlock diffs={node.diffs} labels={{
+    codeLabel: '代码', wrapLabel: '自动换行', unwrapLabel: '不换行',
+    copy: '复制', copied: '已复制', collapseAria: '收起差异',
+    expandAria: (hidden) => `展开 ${hidden} 行差异`, collapse: '收起',
+    expand: (hidden) => `展开 ${hidden} 行`,
+  }} />
 })
 
 /** Json: 收编 dsh JsonTree. */
@@ -98,12 +103,17 @@ export const JsonNode = memo(function JsonNode({ node }: { node: GenuiJson }) {
   if (typeof data !== 'object' || data === null) {
     return <div className={css.jsonScalar}>{String(data)}</div>
   }
-  return <JsonTree data={data as object | unknown[]} copyable />
+  return <JsonTree data={data as object | unknown[]} label="JSON 数据" copyable labels={{
+    copyValue: '复制值', copyJson: '复制 JSON', copyPath: '复制路径',
+    copyPrettyJson: '复制格式化 JSON', copyCompactJson: '复制紧凑 JSON',
+    copied: '已复制', copyFailed: '复制失败', collapseNode: '收起节点',
+    expandNode: '展开节点', copyButtonTitle: (action) => action,
+  }} />
 })
 
 /** Code: 收编 dsh CodeBlock with explicit language. */
 export const CodeNode = memo(function CodeNode({ node }: { node: GenuiCode }) {
-  return <CodeBlock code={node.code.slice(0, GENUI_LIMITS.maxCode)} lang={node.lang} />
+  return <CodeBlock code={node.code.slice(0, GENUI_LIMITS.maxCode)} lang={node.lang} copyLabel="复制" copiedLabel="已复制" />
 })
 
 /**

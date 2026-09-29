@@ -15,7 +15,7 @@
  * re-run render_ui) or through another /panel.
  */
 import type { InputTriggerSource } from '@deepseek-ai/dsh-client-ui-input-trigger/client';
-import type { SessionId } from '@deepseek-ai/dsh-client-runtime/client';
+import type { SessionId } from '@deepseek-ai/dsh-session/types';
 import type { GenuiSpec } from './spec.ts';
 /** Default panel content published by `/panel`: the component overview. */
 export declare const DEFAULT_PANEL_SPEC: GenuiSpec;

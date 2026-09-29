@@ -22,8 +22,10 @@
  */
 
 import type { Context } from '@deepseek-ai/cordis'
-import type {} from '@deepseek-ai/dsh-client-runtime/client'
-import type { SessionId } from '@deepseek-ai/dsh-client-runtime/client'
+import type {} from '@deepseek-ai/dsh-api-session-controller/client'
+import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
+import type {} from '@deepseek-ai/dsh-client-ui-session/client'
+import type { SessionId } from '@deepseek-ai/dsh-session/types'
 import type { IConversation } from '@deepseek-ai/dsh-client-ui-conversation/client'
 import type { Key, ReactNode } from 'react'
 import * as primitives from '@deepseek-ai/dsh-client-ui-primitives'
@@ -174,7 +176,8 @@ export function apply(ctx: Context): () => void {
 }
 
 // Browser services the client entry needs: the slots registry (toolview +
-// dock) and sessions (scoped conversation send behind actions). This
+// dock), sessions and conversation (scoped sends), and uiSession (DOM-channel
+// current selection). This
 // declaration is what the host's fiber inject waiting uses — without it
 // apply() runs before the services bind and the whole plugin tree fails the
 // boot sweep.
@@ -187,7 +190,7 @@ export function apply(ctx: Context): () => void {
 // (optional injection): hosts with the service get /panel registered in any
 // arrival order, hosts without it never register /panel — and the renderer
 // itself never depends on the service either way.
-export const inject = ['slots', 'sessions']
+export const inject = ['slots', 'sessions', 'uiSession', 'conversation']
 
 // Re-export the registry renderer for the test suite (setup.ts registers it
 // exactly like apply() does on contract hosts).

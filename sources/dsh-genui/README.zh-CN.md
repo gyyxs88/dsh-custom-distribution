@@ -1,5 +1,7 @@
 # 🎨 dsh-genui
 
+> DSH 桌面版 `0.2.0-rc.2` 使用与 Web 相同的 renderer。本发行源码按该版本的客户端 Session、Slot 和 UI 组件接口构建；仍通过 `dsh.client.platform: web` 加载，无需桌面专用渲染入口。
+
 <div align="center">
 
 [English](./README.md) · **简体中文**

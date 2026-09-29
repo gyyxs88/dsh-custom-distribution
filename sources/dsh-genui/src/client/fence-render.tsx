@@ -85,7 +85,7 @@ function FenceFallback({ raw, fenceKey }: { raw: string; fenceKey: Key }) {
           ⚠️ dsh-ui fence JSON 解析失败{diagnostic} —— 围栏保持为代码块；请让模型检查并修复 JSON 后重发。
         </div>
       )}
-      <CodeBlock key={fenceKey} code={`${raw}\n`} lang="dsh-ui" />
+      <CodeBlock key={fenceKey} code={`${raw}\n`} lang="dsh-ui" copyLabel="复制" copiedLabel="已复制" />
     </div>
   )
 }

@@ -1,5 +1,7 @@
 # 🎨 dsh-genui
 
+> DSH Desktop `0.2.0-rc.2` uses the same web renderer. This distribution source targets its Session, Slot, and UI component contracts and keeps `dsh.client.platform: web` for desktop activation.
+
 <div align="center">
 
 **English** · [简体中文](./README.zh-CN.md)

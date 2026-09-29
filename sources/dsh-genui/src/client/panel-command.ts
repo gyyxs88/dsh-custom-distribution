@@ -15,7 +15,8 @@
  * re-run render_ui) or through another /panel.
  */
 import type { InputTriggerSource } from '@deepseek-ai/dsh-client-ui-input-trigger/client'
-import type { ClientContext, SessionId } from '@deepseek-ai/dsh-client-runtime/client'
+import type { Context } from '@deepseek-ai/cordis'
+import type { SessionId } from '@deepseek-ai/dsh-session/types'
 import type { GenuiSpec } from './spec.ts'
 import { requestPanelExpand, setLocalPanel } from './panel-store.ts'
 
@@ -70,9 +71,10 @@ function applyPanelCommand(sessionId: string, args: string): void {
  */
 function panelClaim(sessionId: SessionId, sendInstruction: (sessionId: SessionId, instruction: string) => void) {
   return {
+    name: 'panel',
     token: '/panel',
     hint: '开启 GenUI 面板；/panel <指令> 让模型定制；/panel clear 清空',
-    submit: async (args: string, _actx: ClientContext) => {
+    submit: async (args: string, _actx: Context) => {
       const instruction = args.trim()
       if (instruction === '' ) {
         applyPanelCommand(sessionId, '')
