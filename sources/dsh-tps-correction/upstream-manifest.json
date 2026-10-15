@@ -1,0 +1,46 @@
+{
+  "version": "0.2.0-rc.2",
+  "buildCommit": "04f392c9ddd144fa426da2045178797da6db6c11",
+  "files": [
+    {
+      "source": "dsh/node_modules/@deepseek-ai/dsh-client-ui-trajectory/package.json",
+      "path": "upstream/dsh-client-ui-trajectory/package.json",
+      "sha256": "eb5e087db39b45ba1b1df7114d149bef5868c849fb205d7dc81e981814bbadf9"
+    },
+    {
+      "source": "dsh/node_modules/@deepseek-ai/dsh-client-ui-trajectory/lib/index.js",
+      "path": "upstream/dsh-client-ui-trajectory/lib/index.js",
+      "sha256": "1feff7e32e81646ad0b7f1b865a089414d88ea88d4ff81e24f0680ec018530b9"
+    },
+    {
+      "source": "dsh/node_modules/@deepseek-ai/dsh-client-ui-trajectory/lib/client.js",
+      "path": "upstream/dsh-client-ui-trajectory/lib/client.js",
+      "sha256": "2ce347cbeba5aa3601da6546c278f24db6b5c395af4d56c5a3c97fd683a8d823"
+    },
+    {
+      "source": "dsh/node_modules/@deepseek-ai/dsh-client-ui-chat/package.json",
+      "path": "upstream/dsh-client-ui-chat/package.json",
+      "sha256": "89c6a4a3d78aa651d4f9ac1f554399d81be420a177ebb44d21fab85a5f36464b"
+    },
+    {
+      "source": "dsh/node_modules/@deepseek-ai/dsh-client-ui-chat/lib/client.js",
+      "path": "upstream/dsh-client-ui-chat/lib/client.js",
+      "sha256": "a33cbb8130b6e17cf1f7d5d1d7392567694050ca9ab5960ced66e264ea72fbbb"
+    },
+    {
+      "source": "dsh/node_modules/@deepseek-ai/dsh-client-ui-chat/LICENSE",
+      "path": "upstream/dsh-client-ui-chat/LICENSE",
+      "sha256": "ebb4f09972aee8608be255debaf78451a68e95c290f55c240dec2ecfa16ea6be"
+    },
+    {
+      "source": "dsh/node_modules/@deepseek-ai/dsh-client-ui-trajectory/LICENSE",
+      "path": "upstream/dsh-client-ui-trajectory/LICENSE",
+      "sha256": "ebb4f09972aee8608be255debaf78451a68e95c290f55c240dec2ecfa16ea6be"
+    },
+    {
+      "source": "dsh/node_modules/@deepseek-ai/dsh/LICENSE",
+      "path": "upstream/OFFICIAL-LICENSE",
+      "sha256": "ebb4f09972aee8608be255debaf78451a68e95c290f55c240dec2ecfa16ea6be"
+    }
+  ]
+}

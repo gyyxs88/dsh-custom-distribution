@@ -1,0 +1,9 @@
+# Exact official-name assertions; name is NOT a redirection field.
+- id: ui-trajectory
+  name: '@deepseek-ai/dsh-client-ui-trajectory'
+  disabled: true
+- insert:
+    - id: tps-correction
+      name: ./lib/index.js
+    - id: tps-trajectory-rc2
+      name: ./compat/trajectory/lib/index.js

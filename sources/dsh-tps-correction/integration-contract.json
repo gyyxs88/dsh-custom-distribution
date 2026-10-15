@@ -1,0 +1,18 @@
+{
+  "target": "0.2.0-rc.2",
+  "buildCommit": "04f392c9ddd144fa426da2045178797da6db6c11",
+  "version": "0.1.0-rc.2.2",
+  "releaseGate": "MAIN_UI_ACCEPTED_FIXED_ARTIFACT_PENDING",
+  "artifactKind": "external-profile-compatibility-bundle",
+  "profileInstallable": true,
+  "metric": "usage-calibrated Unicode-content proportional receive TPS estimate; not decode or end-to-end TPS",
+  "projection": {"key":"tpsCorrectionV2","stateVersion":2},
+  "statistics": "current provider/model all-history eligible completed attempts weighted by paired receive milliseconds",
+  "publicSeams": ["Cordis bundle patch exact id/name disable then insert", "sessionProjections unique key", "stats slot list id priority shadow"],
+  "replacement": {"disabledEntry":"ui-trajectory","expectedName":"@deepseek-ai/dsh-client-ui-trajectory","insertedEntry":"tps-trajectory-rc2","packageIdentityPreserved":true,"oldAndNewSimultaneous":false},
+  "unchanged": ["ASAR", "official installation", "Chat business renderers", "sessionStats counters/timing", "tokenUsage billing", "original session logs"],
+  "labels": {"speed":"输出速度（估算）","missing":"暂无法计算"},
+  "forbiddenFallbacks": ["usage/(assembled-firstToken)", "end-to-end speed", "DOM/CSS numeric replacement", "private monkeypatch"],
+  "productionGate": "separate main-controller release after fixed artifact and offline install acceptance",
+  "withdrawal": "remove supplemental bundle after upstream covers all entry points and passes no-supplement historical/streaming acceptance"
+}

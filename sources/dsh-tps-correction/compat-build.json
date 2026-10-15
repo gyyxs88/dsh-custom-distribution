@@ -1,0 +1,77 @@
+{
+  "target": "0.2.0-rc.2",
+  "buildCommit": "04f392c9ddd144fa426da2045178797da6db6c11",
+  "sharedMetricSha256": "97970dcbf802362f0bc740e7c5def89370bdd2e481b5e403577e9704516893f0",
+  "edits": [
+    {
+      "label": "embed shared metric in trajectory",
+      "oldSha256": "7ef4d9cd0e5c3d3966949fb92b96fd1cbe4b88116183b8619440cb8b514af5b0",
+      "replacementSha256": "f1d53d5c5f71b621ac18979719ebbdab9eac2fe233b11ac8d24a8727f13485d6"
+    },
+    {
+      "label": "replace independent old trajectory throughput",
+      "oldSha256": "524eaa23f0bcb8f45b3b36427e9a5bea49c2d0bb86a1bd6b415ca145b8b1df4c",
+      "replacementSha256": "cc8eb00311c1ecee5381b19116cb2ea64002633405384131e8c051135a884566"
+    },
+    {
+      "label": "derive TPS from final attempt stream",
+      "oldSha256": "940c306d3e281f342d4700fce4c3bb88930da7cba889e0627f976d82cab64573",
+      "replacementSha256": "8af478bf55610f6c396689e4843a5d0c0accf7bd84ff15c27abe6b9af4359e4e"
+    },
+    {
+      "label": "carry per-step estimate into timing panel",
+      "oldSha256": "d9794382f3a76ac6cf9d0c5e4fa2c05c344dfaeb3a38c350c4ba540adc152a75",
+      "replacementSha256": "7f29ae3bf64dccf74789903251704e9c8a804d20f4f50292b7e31484d31115bb"
+    },
+    {
+      "label": "Chinese estimate label",
+      "oldSha256": "9b52f90c71d5fef2a18c7a36d3f06f3a2ab7d53a48dfb5f00ad2abe54437045a",
+      "replacementSha256": "b154ec11b2f32d84df3e61b52f7b88ad69887d4d83e76bbed3519dea579373f7"
+    },
+    {
+      "label": "English estimate label",
+      "oldSha256": "4962166a9c90e2fed9831340686514309a8c36996e373834ee0b6d2e38794041",
+      "replacementSha256": "adc67f5ccbd5453619722d2ba6dd29ff29dbcb4d6fece488cb81080625f72717"
+    },
+    {
+      "label": "read independent versioned projection",
+      "oldSha256": "500943e5c1b641b254e72c808d67af1fd9dad8dad9db121a2dd70fd0e6b401c1",
+      "replacementSha256": "a30ef171a7d3423f44bfdb9a3360d3a1191449f762c056cd531d8aef5ede3109"
+    },
+    {
+      "label": "no speed fallback from old stats",
+      "oldSha256": "667c79ca272f6e4bfbe50154676d090c18e61254be9ba1571c46a5cea118fa6d",
+      "replacementSha256": "77fe9fcb28335c96b3ffdf112568ad4f2c3c05adb39b30aafee89834264623aa"
+    },
+    {
+      "label": "unavailable speed stays visible in details",
+      "oldSha256": "5cba69db966ab2ec1665a06aa566d52a4e8254b0acc279d0ea252e25e2370ade",
+      "replacementSha256": "f53f9fff878e45eadf9bebe0f7e98ff3c2c5fd40e5fe5691d176d52036f935ba"
+    },
+    {
+      "label": "details use shared estimated receive metric",
+      "oldSha256": "8d8bb2f7175fff23aa5194a6369c294e0a3f571f6ab2ea4d20abca1da7876027",
+      "replacementSha256": "d7da82a4637c818cec036e884d5d2c28a33f88bc3eed79e4b75653c2a69860a4"
+    },
+    {
+      "label": "window fallback never calculates speed",
+      "oldSha256": "24128d2f100c36b03ac3b666ba9922845b4f34a80a9e521b76358dec6df6effa",
+      "replacementSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "average scope tooltip",
+      "oldSha256": "bdc34b04b48b38dd26b358b262f09dac5bce938a4611e12f8d27dbb235ee9455",
+      "replacementSha256": "3b8b8a286bcdb0db345768d4b83bd180cfac1b5a90e37b9561ca0288b9d12a7f"
+    }
+  ],
+  "files": [
+    {
+      "file": "lib/client.js",
+      "sha256": "809f8118c381b47c798616a62824ce98ddab6819fcc28dd6e03d198553b49f4d"
+    },
+    {
+      "file": "compat/trajectory/lib/client.js",
+      "sha256": "7c3d409b5ac4628dce5495db53381283d234eaa66c30d0859f2aa7356f311a27"
+    }
+  ]
+}
