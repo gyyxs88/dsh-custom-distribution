@@ -6,7 +6,8 @@ const require = createRequire(import.meta.url);
 export const officialContract = {
   '@deepseek-ai/cordis': { version: '4.0.4', sha256: '6a9394c0877ff45218818c6e815edd038f8057e1a1deb390a8d43ec81c57691e' },
   '@deepseek-ai/dsh-llm': { version: '0.2.0-rc.2', sha256: '9132c8a8053ee82b9fb1ded4f98c85cf557f288a15a85c552c6b1fb319ead120' },
-  '@deepseek-ai/dsh-llm-pi-ai': { version: '0.2.0-rc.2', sha256: 'd46dbc30aeb3414190000e6f8aeaaf994246b5e5c651de07639f4a7e92de37ef' }
+  '@deepseek-ai/dsh-llm-pi-ai': { version: '0.2.0-rc.2', sha256: 'd46dbc30aeb3414190000e6f8aeaaf994246b5e5c651de07639f4a7e92de37ef' },
+  '@deepseek-ai/dsh-llm-deepseek': { version: '0.2.0-rc.2', sha256: '226e2047b843f954d8478207613f3e44448671c6f98f8edee77008d0fe005484' }
 };
 export function assertOfficial() {
   for (const [pkg, expected] of Object.entries(officialContract)) {

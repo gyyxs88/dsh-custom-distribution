@@ -1,8 +1,10 @@
 import { PiAiAdapter } from '@deepseek-ai/dsh-llm-pi-ai';
 import { LlmError } from '@deepseek-ai/dsh-llm';
+import { DeepSeekAdapter, DeepSeekFilesClient, DeepSeekFileStore } from '@deepseek-ai/dsh-llm-deepseek';
 import { createRequire } from 'node:module';
 import { discover } from './discovery.js';
 import { assertOfficial } from './contract.js';
+import { correctedChunk, correctedError, filesClient } from './errors.js';
 
 const require = createRequire(import.meta.url);
 const versions = ['@deepseek-ai/dsh-llm', '@deepseek-ai/dsh-llm-pi-ai'].map(pkg => require(`${pkg}/package.json`).version);
@@ -25,24 +27,6 @@ function scopedSnapshot(snapshot, provider, sessionId) {
   const profiles = new Map(snapshot.profiles);
   profiles.set(provider, { ...profile, headers });
   return { ...snapshot, profiles };
-}
-function corrected(chunk) {
-  const failure = chunk.type === 'finish' && chunk.reason?.kind === 'error' ? chunk.reason.failure : undefined;
-  // Only the verified upstream 403 envelope and structured type identify a
-  // region refusal; AUTH alone or prose mentioning a country is insufficient.
-  const body = failure?.code === 'AUTH' && typeof failure.message === 'string'
-    ? /^opencode-go-response API error \(403\):\s*([\s\S]+)$/.exec(failure.message)?.[1] : undefined;
-  if (body) {
-    try {
-      const detail = JSON.parse(body);
-      if (detail !== null && !Array.isArray(detail) && detail.type === 'RegionError') {
-        return { ...chunk, reason: { ...chunk.reason, failure: { ...failure, code: 'REGION_RESTRICTED',
-          message: `该模型在当前地区不可用，请手动切换其他模型。\n${failure.message}` } } };
-      }
-    } catch { /* Unstructured or truncated errors retain official classification. */ }
-  }
-  if (failure?.code !== 'PI_AI_ERROR' || !/\bnetwork_error\b/i.test(failure.message ?? '')) return chunk;
-  return { ...chunk, reason: { ...chunk.reason, failure: { ...failure, code: 'TRANSPORT' } } };
 }
 export function apply(ctx) {
   assertOfficial();
@@ -81,9 +65,29 @@ export function apply(ctx) {
       }
     }
     for (const adapter of adapters) {
-      if (!(adapter instanceof PiAiAdapter)) continue;
+      if (!(adapter instanceof PiAiAdapter) && !(adapter instanceof DeepSeekAdapter)) continue;
       if (installed.has(adapter)) continue;
       if (adapter[oldOwner] || adapter[owner]) throw new LlmError('Remove the old session supplement before enabling desktop compatibility', 'DUPLICATE_SUPPLEMENT');
+      if (adapter instanceof DeepSeekAdapter) {
+        if (typeof adapter.generate !== 'function' || !(adapter.files instanceof DeepSeekFileStore) ||
+            typeof adapter.files.client !== 'function' || typeof DeepSeekFilesClient.prototype.request !== 'function') {
+          throw new LlmError('Unsupported rc.2 native adapter boundary', 'UNSUPPORTED_ADAPTER');
+        }
+        const original = adapter.generate;
+        wrap(adapter, 'generate', function(options, connection) {
+          const self = this;
+          return (async function* () {
+            try { yield* original.call(self, options, connection); }
+            catch (error) { throw correctedError(error, options.signal); }
+          })();
+        });
+        const store = adapter.files;
+        if (!installed.has(store)) {
+          const client = store.client;
+          wrap(store, 'client', function(connection) { return filesClient(client.call(this, connection)); });
+        }
+        continue;
+      }
       if (typeof adapter.config?.resolveApiKey !== 'function' || typeof adapter.config?.profiles !== 'function' ||
           !(adapter.current()?.profiles instanceof Map) || !adapter.current()?.models) {
         throw new LlmError('Unsupported rc.2 snapshot or credential boundary', 'UNSUPPORTED_ADAPTER');
@@ -94,7 +98,9 @@ export function apply(ctx) {
         return (async function* () {
           if (!(snapshot?.profiles instanceof Map) || !snapshot.models) throw new LlmError('Unsupported rc.2 snapshot', 'UNSUPPORTED_ADAPTER');
           const scoped = routes.has(options.provider) ? scopedSnapshot(snapshot, options.provider, options.sessionId) : snapshot;
-          for await (const chunk of original.call(self, options, scoped)) yield corrected(chunk);
+          try {
+            for await (const chunk of original.call(self, options, scoped)) yield correctedChunk(chunk, options.provider);
+          } catch (error) { throw correctedError(error, options.signal); }
         })();
       });
     }

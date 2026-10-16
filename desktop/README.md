@@ -16,7 +16,11 @@ The retirement check applies no supplement; exit 2 means measured NOT_ELIGIBLE,
 exit 1 means an execution failure or unknown official API shape requiring probe adaptation.
 Retirement probes record the installed official versions/hashes without enforcing rc.2.
 They never import or apply the supplement, and measure every coverage result from
-real service calls. All probes must pass for ELIGIBLE. The supplement's activation
+real service calls. The current probe covers legacy Go/discovery/network behavior.
+If those checks all pass, it returns NEEDS_ADAPTATION until the rc.2.3 error
+classification, native/account/Files and normal-retry coverage is measured too;
+legacy success alone must never declare ELIGIBLE or remove this supplement.
+The current rc.2 legacy failures still return NOT_ELIGIBLE. The supplement's activation
 contract remains strictly pinned to reviewed rc.2 source.
 
 The release entry builds a deterministic package, verifies every member against

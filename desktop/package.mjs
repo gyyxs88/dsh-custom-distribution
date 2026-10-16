@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { gzipSync, gunzipSync } from 'node:zlib';
 import { sha256 } from './official-runtime.mjs';
-export const packageFiles = ['README.md', 'cordis.patch.yml', 'lib/contract.js', 'lib/discovery.js', 'lib/index.js', 'package.json'];
+export const packageFiles = ['README.md', 'cordis.patch.yml', 'lib/contract.js', 'lib/discovery.js', 'lib/errors.js', 'lib/index.js', 'package.json'];
 const octal = (number, length) => `${number.toString(8).padStart(length - 1, '0')}\0`;
 
 // Fixed order, permissions, uid/gid, timestamps and gzip header produce byte-identical TGZ.

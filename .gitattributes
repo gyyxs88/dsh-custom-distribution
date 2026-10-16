@@ -11,3 +11,5 @@
 *.patch text eol=lf
 *.tgz binary
 sources/** -whitespace
+# Preserve the reviewed archive member byte-for-byte across Git checkouts.
+sources/dsh-desktop-compat/README.md -text

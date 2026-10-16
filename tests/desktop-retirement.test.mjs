@@ -172,7 +172,10 @@ try {
     if (!Array.isArray(policy?.retryableCodes)) throw Error('Unknown official retry policy shape');
     return { covered: reason.kind === 'error' && reason.failure?.code === 'TRANSPORT' && policy.retryableCodes.includes(reason.failure.code), observedCode: reason.failure?.code };
   });
-  report.status = report.unknownShape ? 'NEEDS_ADAPTATION' : report.checks.every(check => check.covered) ? 'ELIGIBLE' : 'NOT_ELIGIBLE';
+  report.legacyCovered = report.checks.every(check => check.covered);
+  report.errorClassificationCoverage = 'UNMEASURED';
+  report.status = report.unknownShape || report.legacyCovered ? 'NEEDS_ADAPTATION' : 'NOT_ELIGIBLE';
+  if (report.legacyCovered) report.adaptationReason = 'Measure the rc.2.3 error classification, native/account/Files and normal-retry coverage before claiming supplement retirement.';
 } catch (error) { report.status = 'NEEDS_ADAPTATION'; report.error = error.message; }
 finally {
   await pi?.dispose(); await runtime?.dispose();

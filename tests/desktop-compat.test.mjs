@@ -263,7 +263,7 @@ async function retryIntegration() {
       assert.deepEqual(await decision(fixed.failure), { kind: 'retry' });
       assert.equal(events.at(-1).type, 'llm/retry-started'); assert.ok(projection);
       add('real-sdk-network_error-official-retry-eligible-no-plugin-retry');
-      for (const [status, code] of [[401, 'AUTH'], [403, 'AUTH'], [429, 'RATE_LIMIT'], [400, 'INVALID_REQUEST'], [503, 'SERVER']]) {
+      for (const [status, code] of [[401, 'AUTHENTICATION_FAILED'], [403, 'FORBIDDEN'], [429, 'RATE_LIMIT'], [400, 'INVALID_REQUEST'], [503, 'SERVER']]) {
         streamError = status;
         const reason = await call(fixture.ctx, 'fixture', 'session-error');
         assert.equal(reason.failure.code, code);
@@ -297,6 +297,8 @@ async function regionIntegration() {
     streamError = httpFailure(401, JSON.stringify({ type: 'invalid_api_key', message: 'Invalid API key' }));
     evidence.authBaseline = (await call(fixture.ctx, 'opencode-go-response', 'session-region-fixture')).failure;
     assert.equal(evidence.authBaseline.code, 'AUTH');
+    streamError = httpFailure(401, JSON.stringify({ error: { type: 'invalid_api_key', message: 'Invalid API key' } }));
+    evidence.nestedAuthBaseline = (await call(fixture.ctx, 'opencode-go-response', 'session-region-fixture')).failure;
     streamError = httpFailure(403, body);
     const patch = fixture.ctx.plugin(supplement); await patch;
     try {
@@ -304,7 +306,7 @@ async function regionIntegration() {
       const fixed = await call(fixture.ctx, 'opencode-go-response', 'session-region-fixture');
       assert.equal(fixed.failure.code, 'REGION_RESTRICTED');
       assert.match(fixed.failure.message, /地区/);
-      assert.ok(fixed.failure.message.endsWith(baseline.failure.message), 'preserve upstream diagnostic');
+      assert.ok(!fixed.failure.message.includes(baseline.failure.message), 'fixed category excludes raw diagnostics');
       assert.equal(received.length, start + 1, 'supplement must not retry');
       evidence.regionCorrected = fixed.failure;
       const prepared = await fixture.ctx.llm.prepareCall({ provider: 'opencode-go-response', model: 'mock-model', maxTokens: 16 });
@@ -312,17 +314,17 @@ async function regionIntegration() {
       add('real-HTTP-403-RegionError-main-and-prepared-corrected');
       const cases = [
         ['401-invalid-key', 401, JSON.stringify({ error: { type: 'invalid_api_key', message: 'Invalid API key' } }), 'AUTH'],
-        ['403-permissions', 403, JSON.stringify({ error: { type: 'permission_error', message: 'Insufficient permissions' } }), 'AUTH'],
-        ['403-plain', 403, '{}', 'AUTH'],
-        ['403-country-natural-language', 403, JSON.stringify({ message: 'This model is not available in your country' }), 'AUTH'],
-        ['403-type-in-natural-language', 403, JSON.stringify({ message: 'RegionError: country restriction' }), 'AUTH'],
-        ['403-wrong-type', 403, JSON.stringify({ type: 'PermissionError', message: 'RegionError in your country' }), 'AUTH'],
-        ['403-nested-type', 403, JSON.stringify({ error: { type: 'RegionError', message: 'not the verified body shape' } }), 'AUTH'],
-        ['403-malformed-JSON', 403, '{"type":"RegionError",', 'AUTH'],
-        ['403-JSON-with-trailer', 403, body + ' trailing', 'AUTH'],
-        ['403-array', 403, '[' + body + ']', 'AUTH'],
-        ['401-RegionError', 401, body, 'AUTH'],
-        ['429-RegionError', 429, body, 'RATE_LIMIT'],
+        ['403-permissions', 403, JSON.stringify({ error: { type: 'permission_error', message: 'Insufficient permissions' } }), 'FORBIDDEN'],
+        ['403-plain', 403, '{}', 'FORBIDDEN'],
+        ['403-country-known-sentence', 403, JSON.stringify({ message: 'This model is not available in your country' }), 'REGION_RESTRICTED'],
+        ['403-type-in-natural-language', 403, JSON.stringify({ message: 'RegionError: country restriction' }), 'FORBIDDEN'],
+        ['403-wrong-type', 403, JSON.stringify({ type: 'PermissionError', message: 'RegionError in your country' }), 'FORBIDDEN'],
+        ['403-nested-type', 403, JSON.stringify({ error: { type: 'RegionError', message: 'not the verified body shape' } }), 'REGION_RESTRICTED'],
+        ['403-malformed-JSON', 403, '{"type":"RegionError",', 'FORBIDDEN'],
+        ['403-JSON-with-trailer', 403, body + ' trailing', 'FORBIDDEN'],
+        ['403-array', 403, '[' + body + ']', 'FORBIDDEN'],
+        ['401-RegionError', 401, body, 'AUTHENTICATION_FAILED'],
+        ['429-RegionError', 429, body, 'REGION_RESTRICTED'],
         ['503-RegionError', 503, body, 'SERVER'],
         ['403-whitespace-structured', 403, ' \n' + body + ' \n', 'REGION_RESTRICTED'],
       ];

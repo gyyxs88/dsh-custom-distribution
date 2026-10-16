@@ -25,10 +25,13 @@ const tests = run('Test-Desktop.mjs', [path.join(output, 'packaged-test'), 'D:/D
 const retirement = run('Test-DesktopRetirement.mjs', [path.join(output, 'retirement')], [0, 2]);
 const testEvidence = JSON.parse(fs.readFileSync(path.join(output, 'packaged-test/test-results.json')));
 if (testEvidence.status !== 'PASSED') throw Error('Packaged integration did not pass');
+const errorEvidence = JSON.parse(fs.readFileSync(path.join(output, 'packaged-test/error-test-results.json')));
+if (errorEvidence.status !== 'PASSED') throw Error('Packaged error integration did not pass');
 // Catch source drift during tests before marking the candidate ready for main-controller Loader acceptance.
 verify(path.join(root, 'sources/dsh-desktop-compat'), bytes);
 const report = { status: 'OFFLINE_GATES_PASSED', archive: manifest.archive,
   sourceMatchesPackage: true, reproducible: true, packagedIntegration: { ...tests, checks: testEvidence.cases.length, inferenceRequests: testEvidence.requests, discoveryRequests: testEvidence.discoveryRequests.length },
+  errorIntegration: { checks: errorEvidence.cases.length, requests: errorEvidence.requests.length, cleanup: errorEvidence.cleanup },
   retirement: { ...retirement, ...JSON.parse(fs.readFileSync(path.join(output, 'retirement/retirement.json'))) },
   pending: ['main-controller formal Loader and isolated deployment acceptance'], productionInstalled: false };
 fs.writeFileSync(path.join(output, 'desktop-release-gates.json'), `${JSON.stringify(report, null, 2)}\n`);

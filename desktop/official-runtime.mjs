@@ -6,7 +6,7 @@ import { pathToFileURL } from 'node:url';
 
 export const defaultArchive = 'D:/DSH/resources/app.asar';
 export const defaultElectron = 'D:/DSH/DeepSeek Harness.exe';
-export const peers = ['@deepseek-ai/cordis', '@deepseek-ai/dsh-llm', '@deepseek-ai/dsh-llm-pi-ai'];
+export const peers = ['@deepseek-ai/cordis', '@deepseek-ai/dsh-llm', '@deepseek-ai/dsh-llm-pi-ai', '@deepseek-ai/dsh-llm-deepseek'];
 export const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 
 // Read only identified packed source members; no credentials, profiles, logs or environment.
