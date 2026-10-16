@@ -1,5 +1,22 @@
 # Independent Desktop rc.2 release
 
+## Persistent Desktop launch
+
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Start-Desktop.ps1`
+starts the installed `D:/DSH/DeepSeek Harness.exe` with the stable OS launch baseline
+plus the caller's proxy variables. Provider/auth and test environment overrides are
+excluded, retaining the previous production credential precedence. The short tracked
+helper `desktop/launch-desktop.cjs` runs using installed Electron's Node runtime.
+Missing proxy names alone fall back to current-user and then machine persistence;
+explicit values, casing and NO_PROXY are retained. Routing remains owned by official
+`dsh-http-proxy`. No Node proxy flag or fetch patch is added. Windows environment
+names are case insensitive. Existing Desktop instances are reused under a launch
+mutex; this entry never stops a running app. Official executable and updater remain
+unchanged. Launch logs are under `%LOCALAPPDATA%/DSH-Desktop-Launcher` and may contain
+official private access URLs; do not publish their raw content. Isolated DSH_HOME is
+refused; Electron/Node test execution switches are removed for the child only.
+The Desktop shortcut may point to this tracked script; keep the separate Web shortcut.
+
 This track leaves the existing Web/legacy `build`, `test` and `acceptance` commands intact.
 Use Node 24.19.0 for these entrypoints. The real adapter tests use installed Electron
 Node mode (currently Node 24.18.1) with an explicitly isolated environment and mock
