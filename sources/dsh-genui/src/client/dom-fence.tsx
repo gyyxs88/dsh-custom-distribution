@@ -4,22 +4,21 @@
  * Stock DSH renders every fenced code block through the shared CodeBlock
  * surface (stable class `md-code-block`, language label rendered as the
  * banner's childless label div). This channel observes the conversation DOM,
- * finds blocks labelled `dsh-ui`, parses the raw fence body and mounts the
+ * verifies explicit `dsh-ui` source fences, parses the raw body and mounts the
  * plugin's own React tree next to the (hidden) stock block:
  *
  * Fence discovery is **multi-surface** (issue #6): besides `md-code-block`,
  * the channel also matches the deepsuite-style surfaces some host builds
  * render instead (`.code-block` / `.code-block-small`), and — as the
- * structural backstop — ANY element whose banner labels it `dsh-ui` and
- * which contains a `<pre>` body. The only invariants are the language label
- * (a leaf element with the exact text `dsh-ui`, outside the code body) and
- * the `<pre>`, so a host DOM drift degrades to a rendered fence, never a
- * silently skipped one:
+ * structural backstop — an element whose banner labels it `dsh-ui` and
+ * which contains a `<pre>` body. On rc.2 the toolbar translates unsupported
+ * languages into "Code" / "代码块", so known surfaces additionally resolve
+ * their owning public Chat node and match the current raw source fence.
  *
  * - **Streaming takeover**: the channel takes over a dsh-ui block as soon as
  *   ONE finished component parses (the partial parser), and re-renders the
  *   root as the body grows — the UI assembles top-down while the reply
- *   streams, no settled marker required. A body with no finished component
+ *   streams, after the explicit fence language is verified. No finished component
  *   yet stays a stock code block (partial JSON must never look broken).
  * - **Pre-paint surgery repair**: the host's React re-renders during
  *   streaming can wipe our foreign container or reset the hide. A repair
@@ -52,6 +51,7 @@ import type {} from '@deepseek-ai/dsh-client-ui-session/client'
 import type { SessionId } from '@deepseek-ai/dsh-session/types'
 import { GenuiActionContext, type GenuiActionHandler } from './action-context.ts'
 import { renderResolvedFenceNode, type GenuiFenceContext } from './fence-render.tsx'
+import { assistantSourceFences, normalizedFenceBody } from './fence-source.ts'
 
 /** Fence surfaces the channel can take over, newest host first: the shared
  * CodeBlock surface every rc.6+ markdown fence renders through
@@ -110,6 +110,7 @@ interface Mount {
   lastRaw: string
   lastSettled: boolean
   lastNode: ReactNode
+  sessionId: SessionId | undefined
 }
 
 function isTextNode(node: Node): node is Text {
@@ -140,20 +141,6 @@ function infostringOf(block: Element): string | null {
     return 'dsh-ui'
   }
   return null
-}
-
-/** The banner label's raw text (empty while streaming — the host renders the
- * language label only once the reply settles). Returns the first leaf
- * outside the code body (banners always lead with the language), so a
- * span-label host reads identically to the div-label host. */
-function labelTextOf(block: Element): string {
-  const pre = block.querySelector('pre')
-  for (const el of block.querySelectorAll('*')) {
-    if (el.childElementCount !== 0) continue
-    if (pre !== null && pre.contains(el)) continue
-    return el.textContent ?? ''
-  }
-  return ''
 }
 
 /** Raw fence body from the stock block's code surface. */
@@ -210,6 +197,7 @@ function findFenceCandidates(scope: ParentNode = document): HTMLElement[] {
   const seen = new Set<HTMLElement>()
   const out: HTMLElement[] = []
   for (const el of scope.querySelectorAll<HTMLElement>(CODE_BLOCK_SELECTORS)) {
+    if (el.closest(`.${CONTAINER_CLASS}`) !== null) continue
     // Modifier classes can sit inside a surface (e.g. a `code-block-small`
     // child of `code-block`): only the outermost matching element is a
     // candidate, so a fence is never double-counted or taken over twice.
@@ -222,6 +210,7 @@ function findFenceCandidates(scope: ParentNode = document): HTMLElement[] {
     seen.add(el)
   }
   for (const pre of scope.querySelectorAll<HTMLElement>('pre')) {
+    if (pre.closest(`.${CONTAINER_CLASS}`) !== null) continue
     // `<pre>` bodies inside a known surface were already handled by the
     // selector pass. Walking up from them again would climb PAST their own
     // (non-dsh-ui or dsh-ui) surface into a shared container — e.g. a
@@ -287,7 +276,7 @@ export function setDomRootFactory(factory: (container: HTMLElement) => Root): vo
  */
 const FLOW_ROW = '[data-chat-flow-key], [data-chat-flow-kind]'
 function rowOf(block: Element): Element {
-  return block.closest('[data-chat-anchor-key]') ?? block.closest(FLOW_ROW) ?? block
+  return block.closest(`[data-chat-node-key], [data-chat-anchor-key], ${FLOW_ROW}`) ?? block
 }
 
 /** 1-based ordinal of this block among the row's settled dsh-ui blocks
@@ -296,12 +285,12 @@ function rowOf(block: Element): Element {
  * bottoms out at the block itself (no owning row in the DOM at all), the
  * ordinal falls back to document order among ALL settled dsh-ui blocks so
  * sibling fences never collide on the same `dom:unknown:N` identity. */
-function fenceIndexOf(row: Element, block: Element): number {
+function fenceIndexOf(row: Element, block: Element, isGenuiFence: (block: HTMLElement) => boolean): number {
   const scope = row === block ? document : row
   let index = 0
   for (const candidate of findFenceCandidates(scope)) {
     if (candidate.closest(STREAMING) !== null) continue
-    if (infostringOf(candidate) === null) continue
+    if (!isGenuiFence(candidate)) continue
     index += 1
     if (candidate === block) return index
   }
@@ -356,6 +345,49 @@ export function installDomFenceRenderer(
   driftWarned = false
   plausibilityWarned = false
   const mounts = new Map<HTMLElement, Mount>()
+  // Rebuilt every sweep from current source + current DOM. A source edit or
+  // session change can never retain an earlier language decision.
+  let sourceLanguages = new Map<HTMLElement, string | null>()
+
+  function isGenuiFence(block: HTMLElement): boolean {
+    if (sourceLanguages.has(block)) return sourceLanguages.get(block) === 'dsh-ui'
+    return infostringOf(block) === 'dsh-ui'
+  }
+
+  function readSourceLanguages(candidates: HTMLElement[]): Map<HTMLElement, string | null> {
+    const languages = new Map<HTMLElement, string | null>()
+    try {
+      const binding = ctx.uiSession.adapter.current.getSnapshot()
+      const snapshot = binding.hooks?.chat?.getSnapshot()
+      const rows = new Set(candidates.map(rowOf))
+      for (const row of rows) {
+        const key = row.getAttribute('data-chat-node-key') ?? row.getAttribute('data-chat-anchor-key')
+        if (key === null) continue
+        const fences = assistantSourceFences(snapshot, key)
+        if (fences === undefined) continue
+        const blocks = candidates.filter((block) => rowOf(block) === row)
+        for (const block of blocks) {
+          languages.set(block, null)
+          if (row.getAttribute('data-chat-group-part') === 'reasoning') continue
+          const raw = normalizedFenceBody(rawOf(block))
+          const matchingSource = fences.filter((fence) => fence.raw === raw)
+          // All stock code bodies count, including identical json/unmarked
+          // examples. A duplicate/ambiguous match must never authorize both.
+          const matchingDom = Array.from(row.querySelectorAll<HTMLElement>('pre')).filter((pre) =>
+            pre.closest(`.${CONTAINER_CLASS}`) === null && rowOf(pre) === row
+            && normalizedFenceBody(pre.textContent ?? '') === raw)
+          const pre = block.querySelector('pre')
+          const index = pre === null ? -1 : matchingDom.indexOf(pre)
+          if (index >= 0 && matchingDom.length === matchingSource.length) {
+            languages.set(block, matchingSource[index]!.language)
+          }
+        }
+      }
+    } catch {
+      // Missing optional Chat projection: only explicit DOM labels qualify.
+    }
+    return languages
+  }
 
   const sessionIdOf = (): SessionId | undefined => {
     try {
@@ -376,7 +408,7 @@ export function installDomFenceRenderer(
       // per block so the degraded path is visible in the console.
       warnOnce(block, 'no [data-chat-anchor-key] ancestor for a dsh-ui fence (host render path without row anchor — e.g. Safari); using fallback identity dom:unknown:N')
     }
-    const fenceIndex = fenceIndexOf(row, block)
+    const fenceIndex = fenceIndexOf(row, block, isGenuiFence)
     const anchorKey = row.getAttribute('data-chat-anchor-key') ?? 'unknown'
     const key = `dom:${anchorKey}:${fenceIndex}` as Key
     const sessionId = sessionIdOf()
@@ -410,13 +442,9 @@ export function installDomFenceRenderer(
     if (block.hasAttribute(PROCESSED)) return
     const row = rowOf(block)
     const settled = isSettled(block)
-    // Settled blocks must carry the dsh-ui label. Streaming blocks cannot:
-    // the host renders the language label only once the reply settles
-    // (MarkdownText passes `lang={streaming ? undefined : lang}`), so during
-    // streaming the fence is identified by CONTENT — a partial parse that
-    // yields a GenUI node. A misidentified fence (e.g. a ```json block that
-    // happens to parse) is reverted at the settle transition below.
-    if (settled && infostringOf(block) === null) return
+    // A parseable body is never proof of language. rc.2 uses generic toolbar
+    // labels even after settlement; require an explicit DOM or source fence.
+    if (!isGenuiFence(block)) return
     const raw = rawOf(block)
     if (raw.trim() === '') {
       if (settled) warnOnce(block, 'settled dsh-ui fence has an empty body; keeping the code block')
@@ -466,7 +494,7 @@ export function installDomFenceRenderer(
     }
     block.style.display = 'none'
     block.setAttribute(PROCESSED, '')
-    mounts.set(block, { root, container, block, lastRaw: raw, lastSettled: settled, lastNode: node })
+    mounts.set(block, { root, container, block, lastRaw: raw, lastSettled: settled, lastNode: node, sessionId: sessionIdOf() })
   }
 
   /** Pre-paint repair: the host's React re-renders during streaming can wipe
@@ -515,6 +543,8 @@ export function installDomFenceRenderer(
    * the streaming→settled transition), repair surgery, then take over every
    * new dsh-ui block — settled or still streaming. */
   function sweep(): void {
+    const candidates = findFenceCandidates()
+    sourceLanguages = readSourceLanguages(candidates)
     for (const [block, mount] of mounts) {
       if (!block.isConnected) {
         unmountBlock(block)
@@ -522,18 +552,10 @@ export function installDomFenceRenderer(
       }
       const raw = rawOf(block)
       const settled = isSettled(block)
-      // Settle transition label re-verification: a streaming block was taken
-      // over by content, not by label. If the now-visible label exists and is
-      // NOT dsh-ui (a ```json fence that happened to parse), restore the
-      // stock block and drop the mount.
-      if (settled && !mount.lastSettled) {
-        const labelText = labelTextOf(block)
-        if (labelText !== '' && labelText !== 'dsh-ui') {
-          // A content-identified fence settled as another language (e.g. a
-          // ```json block that happened to parse): restore the stock block.
-          unmountBlock(block)
-          continue
-        }
+      // Revalidate on every source/DOM revision, including edits after settle.
+      if (!candidates.includes(block) || !isGenuiFence(block) || mount.sessionId !== sessionIdOf()) {
+        unmountBlock(block)
+        continue
       }
       // A host re-render can also wipe the CONTENT of our container while
       // leaving the node in place. An inline mount whose container came back
@@ -602,17 +624,19 @@ export function installDomFenceRenderer(
       }
     }
     repairSurgery()
-    for (const block of findFenceCandidates()) {
+    for (const block of candidates) {
       renderBlock(block)
     }
   }
 
   let scheduled = false
+  let active = true
   const schedule = (): void => {
-    if (scheduled) return
+    if (!active || scheduled) return
     scheduled = true
     requestAnimationFrame(() => {
       scheduled = false
+      if (!active) return
       sweep()
     })
   }
@@ -627,15 +651,41 @@ export function installDomFenceRenderer(
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ['data-streaming'],
+    attributeFilter: ['data-streaming', 'data-chat-node-key', 'data-chat-anchor-key', 'data-chat-flow-key', 'data-chat-group-part'],
     // React streams tokens as text-node updates: without characterData the
     // observer would only fire on structural changes and miss body growth.
     characterData: true,
   })
+  // Source edits need not mutate the code body (e.g. dsh-ui -> json with
+  // identical JSON). Follow the public source invalidations as well as DOM.
+  let disposeChat: (() => void) | undefined
+  let watchedChat: unknown
+  const watchSource = (): void => {
+    try {
+      const chat = ctx.uiSession.adapter.current.getSnapshot()?.hooks?.chat
+      if (chat !== watchedChat) {
+        disposeChat?.()
+        watchedChat = chat
+        disposeChat = chat?.subscribe(schedule)
+      }
+    } catch {
+      // No current session / binding still materializing. DOM labels remain
+      // usable; the next selection invalidation or sweep retries the source.
+      disposeChat?.()
+      disposeChat = undefined
+      watchedChat = undefined
+    }
+    schedule()
+  }
+  const disposeCurrent = ctx.uiSession.adapter.current.subscribe?.(watchSource)
+  watchSource()
   const interval = window.setInterval(sweep, SWEEP_MS)
   sweep()
 
   return () => {
+    active = false
+    disposeCurrent?.()
+    disposeChat?.()
     observer.disconnect()
     window.clearInterval(interval)
     for (const block of Array.from(mounts.keys())) unmountBlock(block)

@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.9.1-dsh020.2] - 2026-10-16
+### 修复
+- 官方 0.2.0-rc.2 将不支持高亮的 `dsh-ui` 工具栏显示为“代码块”/“Code”。DOM 渲染改用当前 session 公开 Chat 投影、`data-chat-node-key` 和当前围栏正文核对语言，流式、完成态与历史重放使用相同身份门禁；普通 JSON/Python/无标记代码不再按内容被流式接管。源文本修改、失效正文和 session 切换会重新核对，重复正文映射不明确时保留代码。
+- 完成态优先使用现有完整 JSON 修复，再降级为已完成前缀，避免已恢复前缀阻止后续表格恢复。保留流式不做结构补全、panel append 原始 JSON 完整性门禁和资源预算。
+- callout 的字符串 `text` 别名归一化到 `content`，保留规范字段优先级及长度限制。
+### 验证
+- 新增 24 项定向回归（其中 2 项按环境变量选择本地私有原始 fixture，不将其写入源码）；覆盖精确畸形表格的 5 行恢复、流式至历史重放、非 UI 代码、重复正文、源码/会话修改、旧宿主标签、空绑定、bare component 与 panel append 门禁。TypeScript 检查通过；候选需经主控官方 rc2 浏览器门禁后发布。
+### 兼容边界
+- 使用已有公开 `uiSession.adapter.current` 的 `hooks.chat` 投影，无 Chat 来源时只接受显式 DOM `dsh-ui` 标签。源码围栏辅助读取限顶层反引号/波浪号围栏；嵌套列表、引用或对应关系不明确时保留宿主代码块。
+
 ## [0.9.1] - 2026-08-22
 ### 新增
 - **编辑级 `diagram` 组件（diagram-design 移植，PR #9）**：白名单新增 `diagram` 节点——27 种 kind（architecture/flowchart/sequence/state/er/timeline/swimlane/quadrant/radar/loop 等）、正交连接器、语义 token 主题（light/dark/editorial 变体）、dotted-paper 底纹、Zone 分组（≤3 个虚线容器 + mono eyebrow 标签）、64px 节点排版与底部 Legend 色板条。复杂度预算由 guard 强制（节点/边/焦点上限），坐标取整 4px 网格、重复 id 自愈、主题色安全校验；`figcaption` 与 SVG `<title>` 分离 id，`aria-labelledby` 稳定指向 `<title>`。

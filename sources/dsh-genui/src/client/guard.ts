@@ -381,7 +381,7 @@ function repairNode(value: unknown, ctx: RepairCtx, depth: number): GenuiNode | 
       }
     }
     case 'callout': {
-      const content = str(v.content, GENUI_LIMITS.maxString)
+      const content = str(v.content, GENUI_LIMITS.maxString) ?? str(v.text, GENUI_LIMITS.maxString)
       if (content === undefined) return null
       return { type: 'callout', content, ...opt('tone', enu(v.tone, CALLOUT_TONES)), ...opt('title', str(v.title, GENUI_LIMITS.maxString)) }
     }
@@ -1380,7 +1380,7 @@ function validateNode(value: unknown, depth: number, at: string, errors: string[
       if (!Array.isArray(v.series)) errors.push(`${at}: type 'plot' requires series (array)`)
       break
     case 'callout':
-      if (typeof v.content !== 'string') errors.push(`${at}: type 'callout' requires content (string)`)
+      if (typeof v.content !== 'string' && typeof v.text !== 'string') errors.push(`${at}: type 'callout' requires content (string)`)
       break
     case 'steps':
       if (!Array.isArray(v.steps)) errors.push(`${at}: type 'steps' requires steps (array)`)

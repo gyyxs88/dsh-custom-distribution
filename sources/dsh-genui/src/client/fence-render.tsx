@@ -126,6 +126,16 @@ function FencePanelPublisher({ sessionId, sourceId, order, spec }: {
  *   streaming halves are never completed early.
  */
 export function resolveGenuiSpec(raw: string, context?: GenuiFenceContext): GenuiSpec | null {
+  // A recoverable prefix can omit later components. Once settled, try the
+  // existing whole-body repair BEFORE accepting that shorter prefix. Every
+  // repaired result still passes through the normal guard/resource budgets.
+  if (context?.source !== undefined) {
+    const completed = completeFenceJson(raw)
+    if (completed !== null) {
+      const spec = repairGenuiSpec(JSON.parse(completed.text))
+      if (spec !== null) return spec
+    }
+  }
   const parsed = parsePartialGenuiSpec(raw)
   let spec = parsed === null ? null : repairGenuiSpec(parsed)
   if (spec === null) {
@@ -133,13 +143,6 @@ export function resolveGenuiSpec(raw: string, context?: GenuiFenceContext): Genu
     if (repaired !== null) {
       const reparsed = parsePartialGenuiSpec(repaired.text)
       spec = reparsed === null ? null : repairGenuiSpec(reparsed)
-    }
-    if (spec === null && context?.source !== undefined) {
-      const completed = completeFenceJson(raw)
-      if (completed !== null) {
-        const reparsed = parsePartialGenuiSpec(completed.text)
-        spec = reparsed === null ? null : repairGenuiSpec(reparsed)
-      }
     }
   }
   return spec
