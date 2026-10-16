@@ -10,7 +10,13 @@ The plugin wraps **instances**, never prototypes or global fetch:
 * Official `PiAiAdapter.streamWithSnapshot`: clone only the selected Go profile
   and its headers, overwrite both identity headers using the dispatch SID, retain
   captured models and other profiles; map only terminal `PI_AI_ERROR` containing
-  the exact word `network_error` to `TRANSPORT`. Official retry owns recovery.
+  the exact word `network_error` to `TRANSPORT`. A terminal `AUTH` with the exact
+  `opencode-go-response API error (403):` envelope and a complete JSON object
+  whose top-level `type` is `RegionError` becomes `REGION_RESTRICTED`, with a
+  Chinese explanation and the original upstream diagnostic. Other auth errors,
+  natural-language region mentions, malformed JSON, cancellation and unrelated
+  chunks retain official behavior. Historical session records are unchanged.
+  Official retry owns recovery; normal retry does not include the new code.
 * Official LLM service `discoverModels`: for the standard `llm-pi-ai` settings
   namespace, query explicit endpoints first. Provider-only prefetch and fallback
   read the original official catalog, including its input capabilities. Lazy keys

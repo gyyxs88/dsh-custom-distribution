@@ -28,6 +28,19 @@ function scopedSnapshot(snapshot, provider, sessionId) {
 }
 function corrected(chunk) {
   const failure = chunk.type === 'finish' && chunk.reason?.kind === 'error' ? chunk.reason.failure : undefined;
+  // Only the verified upstream 403 envelope and structured type identify a
+  // region refusal; AUTH alone or prose mentioning a country is insufficient.
+  const body = failure?.code === 'AUTH' && typeof failure.message === 'string'
+    ? /^opencode-go-response API error \(403\):\s*([\s\S]+)$/.exec(failure.message)?.[1] : undefined;
+  if (body) {
+    try {
+      const detail = JSON.parse(body);
+      if (detail !== null && !Array.isArray(detail) && detail.type === 'RegionError') {
+        return { ...chunk, reason: { ...chunk.reason, failure: { ...failure, code: 'REGION_RESTRICTED',
+          message: `该模型在当前地区不可用，请手动切换其他模型。\n${failure.message}` } } };
+      }
+    } catch { /* Unstructured or truncated errors retain official classification. */ }
+  }
   if (failure?.code !== 'PI_AI_ERROR' || !/\bnetwork_error\b/i.test(failure.message ?? '')) return chunk;
   return { ...chunk, reason: { ...chunk.reason, failure: { ...failure, code: 'TRANSPORT' } } };
 }

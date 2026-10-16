@@ -55,6 +55,9 @@ const server = createServer(async (req, res) => {
   const identity = { openCode: req.headers['x-opencode-session'], native: req.headers['x-deepseek-harness-session-id'],
     userAgent: req.headers['user-agent'], preserved: req.headers['x-test-preserved'] };
   received.push({ path: req.url, identity, marker: body.messages?.at(-1)?.content ?? body.input?.at(-1)?.content });
+  if (streamError && typeof streamError === 'object') {
+    res.writeHead(streamError.status, { 'content-type': 'application/json' }); res.end(streamError.body); return;
+  }
   if (Number.isInteger(streamError)) { res.writeHead(streamError, { 'content-type': 'application/json' }); res.end(JSON.stringify({ error: { message: `fixture ${streamError} network_error` } })); return; }
   // Reproduce the server's contract without sending requests to a provider.
   if (req.url.startsWith('/go/') && (!identity.openCode || identity.openCode.startsWith('stale-'))) {
@@ -275,6 +278,69 @@ async function retryIntegration() {
     } finally { await patch.dispose(); }
   } finally { streamError = undefined; for (const dispose of disposers) await dispose(); await fixture.close(); }
 }
+async function regionIntegration() {
+  const fixture = await setup('openai-responses');
+  const body = JSON.stringify({ type: 'RegionError', message: 'This model is not available in your country' });
+  // OpenAI's SDK exposes wire JSON.error as its parsed body. This envelope
+  // reproduces the exact terminal message supplied in the incident report.
+  const httpFailure = (status, text) => {
+    try { return { status, body: JSON.stringify({ error: JSON.parse(text) }) }; }
+    catch { return { status, body: text }; }
+  };
+  try {
+    streamError = httpFailure(403, body);
+    const baseline = await call(fixture.ctx, 'opencode-go-response', 'session-region-fixture');
+    assert.equal(baseline.kind, 'error'); assert.equal(baseline.failure.code, 'AUTH');
+    assert.equal(baseline.failure.message, `opencode-go-response API error (403): ${body}`);
+    evidence.regionBaseline = baseline.failure;
+    add('official-403-RegionError-misclassified-AUTH-baseline');
+    streamError = httpFailure(401, JSON.stringify({ type: 'invalid_api_key', message: 'Invalid API key' }));
+    evidence.authBaseline = (await call(fixture.ctx, 'opencode-go-response', 'session-region-fixture')).failure;
+    assert.equal(evidence.authBaseline.code, 'AUTH');
+    streamError = httpFailure(403, body);
+    const patch = fixture.ctx.plugin(supplement); await patch;
+    try {
+      const start = received.length;
+      const fixed = await call(fixture.ctx, 'opencode-go-response', 'session-region-fixture');
+      assert.equal(fixed.failure.code, 'REGION_RESTRICTED');
+      assert.match(fixed.failure.message, /地区/);
+      assert.ok(fixed.failure.message.endsWith(baseline.failure.message), 'preserve upstream diagnostic');
+      assert.equal(received.length, start + 1, 'supplement must not retry');
+      evidence.regionCorrected = fixed.failure;
+      const prepared = await fixture.ctx.llm.prepareCall({ provider: 'opencode-go-response', model: 'mock-model', maxTokens: 16 });
+      assert.equal((await call(fixture.ctx, 'opencode-go-response', 'session-region-fixture', 'session-title', prepared)).failure.code, 'REGION_RESTRICTED');
+      add('real-HTTP-403-RegionError-main-and-prepared-corrected');
+      const cases = [
+        ['401-invalid-key', 401, JSON.stringify({ error: { type: 'invalid_api_key', message: 'Invalid API key' } }), 'AUTH'],
+        ['403-permissions', 403, JSON.stringify({ error: { type: 'permission_error', message: 'Insufficient permissions' } }), 'AUTH'],
+        ['403-plain', 403, '{}', 'AUTH'],
+        ['403-country-natural-language', 403, JSON.stringify({ message: 'This model is not available in your country' }), 'AUTH'],
+        ['403-type-in-natural-language', 403, JSON.stringify({ message: 'RegionError: country restriction' }), 'AUTH'],
+        ['403-wrong-type', 403, JSON.stringify({ type: 'PermissionError', message: 'RegionError in your country' }), 'AUTH'],
+        ['403-nested-type', 403, JSON.stringify({ error: { type: 'RegionError', message: 'not the verified body shape' } }), 'AUTH'],
+        ['403-malformed-JSON', 403, '{"type":"RegionError",', 'AUTH'],
+        ['403-JSON-with-trailer', 403, body + ' trailing', 'AUTH'],
+        ['403-array', 403, '[' + body + ']', 'AUTH'],
+        ['401-RegionError', 401, body, 'AUTH'],
+        ['429-RegionError', 429, body, 'RATE_LIMIT'],
+        ['503-RegionError', 503, body, 'SERVER'],
+        ['403-whitespace-structured', 403, ' \n' + body + ' \n', 'REGION_RESTRICTED'],
+      ];
+      for (const [label, status, responseBody, code] of cases) {
+        streamError = httpFailure(status, responseBody);
+        const reason = await call(fixture.ctx, 'opencode-go-response', 'session-region-fixture');
+        assert.equal(reason.failure.code, code, label);
+        add(`real-HTTP-region-boundary ${label}`);
+      }
+      streamError = undefined;
+      assert.equal((await call(fixture.ctx, 'opencode-go-response', 'session-region-fixture')).kind, 'stop');
+      add('responses-SSE-success-preserved-after-region-error');
+    } finally { await patch.dispose(); }
+    streamError = httpFailure(403, body);
+    assert.equal((await call(fixture.ctx, 'opencode-go-response', 'session-region-fixture')).failure.code, 'AUTH');
+    add('region-supplement-unload-restores-official-AUTH');
+  } finally { streamError = undefined; await fixture.close(); }
+}
 await test('real rc2 ASAR adapter compatibility', async () => {
 try {
   for (const api of protocols) {
@@ -346,6 +412,7 @@ try {
   }
   await discoveryIntegration();
   await retryIntegration();
+  await regionIntegration();
   evidence.status = 'PASSED'; evidence.requests = received.length;
   evidence.discoveryRequests = discoveries;
   evidence.identityCapture = received;
