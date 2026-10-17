@@ -7,7 +7,7 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const output = path.resolve(process.argv[2] ?? path.join(root, '../../temp/desktop-repair-20260930'));
 const archive = process.argv[3] ?? defaultArchive, electron = process.argv[4] ?? defaultElectron;
 const official = installation(archive);
-if (official.some(pkg => pkg.version !== (pkg.name.endsWith('/cordis') ? '4.0.4' : '0.2.0-rc.2'))) throw Error('Unsupported official installation');
+if (official.some(pkg => pkg.version !== (pkg.name.endsWith('/cordis') ? '4.0.5' : '0.2.1-rc.2'))) throw Error('Unsupported official installation');
 fs.mkdirSync(output, { recursive: true });
 const entry = process.argv[5] ?? path.join(root, 'sources/dsh-desktop-compat/lib/index.js');
 for (const [test, prefix] of [['desktop-compat.test.mjs', 'desktop-test'], ['desktop-errors.test.mjs', 'desktop-errors']]) {
@@ -15,7 +15,7 @@ const result = spawnSync(electron, [path.join(root, 'tests', test), archive, out
   cwd: root, encoding: 'utf8', timeout: 120000,
   // Explicit isolated launch environment. Never inspect or inherit provider credentials/proxy env.
   env: { ELECTRON_RUN_AS_NODE: '1', SystemRoot: 'C:\\Windows', WINDIR: 'C:\\Windows',
-    TEMP: output, TMP: output, PATH: 'C:\\Windows\\System32;C:\\Windows' }
+    TEMP: output, TMP: output, USERPROFILE: output, HOME: output, DSH_HOME: path.join(output, 'home'), PATH: 'C:\\Windows\\System32;C:\\Windows' }
 });
 fs.writeFileSync(path.join(output, `${prefix}.stdout.log`), result.stdout ?? '');
 fs.writeFileSync(path.join(output, `${prefix}.stderr.log`), result.stderr ?? '');

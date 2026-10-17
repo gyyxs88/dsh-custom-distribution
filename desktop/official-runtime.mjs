@@ -34,6 +34,7 @@ export function installation(archive = defaultArchive) {
   });
 }
 export function useOfficial(archive = defaultArchive) {
+  archive = path.resolve(archive);
   const official = `${archive.replaceAll('\\', '/')}/dsh/node_modules/`;
   const redirects = new Map(peers.map(pkg => [pkg, `${official}${pkg}/lib/index.js`]));
   registerHooks({ resolve(specifier, context, next) {

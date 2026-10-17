@@ -21,7 +21,8 @@ const candidateEntry = process.argv[4] ?? new URL('../sources/dsh-desktop-compat
 const supplement = await import(pathToFileURL(candidateEntry));
 const requireOfficial = createRequire(`${official}@deepseek-ai/dsh-llm-pi-ai/package.json`);
 const code = fs.readFileSync(`${official}@deepseek-ai/dsh-llm-pi-ai/lib/index.js`);
-assert.equal(code.toString('utf8').length, 113888, 'must test the identified official rc.2 character length');
+const { officialContract } = await import(new URL('./contract.js', pathToFileURL(candidateEntry)));
+assert.equal(createHash('sha256').update(code).digest('hex'), officialContract['@deepseek-ai/dsh-llm-pi-ai'].sha256, 'reviewed exact official candidate');
 const evidence = { official: { llm: requireOfficial('@deepseek-ai/dsh-llm/package.json').version,
   piAdapter: requireOfficial('@deepseek-ai/dsh-llm-pi-ai/package.json').version,
   piSdk: JSON.parse(fs.readFileSync(`${official}@earendil-works/pi-ai/package.json`, 'utf8')).version,
@@ -156,6 +157,10 @@ async function discoveryIntegration() {
     await assert.rejects(ctx.llm.discoverModels('llm-pi-ai', { provider: 'unknown-fixture' }), { code: 'DISCOVERY_FAILED' });
     add('unknown-provider-only-no-invented-catalog');
     discoveryMode = 'live';
+    const nativeCustom = await probe({ provider: 'unknown-fixture', apiKey: 'mock-draft-key' });
+    assert.deepEqual(nativeCustom, uncatalogued);
+    assert.notEqual(discoveries.at(-1).identity, 'identity');
+    add('uncatalogued-live-discovery-delegates-to-official');
     const live = await probe();
     assert.deepEqual(live, [{ id: 'live-model', name: 'Live', contextWindow: 8888, maxTokens: 777, inputModalities: ['text', 'image'] }, { id: 'plain', name: 'plain' }]);
     assert.equal(credentialReads, 1); assert.equal(discoveries.at(-1).identity, 'identity'); assert.equal(discoveries.at(-1).preserved, 'stored');
@@ -177,10 +182,15 @@ async function discoveryIntegration() {
     }
     discoveryMode = 503;
     await assert.rejects(probe({ provider: 'unknown-fixture', apiKey: 'mock-draft-key' }), { code: 'DISCOVERY_FAILED' }); add('503-unknown-provider-no-catalog');
-    const closedServer = createServer();
-    await new Promise(resolve => closedServer.listen(0, '127.0.0.1', resolve));
-    const closedPort = closedServer.address().port;
-    await new Promise(resolve => closedServer.close(resolve));
+    // Windows may allocate a Fetch-forbidden port (for example 10080). Such a
+    // URL never reaches TCP and cannot prove ECONNREFUSED/catalog fallback.
+    let closedPort;
+    do {
+      const closedServer = createServer();
+      await new Promise(resolve => closedServer.listen(0, '127.0.0.1', resolve));
+      closedPort = closedServer.address().port;
+      await new Promise(resolve => closedServer.close(resolve));
+    } while ([1,7,9,11,13,15,17,19,20,21,22,23,25,37,42,43,53,69,77,79,87,95,101,102,103,104,109,110,111,113,115,117,119,123,135,137,139,143,161,179,389,427,465,512,513,514,515,526,530,531,532,540,548,554,556,563,587,601,636,989,990,993,995,1719,1720,1723,2049,3659,4045,5060,5061,6000,6566,6665,6666,6667,6668,6669,6697,10080].includes(closedPort));
     assert.deepEqual(await probe({ baseURL: `http://127.0.0.1:${closedPort}/v1`, apiKey: 'mock-draft-key' }), catalog); add('real-connection-refused-catalog-fallback');
     const start = discoveries.length, reads = credentialReads;
     for (const baseURL of ['invalid', 'file:///fixture', ' http://127.0.0.1/', `${base}/?x=1`, `${base}/#x`, `http://user:pass@127.0.0.1/`]) {

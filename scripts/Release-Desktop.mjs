@@ -5,6 +5,8 @@ import { spawnSync } from 'node:child_process';
 import { verify, unpack } from '../desktop/package.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const output = path.resolve(process.argv[2] ?? path.join(root, '../../temp/desktop-repair-20260930'));
+const archive = path.resolve(process.argv[3] ?? 'D:/DSH/resources/app.asar');
+const electron = path.resolve(process.argv[4] ?? 'D:/DSH/DeepSeek Harness.exe');
 const candidate = path.join(output, '候选');
 const run = (file, args, allowed = [0]) => {
   const result = spawnSync(process.execPath, [path.join(root, 'scripts', file), ...args], { cwd: root, encoding: 'utf8', timeout: 120000 });
@@ -12,7 +14,7 @@ const run = (file, args, allowed = [0]) => {
   return { exitCode: result.status };
 };
 fs.mkdirSync(output, { recursive: true });
-run('Build-Desktop.mjs', [candidate]);
+run('Build-Desktop.mjs', [candidate, archive]);
 const manifest = JSON.parse(fs.readFileSync(path.join(candidate, 'candidate-manifest.json')));
 const bytes = fs.readFileSync(manifest.archive.path);
 verify(path.join(root, 'sources/dsh-desktop-compat'), bytes);
@@ -21,8 +23,8 @@ for (const [name, content] of unpack(bytes)) {
   const file = path.join(candidate, name);
   fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, content);
 }
-const tests = run('Test-Desktop.mjs', [path.join(output, 'packaged-test'), 'D:/DSH/resources/app.asar', 'D:/DSH/DeepSeek Harness.exe', path.join(staging, 'lib/index.js')]);
-const retirement = run('Test-DesktopRetirement.mjs', [path.join(output, 'retirement')], [0, 2]);
+const tests = run('Test-Desktop.mjs', [path.join(output, 'packaged-test'), archive, electron, path.join(staging, 'lib/index.js')]);
+const retirement = run('Test-DesktopRetirement.mjs', [path.join(output, 'retirement'), archive, electron], [0, 2]);
 const testEvidence = JSON.parse(fs.readFileSync(path.join(output, 'packaged-test/test-results.json')));
 if (testEvidence.status !== 'PASSED') throw Error('Packaged integration did not pass');
 const errorEvidence = JSON.parse(fs.readFileSync(path.join(output, 'packaged-test/error-test-results.json')));

@@ -26,6 +26,7 @@ const add = (label, data = {}) => { evidence.cases.push({ label, passed: true, .
 const secret = randomBytes(24).toString('hex'); // Random mock, never saved or printed.
 let current = {}, uploads = 0, deletes = 0, lists = 0;
 const server = createServer(async (req, res) => {
+  if (req.url === '/models') { res.setHeader('content-type', 'application/json'); res.end(JSON.stringify({data:[{id:'deepseek-flash',output_modalities:['text'],api_capabilities:{anthropic_messages:{}}}]})); return; }
   let bytes = 0, text = '';
   for await (const part of req) { bytes += part.length; if (!req.url.includes('/files')) text += part; }
   evidence.requests.push({ method: req.method, path: req.url, bytes });
@@ -82,7 +83,7 @@ async function setup(account = false, early = false) {
       resolveUserId: () => 'mock-user', resolveFiles: () => store });
     registration = ctx.llm.registerAdapter(['fixture'], adapter);
   };
-  if (account) { accountPlugin = ctx.plugin(Account, { baseURL, models, maxTokens: 32, thinking: 'disabled' }); await accountPlugin; adapter = ctx.llm.registration('deepseek-account').adapter; }
+  if (account) { accountPlugin = ctx.plugin(Account, { baseURL, maxTokens: 32, thinking: 'disabled' }); await accountPlugin; adapter = ctx.llm.registration('deepseek-account').adapter; }
   else attach();
   if (!early) { patch = ctx.plugin(supplement); await patch; }
   return { ctx, adapter, patch, store, connection, get rejectedTokens() { return rejectedTokens; },
@@ -91,7 +92,7 @@ async function setup(account = false, early = false) {
 }
 async function call(fixture, prepared, signal, messages) {
   const provider = fixture.ctx.llm.listProviders()[0].id;
-  const options = { provider, model: 'mock-model', maxTokens: 16, sessionId: 'mock-session', purpose: prepared ? 'session-title' : 'agent',
+  const options = { provider, model: provider === 'deepseek-account' ? 'deepseek-flash' : 'mock-model', maxTokens: 16, sessionId: 'mock-session', purpose: prepared ? 'session-title' : 'agent',
     messages: messages ?? [{ role: 'user', content: [{ type: 'text', text: 'offline' }] }], signal: signal ?? AbortSignal.timeout(5000), ...(prepared?.config ?? {}) };
   const chunks = [];
   for await (const chunk of prepared ? prepared.stream(options) : fixture.ctx.llm.stream(options)) chunks.push(chunk);

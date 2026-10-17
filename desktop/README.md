@@ -1,4 +1,40 @@
-# Independent Desktop rc.2 release
+# Independent Desktop 0.2.1-rc.2 release
+
+The 2026-10-17 candidate uses the signed official Windows installer without ASAR
+changes. `sources/dsh-desktop-compat` is now pinned to the reviewed 0.2.1-rc.2
+adapters and Cordis 4.0.5. Its discovery supplement only handles catalog routes;
+uncatalogued routes delegate to official live discovery. The copy-ID bundle and
+inactive OpenCode wrapper retire from the active Desktop profile. Their archives
+and history remain available. GenUI's generated client must be rebuilt from the
+settle-fixed TypeScript source before packing; stale tracked build output does
+not contain the previous fix.
+
+For isolated release gates, pass all three explicit paths:
+
+```powershell
+node scripts/Release-Desktop.mjs <output> <official-app.asar> <official-electron.exe>
+```
+
+`scripts/Prepare-Upgrade021Fixture.mjs <task-root> <fixture-name>` consumes the
+accepted `candidate-ready.json` and `artifact-set.json`. It creates an ACL protected
+home containing read-only copies of sessions, attachments, storages and workspace
+state, replaces credentials and model routes with offline fixtures, and extracts
+only the selected TGZs. Its modified profile is never a production deployment
+source. Production changes are separately proposed in
+`deployment-manifest-proposal.json`; preserve the live patch file bytes.
+
+`scripts/Start-Upgrade021Fixture.mjs <task-root> <fixture-name>` starts the exact
+official Desktop Host on an OS-assigned loopback port. The authentication URL is
+written only to the protected `<fixture-name>/ready-private.json`. A prompt
+containing `genui` returns streamed dsh-ui plus ordinary JSON; `fixture:region`,
+`fixture:forbidden`, `fixture:quota` and `fixture:auth` return controlled errors.
+Create `<fixture-name>/stop-request` to request official idle inspection and
+shutdown over IPC. Active or unknown work refuses shutdown. The process owner
+and lifecycle are recorded in the private ready file and lifecycle.json.
+
+The accepted TPS supplement is supplied independently by executor B. It uses
+public external composition and a generated trajectory module overlay; it is
+custom supplemental code. The official ASAR must retain its initial hash.
 
 ## Persistent Desktop launch
 

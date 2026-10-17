@@ -1,7 +1,7 @@
 {
   "name": "@omdsh-dev/dsh-genui",
   "description": "GenUI for DeepSeek Harness: interactive UI components rendered inline in assistant replies via the ```dsh-ui fence — layout, charts, plots, forms, quizzes, mermaid, 3D scenes, and an action event loop back to the model. Ships the fence-teaching host plugin, the browser renderer (client half), and the genui skill.",
-  "version": "0.9.1-dsh020.2",
+  "version": "0.9.1-dsh021.2",
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/types/plugin/index.d.ts",
@@ -9,10 +9,6 @@
     ".": {
       "types": "./lib/types/plugin/index.d.ts",
       "default": "./lib/index.js"
-    },
-    "./invariant": {
-      "types": "./lib/types/plugin/invariant.d.ts",
-      "default": "./lib/invariant.js"
     },
     "./client": {
       "types": "./lib/types/client/index.d.ts",
@@ -22,13 +18,11 @@
   },
   "files": [
     "lib/index.js",
-    "lib/invariant.js",
     "lib/client.js",
     "lib/assets/mermaid.js",
     "lib/assets/three.js",
     "lib/assets/echarts.js",
     "lib/types/plugin/index.d.ts",
-    "lib/types/plugin/invariant.d.ts",
     "lib/types/client/index.d.ts",
     "SKILL.md",
     "README.md",
@@ -64,21 +58,20 @@
     "react": "^18.3.1"
   },
   "peerDependencies": {
-    "@deepseek-ai/dsh-api-session-controller": "0.2.0-rc.2",
-    "@deepseek-ai/dsh-client-ui-conversation": "0.2.0-rc.2",
-    "@deepseek-ai/dsh-client-ui-input-trigger": "0.2.0-rc.2",
-    "@deepseek-ai/dsh-client-ui-primitives": "0.2.0-rc.2",
-    "@deepseek-ai/dsh-client-ui-renderer": "0.2.0-rc.2",
-    "@deepseek-ai/dsh-client-ui-session": "0.2.0-rc.2",
-    "@deepseek-ai/dsh-client-ui-slots": "0.2.0-rc.2",
-    "@deepseek-ai/dsh-client-ui-tool": "0.2.0-rc.2",
-    "@deepseek-ai/dsh-invariants": "0.2.0-rc.2",
-    "@deepseek-ai/dsh-llm": "0.2.0-rc.2",
-    "@deepseek-ai/dsh-session": "0.2.0-rc.2",
-    "@deepseek-ai/dsh-system-prompt": "0.2.0-rc.2",
-    "@deepseek-ai/dsh-tools": "0.2.0-rc.2",
-    "@deepseek-ai/dsh-util-values": "0.2.0-rc.2",
-    "@deepseek-ai/cordis": "4.0.4",
+    "@deepseek-ai/dsh-api-session-controller": "0.2.0-rc.2 || 0.2.1-rc.2",
+    "@deepseek-ai/dsh-client-ui-conversation": "0.2.0-rc.2 || 0.2.1-rc.2",
+    "@deepseek-ai/dsh-client-ui-input-trigger": "0.2.0-rc.2 || 0.2.1-rc.2",
+    "@deepseek-ai/dsh-client-ui-primitives": "0.2.0-rc.2 || 0.2.1-rc.2",
+    "@deepseek-ai/dsh-client-ui-renderer": "0.2.0-rc.2 || 0.2.1-rc.2",
+    "@deepseek-ai/dsh-client-ui-session": "0.2.0-rc.2 || 0.2.1-rc.2",
+    "@deepseek-ai/dsh-client-ui-slots": "0.2.0-rc.2 || 0.2.1-rc.2",
+    "@deepseek-ai/dsh-client-ui-tool": "0.2.0-rc.2 || 0.2.1-rc.2",
+    "@deepseek-ai/dsh-llm": "0.2.0-rc.2 || 0.2.1-rc.2",
+    "@deepseek-ai/dsh-session": "0.2.0-rc.2 || 0.2.1-rc.2",
+    "@deepseek-ai/dsh-system-prompt": "0.2.0-rc.2 || 0.2.1-rc.2",
+    "@deepseek-ai/dsh-tools": "0.2.0-rc.2 || 0.2.1-rc.2",
+    "@deepseek-ai/dsh-util-values": "0.2.0-rc.2 || 0.2.1-rc.2",
+    "@deepseek-ai/cordis": "~4.0.4 || ~4.0.5",
     "react": "^18.0.0 || ^19.0.0"
   },
   "devDependencies": {
@@ -119,6 +112,7 @@
   "packageManager": "pnpm@11.7.0",
   "engines": {
     "node": "^22.19.0 || >=24.0.0",
-    "pnpm": ">=11.7.0 <12"
+    "pnpm": ">=11.7.0 <12",
+    "dsh": "0.2.0-rc.2 || 0.2.1-rc.2"
   }
 }

@@ -1,6 +1,6 @@
-# Desktop rc.2 compatibility supplement
+# Desktop 0.2.1-rc.2 compatibility supplement
 
-External supplemental bundle `0.1.0-rc.2.3` for official DSH `0.2.0-rc.2`.
+External supplemental bundle `0.2.1-rc.2.2` for official DSH `0.2.1-rc.2`.
 It replaces `dsh-desktop-opencode-session`. Cordis, LLM, pi-ai adapter and native
 DeepSeek adapter entry sources are gated by exact reviewed version and SHA-256.
 An upstream change requires review before activation.
@@ -23,7 +23,11 @@ The plugin wraps instances, never prototypes or global fetch:
   The official native image request may still fall back to inline images after
   upload failure; this supplement does not change that recovery.
 * `llm.discoverModels` retains live-first discovery in the standard `llm-pi-ai`
-  namespace, lazy credentials, stored headers and safe static-catalog fallback.
+  namespace for providers with an installed catalog, lazy credentials, stored
+  headers and safe static-catalog fallback. Providers without a catalog use the
+  official live discovery unchanged. Official 0.2.1-rc.2 still chooses the static
+  catalog before a supplied endpoint, and still conflates some 403 failures with
+  invalid API keys; neither gap is retired on the basis of a similar feature name.
 
 Classification trusts actual status fields and anchored SDK HTTP envelopes.
 Numbers in body text and numeric provider `error.code` never become HTTP status.

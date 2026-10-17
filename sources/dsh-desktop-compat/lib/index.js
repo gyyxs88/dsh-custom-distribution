@@ -31,11 +31,11 @@ function scopedSnapshot(snapshot, provider, sessionId) {
 export function apply(ctx) {
   assertOfficial();
   const llm = ctx.llm;
-  if (versions.some(version => version !== '0.2.0-rc.2') ||
-      require('@deepseek-ai/cordis/package.json').version !== '4.0.4' ||
+  if (versions.some(version => version !== '0.2.1-rc.2') ||
+      require('@deepseek-ai/cordis/package.json').version !== '4.0.5' ||
       ['registration', 'listProviders', 'listConfigurableProviders', 'discoverModels'].some(method => typeof llm[method] !== 'function') ||
       ['current', 'profileOf', 'modelOf', 'stream', 'prepareCall', 'streamWithSnapshot'].some(method => typeof PiAiAdapter.prototype[method] !== 'function')) {
-    throw new LlmError('Desktop compatibility supplement supports the verified official rc.2 shape only', 'UNSUPPORTED_ADAPTER');
+    throw new LlmError('Desktop compatibility supplement supports the verified official 0.2.1-rc.2 shape only', 'UNSUPPORTED_ADAPTER');
   }
   if (llm[owner]) throw new LlmError('Desktop compatibility supplement already attached', 'DUPLICATE_SUPPLEMENT');
   const installed = new Map();
@@ -125,6 +125,8 @@ export function apply(ctx) {
       const snapshot = adapter.current(), profile = snapshot.profiles.get(request.provider);
       return profile ? { headers: profile.headers, resolveApiKey: () => adapter.config.resolveApiKey(request.provider, profile) } : undefined;
     };
+    const installedCatalog = await catalog();
+    if (!installedCatalog.length) return originalDiscovery.call(this, settingsNs, request, signal);
     const models = await discover(request, signal, catalog, stored);
     if (!models.length && (request.baseURL === undefined || request.baseURL === '')) {
       // Preserve the official no-catalog diagnostic on provider-only prefetch.
