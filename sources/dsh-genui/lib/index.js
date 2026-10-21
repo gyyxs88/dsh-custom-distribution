@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { readFileSync } from "node:fs";
 //#region src/client/spec.ts
 /**
 * Wrap a bare component object into a col root. Returns null when `value` is
@@ -443,13 +444,7 @@ function repairNode(value, ctx, depth) {
 			};
 		}
 		case "table": {
-			let rawCols = v.columns;
-			let rawRows = v.rows !== void 0 ? v.rows : v.data;
-			if (Array.isArray(rawCols) && rawCols.length > 0 && typeof rawCols[0] === "object" && rawCols[0] !== null) rawCols = rawCols.map((c) => columnHeaderText(c));
-			if (Array.isArray(rawRows) && rawRows.length > 0 && typeof rawRows[0] === "object" && rawRows[0] !== null && !Array.isArray(rawRows[0])) {
-				const keys = Array.isArray(v.columns) && v.columns.length > 0 && typeof v.columns[0] === "object" && v.columns[0] !== null ? v.columns.map((c) => columnKeyOf(c)).filter((k) => k !== void 0) : Object.keys(rawRows[0]);
-				rawRows = rawRows.map((row) => keys.map((k) => cellText(row[k])));
-			}
+			const { rawCols, rawRows } = normalizeTableFields(v);
 			const columns = repairStrings(rawCols, GENUI_LIMITS.maxTableCols, 128);
 			const rows = repairRows(rawRows, GENUI_LIMITS.maxTableRows, GENUI_LIMITS.maxTableCols);
 			if (columns === void 0 || rows === void 0) return null;
@@ -492,7 +487,7 @@ function repairNode(value, ctx, depth) {
 			};
 		}
 		case "callout": {
-			const content = str(v.content, GENUI_LIMITS.maxString);
+			const content = str(v.content, GENUI_LIMITS.maxString) ?? str(v.text, GENUI_LIMITS.maxString);
 			if (content === void 0) return null;
 			return {
 				type: "callout",
@@ -842,6 +837,49 @@ function cellText(v) {
 	if (v === null || v === void 0) return "";
 	return JSON.stringify(v);
 }
+/** Table aliases and row/column diagnostics share the renderer normalization. */
+function normalizeTableFields(v, report) {
+	const rowField = v.rows !== void 0 ? "rows" : "data";
+	let rawCols = v.columns;
+	let rawRows = v[rowField];
+	if (Array.isArray(rawCols)) rawCols = rawCols.map((column, i) => {
+		if (typeof column === "string") return column;
+		if (obj(column) !== void 0) {
+			if (columnKeyOf(column) === void 0) report?.(`columns[${i}]`, "string or object with title/label/key/dataIndex", column);
+			return columnHeaderText(column);
+		}
+		report?.(`columns[${i}]`, "string or named column object", column);
+		return column;
+	});
+	if (Array.isArray(rawRows)) {
+		const first = rawRows.find((row) => obj(row) !== void 0);
+		const keys = Array.isArray(v.columns) && obj(v.columns[0]) !== void 0 ? v.columns.map(columnKeyOf).filter((key) => key !== void 0) : first === void 0 ? [] : Object.keys(first);
+		rawRows = rawRows.map((row, i) => {
+			const record = obj(row);
+			let cells = row;
+			let path = `${rowField}[${i}]`;
+			if (record !== void 0) {
+				if ("cells" in record) {
+					cells = record.cells;
+					path += ".cells";
+				} else cells = keys.map((key) => cellText(record[key]));
+			}
+			if (!Array.isArray(cells)) {
+				report?.(path, "cell array or row object", cells);
+				return cells;
+			}
+			for (let j = 0; j < Math.min(cells.length, GENUI_LIMITS.maxTableCols); j++) {
+				const cell = cells[j];
+				if (typeof cell !== "string" && !(typeof cell === "number" && Number.isFinite(cell))) report?.(`${path}[${j}]`, "string or finite number", cell);
+			}
+			return cells;
+		});
+	}
+	return {
+		rawCols,
+		rawRows
+	};
+}
 function repairPlotSeries(v, cap) {
 	if (!Array.isArray(v)) return void 0;
 	const out = [];
@@ -893,15 +931,22 @@ function repairSteps(v) {
 	}
 	return out;
 }
-function repairPairs(v, cap) {
+function repairPairs(v, cap, report) {
 	if (!Array.isArray(v)) return void 0;
 	const out = [];
-	for (const p of v) {
+	for (const [index, p] of v.entries()) {
 		if (out.length >= cap) break;
 		const o = obj(p);
 		const key = o === void 0 ? void 0 : str(o.key, 256);
 		const value = o === void 0 ? void 0 : str(o.value, GENUI_LIMITS.maxString);
-		if (key === void 0 || value === void 0) continue;
+		if (key === void 0 || value === void 0) {
+			if (o === void 0) report?.(index, "", "object", p);
+			else {
+				if (key === void 0) report?.(index, ".key", "string", o.key);
+				if (value === void 0) report?.(index, ".value", "string", o.value);
+			}
+			continue;
+		}
 		out.push({
 			key,
 			value
@@ -1229,6 +1274,302 @@ function repairGenuiSpec(value) {
 		items: repairItems(v.items, ctx, 0)
 	};
 }
+/** Static examples never echo user data (which can contain secrets). */
+const DIAGNOSTIC_EXAMPLES = {
+	spec: { items: [{
+		type: "text",
+		content: "内容"
+	}] },
+	node: {
+		type: "text",
+		content: "内容"
+	},
+	callout: {
+		type: "callout",
+		content: "说明"
+	},
+	keyvalue: {
+		type: "keyvalue",
+		pairs: [{
+			key: "名称",
+			value: "内容"
+		}]
+	},
+	table: {
+		type: "table",
+		columns: ["名称"],
+		rows: [["内容"]]
+	},
+	tabs: {
+		type: "tabs",
+		tabs: [{
+			label: "标题",
+			items: [{
+				type: "text",
+				content: "内容"
+			}]
+		}]
+	},
+	accordion: {
+		type: "accordion",
+		items: [{
+			title: "标题",
+			items: []
+		}]
+	},
+	text: {
+		type: "text",
+		content: "内容"
+	},
+	stat: {
+		type: "stat",
+		label: "数量",
+		value: "1"
+	},
+	steps: {
+		type: "steps",
+		steps: [{ title: "开始" }]
+	},
+	button: {
+		type: "button",
+		label: "继续",
+		action: "continue"
+	},
+	checkbox: {
+		type: "checkbox",
+		label: "选项"
+	},
+	switch: {
+		type: "switch",
+		label: "开关"
+	},
+	link: {
+		type: "link",
+		label: "链接",
+		href: "https://example.com"
+	},
+	audio: {
+		type: "audio",
+		src: "/example.mp3"
+	},
+	video: {
+		type: "video",
+		src: "/example.mp4"
+	},
+	select: {
+		type: "select",
+		options: ["选项"]
+	},
+	radio: {
+		type: "radio",
+		options: ["选项"]
+	},
+	submit: {
+		type: "submit",
+		label: "提交",
+		action: "submit"
+	},
+	badge: {
+		type: "badge",
+		label: "状态"
+	},
+	progress: {
+		type: "progress",
+		value: 50
+	},
+	avatar: {
+		type: "avatar",
+		name: "姓名"
+	},
+	list: {
+		type: "list",
+		items: ["内容"]
+	},
+	chart: {
+		type: "chart",
+		data: [{
+			label: "数量",
+			value: 1
+		}]
+	},
+	plot: {
+		type: "plot",
+		series: [{ expr: "x" }]
+	},
+	diff: {
+		type: "diff",
+		diffs: [{
+			path: "example.txt",
+			oldText: null,
+			newText: "内容"
+		}]
+	},
+	json: {
+		type: "json",
+		value: {}
+	},
+	code: {
+		type: "code",
+		code: "example"
+	},
+	copy: {
+		type: "copy",
+		text: "内容"
+	},
+	mermaid: {
+		type: "mermaid",
+		code: "graph TD\nA-->B"
+	},
+	scene3d: {
+		type: "scene3d",
+		meshes: [{ shape: "box" }]
+	},
+	timeline: {
+		type: "timeline",
+		items: [{ title: "开始" }]
+	},
+	"file-tree": {
+		type: "file-tree",
+		items: [{
+			name: "example.txt",
+			type: "file"
+		}]
+	},
+	breadcrumb: {
+		type: "breadcrumb",
+		items: ["首页"]
+	},
+	quiz: {
+		type: "quiz",
+		question: "选择",
+		options: [{
+			label: "A",
+			correct: true
+		}]
+	},
+	diagram: {
+		type: "diagram",
+		kind: "architecture",
+		nodes: [],
+		edges: []
+	},
+	echart: {
+		type: "echart",
+		preset: "bar",
+		data: [{
+			label: "数量",
+			value: 1
+		}]
+	}
+};
+function diagnosticType(value) {
+	return value === void 0 ? "missing" : value === null ? "null" : Array.isArray(value) ? "array" : typeof value;
+}
+/**
+* Diagnose actual content loss using the SAME repair functions as rendering.
+* The existing validator describes failed nodes only; repaired aliases and
+* defaulted optional fields never become false failures. Paths address raw
+* input, including tabs.content's singleton and array forms.
+*/
+function diagnoseGenuiSpec(value) {
+	const errors = [];
+	const root = obj(value);
+	if (root === void 0) return {
+		ok: false,
+		errors: ["$: expected object; got " + diagnosticType(value)]
+	};
+	const add = (path, type, expected, actual) => {
+		if (errors.length >= 12) return;
+		const example = DIAGNOSTIC_EXAMPLES[type];
+		errors.push(`${path} (${type}): ${actual === void 0 ? "missing field" : "type/format error"}; expected ${expected}; got ${diagnosticType(actual)}` + (example === void 0 ? "" : `; example: ${JSON.stringify(example)}`));
+	};
+	let visited = 0;
+	const walk = (node, at, depth) => {
+		if (visited++ >= GENUI_LIMITS.maxNodes || depth > GENUI_LIMITS.maxDepth) {
+			add(at, "spec", `at most ${GENUI_LIMITS.maxNodes} nodes / depth ${GENUI_LIMITS.maxDepth}`, node);
+			return;
+		}
+		const v = obj(node);
+		if (v === void 0) {
+			add(at, "node", "object", node);
+			return;
+		}
+		if (typeof v.type !== "string") {
+			add(`${at}.type`, "node", "string", v.type);
+			return;
+		}
+		const type = GENUI_NODE_TYPES.has(v.type) ? v.type : "custom";
+		if (type === "table") normalizeTableFields(v, (field, expected, actual) => add(`${at}.${field}`, type, expected, actual));
+		if (repairNode(v, { remaining: GENUI_LIMITS.maxNodes }, depth) === null) {
+			const reasons = [];
+			validateNode(v, depth, at, reasons, () => {});
+			for (const reason of reasons.slice(0, 4)) {
+				const field = /requires ([\w]+)|'([\w]+)' must/.exec(reason);
+				const key = field?.[1] ?? field?.[2];
+				if (key !== void 0) {
+					const expected = /\(([^)]+)\)/.exec(reason)?.[1] ?? "valid field value";
+					add(`${at}.${key}`, type, expected, v[key]);
+				}
+			}
+			if (reasons.length === 0 || !reasons.some((r) => /requires |'\w+' must/.test(r))) add(at, type, "renderable component fields (see genui skill)", node);
+			return;
+		}
+		if (type === "keyvalue") repairPairs(v.pairs, GENUI_LIMITS.maxKeyValuePairs, (index, field, expected, actual) => {
+			add(`${at}.pairs[${index}]${field}`, type, expected, actual);
+		});
+		if (type === "steps" && Array.isArray(v.steps)) for (let i = 0; i < Math.min(v.steps.length, GENUI_LIMITS.maxSteps); i++) {
+			const step = obj(v.steps[i]);
+			if (step === void 0) add(`${at}.steps[${i}]`, type, "object with title (string)", v.steps[i]);
+			else if (typeof step.title !== "string") add(`${at}.steps[${i}].title`, type, "string", step.title);
+		}
+		const children = (items, path) => {
+			if (!Array.isArray(items)) {
+				add(path, type, "array", items);
+				return;
+			}
+			for (let i = 0; i < items.length && visited <= GENUI_LIMITS.maxNodes; i++) walk(items[i], `${path}[${i}]`, depth + 1);
+		};
+		if ([
+			"row",
+			"col",
+			"grid",
+			"card"
+		].includes(type)) children(v.items, `${at}.items`);
+		else if (type === "list" && Array.isArray(v.items)) for (let i = 0; i < v.items.length && visited <= GENUI_LIMITS.maxNodes; i++) {
+			const item = obj(v.items[i]);
+			if (item !== void 0 && typeof item.type === "string" && typeof item.title !== "string") walk(item, `${at}.items[${i}]`, depth + 1);
+		}
+		else if (type === "tabs" && Array.isArray(v.tabs) || type === "accordion" && Array.isArray(v.items)) {
+			const field = type === "tabs" ? "tabs" : "items";
+			const holders = v[field];
+			const cap = type === "tabs" ? GENUI_LIMITS.maxTabs : GENUI_LIMITS.maxAccordionItems;
+			for (let i = 0; i < Math.min(holders.length, cap); i++) {
+				const holder = obj(holders[i]);
+				const path = `${at}.${field}[${i}]`;
+				if (holder === void 0) {
+					add(path, type, "object", holders[i]);
+					continue;
+				}
+				const label = type === "tabs" ? "label" : "title";
+				if (typeof holder[label] !== "string") {
+					add(`${path}.${label}`, type, "string", holder[label]);
+					continue;
+				}
+				if (type === "tabs" && holder.items === void 0 && holder.content !== void 0) {
+					if (Array.isArray(holder.content)) children(holder.content, `${path}.content`);
+					else walk(holder.content, `${path}.content`, depth + 1);
+				} else children(holder.items, `${path}.items`);
+			}
+		}
+	};
+	if (Array.isArray(root.items)) for (let i = 0; i < root.items.length && visited <= GENUI_LIMITS.maxNodes; i++) walk(root.items[i], `$.items[${i}]`, 0);
+	else if (wrapSingleComponentRoot(value) !== null) walk(value, "$", 0);
+	else add("$.items", "spec", "array", root.items);
+	return {
+		ok: errors.length === 0,
+		errors
+	};
+}
 /**
 * Count the nodes of a spec tree (every item, descending into tabs /
 * accordion / file-tree / list containers — the same descent
@@ -1319,47 +1660,185 @@ const GENUI_NODE_TYPES = /* @__PURE__ */ new Set([
 	"echart",
 	"diagram"
 ]);
-/**
-* Count DECLARED nodes in a raw spec tree: objects whose `type` is a
-* white-listed string, descending the same containers `countGenuiNodes`
-* walks. `validate_dsh_ui` compares this with the repaired count to surface
-* children the repair silently dropped (blank-render class of bugs, issue
-* #42) instead of reporting a green check on a half-empty tree.
-*/
-function countDeclaredGenuiNodes(value, cap = Number.POSITIVE_INFINITY) {
-	let count = 0;
-	const declared = (candidate) => {
-		const o = obj(candidate);
-		return o !== void 0 && typeof o.type === "string" && GENUI_NODE_TYPES.has(o.type);
+function validateNode(value, depth, at, errors, walk) {
+	if (depth > GENUI_LIMITS.maxDepth) {
+		errors.push(`${at}: exceeds max depth ${GENUI_LIMITS.maxDepth}`);
+		return;
+	}
+	const v = obj(value);
+	if (v === void 0) {
+		errors.push(`${at}: must be an object`);
+		return;
+	}
+	const type = v.type;
+	if (typeof type !== "string") {
+		errors.push(`${at}: missing string 'type'`);
+		return;
+	}
+	const isStr = (name) => {
+		if (v[name] !== void 0 && typeof v[name] !== "string") errors.push(`${at}: '${name}' must be a string`);
 	};
-	const walk = (list) => {
-		if (!Array.isArray(list)) return;
-		for (const item of list) {
-			if (count >= cap) return;
-			if (!declared(item)) continue;
-			count += 1;
-			const v = obj(item);
-			if (v === void 0) continue;
-			if (v.type === "tabs" && Array.isArray(v.tabs)) for (const t of v.tabs) walkItemsOf(t);
-			else if (v.type === "accordion" && Array.isArray(v.items)) for (const it of v.items) walkItemsOf(it);
-			else if ((v.type === "row" || v.type === "col" || v.type === "grid" || v.type === "card") && Array.isArray(v.items)) walk(v.items);
-			else if (v.type === "list" && Array.isArray(v.items)) {
-				for (const li of v.items) if (declared(li)) walk([li]);
+	const isNum = (name) => {
+		if (v[name] !== void 0 && (typeof v[name] !== "number" || !Number.isFinite(v[name]))) errors.push(`${at}: '${name}' must be a finite number`);
+	};
+	switch (type) {
+		case "text":
+			if (typeof v.content !== "string" && typeof v.text !== "string") errors.push(`${at}: type 'text' requires content or text (string)`);
+			isStr("content");
+			isStr("text");
+			break;
+		case "row":
+		case "col":
+		case "card":
+		case "grid":
+			if (!Array.isArray(v.items)) errors.push(`${at}: type '${type}' requires items (array)`);
+			walk(v.items, depth + 1, `${at}.items`);
+			if (type === "grid") isNum("cols");
+			break;
+		case "button":
+		case "checkbox":
+		case "link":
+		case "switch":
+			if (typeof v.label !== "string") errors.push(`${at}: type '${type}' requires label (string)`);
+			isStr("label");
+			break;
+		case "audio":
+		case "video":
+			if (typeof v.src !== "string") errors.push(`${at}: type '${type}' requires src (string)`);
+			isStr("src");
+			isStr("alt");
+			if (type === "video") isStr("poster");
+			break;
+		case "slider":
+			isStr("label");
+			isNum("min");
+			isNum("max");
+			isNum("step");
+			isNum("value");
+			break;
+		case "input":
+		case "textarea":
+			isStr("label");
+			isStr("placeholder");
+			isStr("value");
+			break;
+		case "select":
+		case "radio":
+			if (!Array.isArray(v.options)) errors.push(`${at}: type '${type}' requires options (array)`);
+			break;
+		case "submit":
+			if (typeof v.label !== "string") errors.push(`${at}: type 'submit' requires label (string)`);
+			break;
+		case "badge":
+			if (typeof v.label !== "string" && typeof v.text !== "string" && typeof v.value !== "string") errors.push(`${at}: type 'badge' requires label, text, or value (string)`);
+			isStr("label");
+			isStr("text");
+			isStr("value");
+			break;
+		case "stat":
+			if (typeof v.label !== "string") errors.push(`${at}: type 'stat' requires label (string)`);
+			if (typeof v.value !== "string") errors.push(`${at}: type 'stat' requires value (string)`);
+			isStr("delta");
+			break;
+		case "progress":
+			if (typeof v.value !== "number" || !Number.isFinite(v.value) || v.value < 0 || v.value > 100) errors.push(`${at}: type 'progress' requires value (number 0..100)`);
+			isNum("value");
+			break;
+		case "avatar":
+			if (typeof v.name !== "string") errors.push(`${at}: type 'avatar' requires name (string)`);
+			break;
+		case "list":
+			if (!Array.isArray(v.items)) errors.push(`${at}: type 'list' requires items (array)`);
+			if (Array.isArray(v.items)) for (let i = 0; i < v.items.length; i++) {
+				const item = obj(v.items[i]);
+				if (item !== void 0 && typeof item.type === "string") validateNode(item, depth + 1, `${at}.items[${i}]`, errors, walk);
 			}
-		}
-	};
-	const walkItemsOf = (holder) => {
-		const o = obj(holder);
-		if (o === void 0) return;
-		const items = o.items !== void 0 ? o.items : o.content;
-		if (Array.isArray(items)) walk(items);
-		else if (declared(items)) walk([items]);
-	};
-	const root = obj(value);
-	if (root === void 0) return count;
-	if (!Array.isArray(root.items) && declared(value)) walk([value]);
-	else walk(root.items);
-	return count;
+			break;
+		case "table":
+			if (!Array.isArray(v.columns)) errors.push(`${at}: type 'table' requires columns (array)`);
+			if (!Array.isArray(v.rows)) errors.push(`${at}: type 'table' requires rows (array)`);
+			break;
+		case "chart":
+			if (!Array.isArray(v.data) && !Array.isArray(v.series)) errors.push(`${at}: type 'chart' requires data or series (array)`);
+			break;
+		case "tabs":
+			if (!Array.isArray(v.tabs)) errors.push(`${at}: type 'tabs' requires tabs (array)`);
+			if (Array.isArray(v.tabs)) for (let i = 0; i < v.tabs.length; i++) {
+				const t = obj(v.tabs[i]);
+				if (t === void 0) {
+					errors.push(`${at}.tabs[${i}] must be an object`);
+					continue;
+				}
+				if (typeof t.label !== "string") errors.push(`${at}.tabs[${i}].label must be a string`);
+				walk(t.items, depth + 1, `${at}.tabs[${i}].items`);
+			}
+			break;
+		case "plot":
+			if (!Array.isArray(v.series)) errors.push(`${at}: type 'plot' requires series (array)`);
+			break;
+		case "callout":
+			if (typeof v.content !== "string" && typeof v.text !== "string") errors.push(`${at}: type 'callout' requires content (string)`);
+			break;
+		case "steps":
+			if (!Array.isArray(v.steps)) errors.push(`${at}: type 'steps' requires steps (array)`);
+			break;
+		case "keyvalue":
+			if (!Array.isArray(v.pairs)) errors.push(`${at}: type 'keyvalue' requires pairs (array)`);
+			break;
+		case "diff":
+			if (!Array.isArray(v.diffs)) errors.push(`${at}: type 'diff' requires diffs (array)`);
+			break;
+		case "json":
+			if (!("value" in v)) errors.push(`${at}: type 'json' requires value`);
+			break;
+		case "code":
+			if (typeof v.code !== "string") errors.push(`${at}: type 'code' requires code (string)`);
+			break;
+		case "accordion":
+			if (!Array.isArray(v.items)) errors.push(`${at}: type 'accordion' requires items (array)`);
+			if (Array.isArray(v.items)) for (let i = 0; i < v.items.length; i++) {
+				const item = obj(v.items[i]);
+				if (item === void 0) {
+					errors.push(`${at}.items[${i}] must be an object`);
+					continue;
+				}
+				if (typeof item.title !== "string") errors.push(`${at}.items[${i}].title must be a string`);
+				walk(item.items, depth + 1, `${at}.items[${i}].items`);
+			}
+			break;
+		case "copy":
+			if (typeof v.text !== "string") errors.push(`${at}: type 'copy' requires text (string)`);
+			break;
+		case "mermaid":
+			if (typeof v.code !== "string") errors.push(`${at}: type 'mermaid' requires code (string)`);
+			break;
+		case "scene3d":
+			if (!Array.isArray(v.meshes)) errors.push(`${at}: type 'scene3d' requires meshes (array)`);
+			break;
+		case "timeline":
+			if (!Array.isArray(v.items)) errors.push(`${at}: type 'timeline' requires items (array)`);
+			break;
+		case "file-tree":
+			if (!Array.isArray(v.items)) errors.push(`${at}: type 'file-tree' requires items (array)`);
+			break;
+		case "breadcrumb":
+			if (!Array.isArray(v.items)) errors.push(`${at}: type 'breadcrumb' requires items (array)`);
+			break;
+		case "quiz":
+			if (typeof v.question !== "string") errors.push(`${at}: type 'quiz' requires question (string)`);
+			if (!Array.isArray(v.options)) errors.push(`${at}: type 'quiz' requires options (array)`);
+			break;
+		case "diagram":
+			if (typeof v.kind !== "string") errors.push(`${at}: type 'diagram' requires kind (string)`);
+			if (!Array.isArray(v.nodes)) errors.push(`${at}: type 'diagram' requires nodes (array)`);
+			if (v.edges !== void 0 && !Array.isArray(v.edges)) errors.push(`${at}: type 'diagram' requires edges (array) when present`);
+			break;
+		case "echart":
+			if (v.option === void 0 && v.data === void 0 && v.series === void 0) errors.push(`${at}: type 'echart' requires option, data, or series`);
+			isNum("height");
+			break;
+		default: errors.push(`${at}: unknown type '${type}' (custom renderer?)`);
+	}
 }
 //#endregion
 //#region src/shared/fence-repair.ts
@@ -1470,6 +1949,11 @@ function completeFenceJson(raw) {
 		return null;
 	}
 }
+//#endregion
+//#region src/plugin/contract.ts
+/** Shared model instructions: the budget belongs to one display, never a session. */
+const GENUI_AUTHORING_RULE = "先获取字段说明：加载 genui 技能正文后再编写 spec；技能不可用时直接用普通 Markdown 交付内容。常用字段：callout.content 为字符串（兼容 text 别名）；keyvalue.pairs 为 [{\"key\":\"名称\",\"value\":\"内容\"}]；table.columns 为字符串数组、rows 为二维数组；tabs.tabs 为 [{\"label\":\"名称\",\"items\":[]}]。";
+const GENUI_RETRY_RULE = "同一展示总共最多 2 次 validate_dsh_ui（初次 + 1 次修复验证；包括同一个 run_code 中的批量调用）。初次失败只按诊断修正一次；修复后仍失败，立即用普通 Markdown 交付原本内容，停止 UI 尝试。不得枚举组件变体探测、换组件继续凑次数或无限重试。";
 //#endregion
 //#region src/plugin/tool.ts
 /**
@@ -1594,7 +2078,7 @@ function cardTitle(args) {
 function createRenderUiTool() {
 	return {
 		name: "render_ui",
-		description: "Render an interactive UI card in the conversation tool row by passing a GenUI spec (a white-listed component tree; the same vocabulary as the ```dsh-ui fence, see the system prompt). Use it when the user asks for a structured panel, dashboard, or form that belongs in the tool row rather than inline in the reply. The card is interactive client-side (tabs, buttons, inputs, switches); components carrying an \"action\" field send [genui-action] back to you when the user interacts, and you should re-render the updated UI.",
+		description: "Render an interactive UI card in the conversation tool row by passing a GenUI spec (a white-listed component tree; the same vocabulary as the ```dsh-ui fence, see the system prompt). " + GENUI_AUTHORING_RULE + GENUI_RETRY_RULE + "Use it when the user asks for a structured panel, dashboard, or form that belongs in the tool row rather than inline in the reply. The card is interactive client-side (tabs, buttons, inputs, switches); components carrying an \"action\" field send [genui-action] back to you when the user interacts, and you should re-render the updated UI.",
 		parameters: RENDER_UI_PARAMETERS,
 		output: {
 			schema: RENDER_UI_OUTPUT_SCHEMA,
@@ -1610,7 +2094,7 @@ function createRenderUiTool() {
 		},
 		async execute(args) {
 			const spec = repairGenuiSpec(specOf(args));
-			if (spec === null) return "render_ui：spec 无效 —— 根对象需要 \"items\" 数组（组件树白名单见系统提示词），请修正后重试。";
+			if (spec === null) return "render_ui：spec 无效 —— 根对象需要 \"items\" 数组。" + GENUI_RETRY_RULE;
 			return `已渲染 UI「${spec.title ?? "未命名"}」（${countNodes(spec)} 个组件）。用户现在可以看到这张卡片；组件带 action 时，用户交互会以 [genui-action] 消息发回给你，届时请重新渲染更新后的界面。`;
 		},
 		presentCall(args) {
@@ -1639,7 +2123,7 @@ function createRenderUiTool() {
 * before emitting — turning "render a red banner after the fact" into
 * "verify before you send". Purely local: no LLM, no network, no DOM.
 */
-const VALIDATE_DESCRIPTION = "Validate the JSON body of a ```dsh-ui fence BEFORE emitting it — use for non-trivial specs (≥3 nodes or containing a table); skip for trivial ones (≤2 nodes). Pass the exact JSON text you are about to put inside the fence as the \"spec\" argument (a string). Returns ✅ when it parses as a valid GenUI spec, or ❌ with the exact position, bracket counts, and likely causes when it does not — fix the JSON, re-validate, and only then emit the fence. When the JSON is broken but repairable (unescaped quotes, trailing commas, missing closers), the ❌ reply INCLUDES the auto-repaired JSON — copy it verbatim into the fence instead of rewriting by hand.";
+const VALIDATE_DESCRIPTION = "Validate the JSON body of a ```dsh-ui fence BEFORE emitting it — use for non-trivial specs (≥3 nodes or containing a table); skip for trivial ones (≤2 nodes). Pass the exact JSON text you are about to put inside the fence as the \"spec\" argument (a string). Returns exact JSON paths, component types, missing/type errors and safe minimal examples. Auto-repaired JSON is returned only after content-integrity validation succeeds; copy that JSON verbatim without another validation. " + GENUI_AUTHORING_RULE + GENUI_RETRY_RULE;
 const VALIDATE_PARAMETERS = {
 	type: "object",
 	properties: { spec: {
@@ -1732,21 +2216,25 @@ function createValidateDshUiTool() {
 		},
 		async execute(args) {
 			const raw = fenceTextOf(args);
-			if (raw === null || raw.trim() === "") return "❌ validate_dsh_ui：缺少 spec 参数 —— 把围栏 JSON 文本作为 spec 传入。";
+			if (raw === null || raw.trim() === "") return "❌ $.spec: missing field; expected JSON text or object。" + GENUI_RETRY_RULE;
 			let parsed;
+			let syntaxRepairs = 0;
 			try {
 				parsed = JSON.parse(raw);
 			} catch (error) {
-				const detail = error instanceof Error ? error.message : String(error);
+				const message = error instanceof Error ? error.message : "";
+				const detail = /position \d+(?: \(line \d+ column \d+\))?/.exec(message)?.[0] ?? "invalid JSON syntax";
 				const repaired = completeFenceJson(raw);
-				if (repaired !== null && repairGenuiSpec(JSON.parse(repaired.text)) !== null) return `❌ dsh-ui 围栏 JSON 解析失败：${detail}。\n${bracketDiagnostic(raw)}  已自动修复 ${repaired.repairs} 处，下面是修复后的 JSON，直接作为围栏正文发出即可（无需再验证）：\n\`\`\`\n${repaired.text}\n\`\`\``;
-				return `❌ dsh-ui 围栏 JSON 解析失败：${detail}。\n${bracketDiagnostic(raw)}  自动修复未能恢复（结构损坏），请按错误信息修正后重新调用本工具验证，通过后再发出围栏。\n${COMMON_CAUSES}`;
+				if (repaired === null) return `❌ $: JSON 解析失败：${detail}。\n${bracketDiagnostic(raw)}${COMMON_CAUSES}\n${GENUI_RETRY_RULE}`;
+				parsed = JSON.parse(repaired.text);
+				syntaxRepairs = repaired.repairs;
 			}
+			const diagnostic = diagnoseGenuiSpec(parsed);
+			if (!diagnostic.ok) return `❌ 验证未通过：\n${diagnostic.errors.map((e) => "- " + e).join("\n")}\n${GENUI_RETRY_RULE}`;
 			const spec = repairGenuiSpec(parsed);
-			if (spec === null) return "❌ 不是合法 GenUI spec：根对象需要 \"items\" 数组，且每个节点 type 必须在白名单内（见系统提示词）。请修正后重新验证。";
+			if (spec === null) return "❌ $.items (spec): missing/type error; expected array。" + GENUI_RETRY_RULE;
 			const validCount = countNodes(spec);
-			const declaredCount = countDeclaredGenuiNodes(parsed, GENUI_LIMITS.maxNodes + 1);
-			if (declaredCount > validCount) return `❌ 验证未通过：检测到声明了 ${declaredCount} 个组件，但仅成功解析出 ${validCount} 个（有 ${declaredCount - validCount} 个组件因字段格式异常被丢弃）。常见原因：table 的 columns/rows 不是二维字符串数组、tabs 的 items/content 缺失、嵌套组件字段类型不符。请修正后重新验证。`;
+			if (syntaxRepairs > 0) return `✅ 已自动修复 ${syntaxRepairs} 处 JSON 语法且字段完整（${validCount} 个组件），直接照抄以下 JSON，无需再验证：\n\`\`\`\n${JSON.stringify(spec)}\n\`\`\``;
 			return `✅ dsh-ui spec 合法（${validCount} 个组件），可以发出围栏。`;
 		},
 		presentCall() {
@@ -1761,6 +2249,34 @@ function createValidateDshUiTool() {
 				card: "generic",
 				title: "验证 dsh-ui 围栏"
 			};
+		}
+	};
+}
+//#endregion
+//#region src/plugin/skill.ts
+/** Kept as a URL so a packed lib/index.js resolves the package-root resource. */
+function loadGenuiSkill() {
+	const relative = import.meta.url.endsWith("/src/plugin/skill.ts") ? "../../SKILL.md" : "../SKILL.md";
+	const path = fileURLToPath(new URL(relative, import.meta.url));
+	const raw = readFileSync(path, "utf8").replaceAll("\r\n", "\n");
+	const match = /^---\n([\s\S]*?)\n---\n([\s\S]+)$/u.exec(raw);
+	if (match === null) throw new Error("genui: missing skill frontmatter/body");
+	const description = /^description: (".*")$/mu.exec(match[1])?.[1];
+	if (description === void 0 || !/^name: genui$/mu.test(match[1])) throw new Error("genui: invalid skill metadata");
+	return {
+		name: "genui",
+		description: JSON.parse(description),
+		content: match[2].trim(),
+		source: "bundled",
+		provider: "dsh-genui",
+		path,
+		invocation: {
+			modelInvocable: true,
+			userInvocable: true
+		},
+		resourceBase: {
+			kind: "directory",
+			path: dirname(path)
 		}
 	};
 }
@@ -1842,14 +2358,15 @@ The spec is a white-listed component tree rendered inline where the fence sits. 
 
 Rules:
 - 触发: 结构化表达优于纯文本时主动用（要点、强调、对比、流程、步骤、状态、数据、演示），纯问答与一句话不套 UI；一个主题一个主组件，每次 3–8 个组件，同一数据不重复出现。
-- JSON 严格: 坏围栏降级为代码块；≥3 节点或含 table 的围栏发出前调用 validate_dsh_ui，❌ 修好再发（若附「已自动修复」JSON 照抄即可）。
+- 字段规范: ${GENUI_AUTHORING_RULE}
+- JSON 严格: ≥3 节点或含 table 的围栏发出前调用 validate_dsh_ui；只有通过字段完整性检查的「已自动修复」JSON 可照抄发出，无需再验证。${GENUI_RETRY_RULE}
 - 规模: ≤200 节点、嵌套≤8 层（超出被截断）；3D mesh 1–5；plot 给合理 xMin/xMax。
 - LOCAL-FIRST + actions: UI 能自己做的状态变化（判卷、判题、重置、展开、选中）就地完成，零往返；action 只用于必须模型参与的事。交互组件带 "action":"name"，交互以 [genui-action] name + 组件数据回传，届时重渲染更新 UI；无 action 的按钮禁用。
 - Durable state: 交互状态按「会话+内容指纹」持久化——刷新/重放恢复；重渲染相同内容保留，新内容重置。
 - 卷子模式: 每题一个 radio（group+answer+explanation）+ 一个 submit（groups 全列），本地判分。
 - Secrets ban: 不索取密码、API Key、Token、恢复码；需要时拒绝并解释。
 - Tool channel: render_ui 工具把同一 spec 渲染为工具行卡片（交付物型界面用）；围栏用于回答内联 UI。
-- Panel: "panel":true 只渲染进会话面板 dock 并原地更新；"append":true 追加合并（同标签 tabs 追加/新标签加入/尾部追加）；上限 200 节点/200 次追加，满了发 replace 重建。面板组件来的 [genui-action] 只回一个 panel:true 围栏 + 至多一行 10 字内确认，不解释、不用普通围栏。`;
+- Panel: "panel":true 只渲染进会话面板 dock 并原地更新；"append":true 追加合并（同标签 tabs 追加/新标签加入/尾部追加）；上限 200 节点/200 次追加，满了发 replace 重建。面板组件来的 [genui-action] 只回一个 panel:true 围栏 + 至多一行 10 字内确认，不解释、不用普通围栏；验证失败时仍遵守上述 Markdown 降级规则。`;
 /**
 * Register the GenUI output-language section and the render_ui tool.
 * @param ctx - cordis context.
@@ -1860,6 +2377,25 @@ function apply(ctx) {
 		name: "genui:fence",
 		order: 105,
 		text: GENUI_SECTION_TEXT
+	});
+	let skills;
+	let disposeSkill;
+	const tryRegisterSkill = () => {
+		const next = ctx.reflect.get("skills", false);
+		if (next === skills) return;
+		disposeSkill?.();
+		disposeSkill = void 0;
+		skills = next;
+		if (next !== void 0) disposeSkill = next.register(loadGenuiSkill());
+	};
+	tryRegisterSkill();
+	ctx.on("internal/service", (name) => {
+		if (name === "skills") tryRegisterSkill();
+	});
+	ctx.effect(() => () => {
+		disposeSkill?.();
+		disposeSkill = void 0;
+		skills = void 0;
 	});
 	let registered = false;
 	const tryRegister = (value) => {

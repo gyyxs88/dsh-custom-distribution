@@ -22,8 +22,9 @@ import type { ContentBlock } from '@deepseek-ai/dsh-llm'
 import type { JsonValue } from '@deepseek-ai/dsh-util-values'
 import type { GenericCallView, GenericResultView, JsonSchemaNode, ToolDefinition } from '@deepseek-ai/dsh-tools'
 import type { GenuiSpec } from '../client/spec.ts'
-import { GENUI_LIMITS, countDeclaredGenuiNodes, countGenuiNodes, repairGenuiSpec } from '../client/guard.ts'
+import { GENUI_LIMITS, countGenuiNodes, diagnoseGenuiSpec, repairGenuiSpec } from '../client/guard.ts'
 import { completeFenceJson } from '../shared/fence-repair.ts'
+import { GENUI_AUTHORING_RULE, GENUI_RETRY_RULE } from './contract.ts'
 
 /**
  * Arguments schema: an open `spec` slot. The schema must NOT reject anything
@@ -156,6 +157,7 @@ export function createRenderUiTool(): ToolDefinition {
     name: 'render_ui',
     description:
       'Render an interactive UI card in the conversation tool row by passing a GenUI spec (a white-listed component tree; the same vocabulary as the ```dsh-ui fence, see the system prompt). '
+      + GENUI_AUTHORING_RULE + GENUI_RETRY_RULE
       + 'Use it when the user asks for a structured panel, dashboard, or form that belongs in the tool row rather than inline in the reply. '
       + 'The card is interactive client-side (tabs, buttons, inputs, switches); components carrying an "action" field send [genui-action] back to you when the user interacts, and you should re-render the updated UI.',
     parameters: RENDER_UI_PARAMETERS,
@@ -174,7 +176,7 @@ export function createRenderUiTool(): ToolDefinition {
     async execute(args: unknown): Promise<JsonValue> {
       const spec = repairGenuiSpec(specOf(args))
       if (spec === null) {
-        return 'render_ui：spec 无效 —— 根对象需要 "items" 数组（组件树白名单见系统提示词），请修正后重试。'
+        return 'render_ui：spec 无效 —— 根对象需要 "items" 数组。' + GENUI_RETRY_RULE
       }
       const title = spec.title ?? '未命名'
       return `已渲染 UI「${title}」（${countNodes(spec)} 个组件）。用户现在可以看到这张卡片；组件带 action 时，用户交互会以 [genui-action] 消息发回给你，届时请重新渲染更新后的界面。`
@@ -202,8 +204,8 @@ export function createRenderUiTool(): ToolDefinition {
 const VALIDATE_DESCRIPTION =
   'Validate the JSON body of a ```dsh-ui fence BEFORE emitting it — use for non-trivial specs (≥3 nodes or containing a table); skip for trivial ones (≤2 nodes). '
   + 'Pass the exact JSON text you are about to put inside the fence as the "spec" argument (a string). '
-  + 'Returns ✅ when it parses as a valid GenUI spec, or ❌ with the exact position, bracket counts, and likely causes when it does not — fix the JSON, re-validate, and only then emit the fence. '
-  + 'When the JSON is broken but repairable (unescaped quotes, trailing commas, missing closers), the ❌ reply INCLUDES the auto-repaired JSON — copy it verbatim into the fence instead of rewriting by hand.'
+  + 'Returns exact JSON paths, component types, missing/type errors and safe minimal examples. Auto-repaired JSON is returned only after content-integrity validation succeeds; copy that JSON verbatim without another validation. '
+  + GENUI_AUTHORING_RULE + GENUI_RETRY_RULE
 
 const VALIDATE_PARAMETERS: Record<string, unknown> = {
   type: 'object',
@@ -292,32 +294,34 @@ export function createValidateDshUiTool(): ToolDefinition {
     async execute(args: unknown): Promise<JsonValue> {
       const raw = fenceTextOf(args)
       if (raw === null || raw.trim() === '') {
-        return '❌ validate_dsh_ui：缺少 spec 参数 —— 把围栏 JSON 文本作为 spec 传入。'
+        return '❌ $.spec: missing field; expected JSON text or object。' + GENUI_RETRY_RULE
       }
       let parsed: unknown
+      let syntaxRepairs = 0
       try {
         parsed = JSON.parse(raw)
       } catch (error: unknown) {
-        const detail = error instanceof Error ? error.message : String(error)
+        // JSON.parse errors can contain source excerpts. Expose location only.
+        const message = error instanceof Error ? error.message : ''
+        const detail = /position \d+(?: \(line \d+ column \d+\))?/.exec(message)?.[0] ?? 'invalid JSON syntax'
         // Pre-emission, both repair tiers are safe (no streaming half exists
         // in a validation call). When the repair succeeds, hand the model the
         // FIXED JSON instead of asking it to re-author the fix — re-writing
         // the whole fence by hand is where the next typo comes from.
         const repaired = completeFenceJson(raw)
-        if (repaired !== null && repairGenuiSpec(JSON.parse(repaired.text) as unknown) !== null) {
-          return `❌ dsh-ui 围栏 JSON 解析失败：${detail}。\n${bracketDiagnostic(raw)}  已自动修复 ${repaired.repairs} 处，下面是修复后的 JSON，直接作为围栏正文发出即可（无需再验证）：\n\`\`\`\n${repaired.text}\n\`\`\``
-        }
-        return `❌ dsh-ui 围栏 JSON 解析失败：${detail}。\n${bracketDiagnostic(raw)}  自动修复未能恢复（结构损坏），请按错误信息修正后重新调用本工具验证，通过后再发出围栏。\n${COMMON_CAUSES}`
+        if (repaired === null) return `❌ $: JSON 解析失败：${detail}。\n${bracketDiagnostic(raw)}${COMMON_CAUSES}\n${GENUI_RETRY_RULE}`
+        parsed = JSON.parse(repaired.text) as unknown
+        syntaxRepairs = repaired.repairs
       }
+      // Syntax completion must pass the SAME integrity gate as valid JSON.
+      const diagnostic = diagnoseGenuiSpec(parsed)
+      if (!diagnostic.ok) return `❌ 验证未通过：\n${diagnostic.errors.map(e => '- ' + e).join('\n')}\n${GENUI_RETRY_RULE}`
       const spec = repairGenuiSpec(parsed)
       if (spec === null) {
-        return '❌ 不是合法 GenUI spec：根对象需要 "items" 数组，且每个节点 type 必须在白名单内（见系统提示词）。请修正后重新验证。'
+        return '❌ $.items (spec): missing/type error; expected array。' + GENUI_RETRY_RULE
       }
       const validCount = countNodes(spec)
-      const declaredCount = countDeclaredGenuiNodes(parsed, GENUI_LIMITS.maxNodes + 1)
-      if (declaredCount > validCount) {
-        return `❌ 验证未通过：检测到声明了 ${declaredCount} 个组件，但仅成功解析出 ${validCount} 个（有 ${declaredCount - validCount} 个组件因字段格式异常被丢弃）。常见原因：table 的 columns/rows 不是二维字符串数组、tabs 的 items/content 缺失、嵌套组件字段类型不符。请修正后重新验证。`
-      }
+      if (syntaxRepairs > 0) return `✅ 已自动修复 ${syntaxRepairs} 处 JSON 语法且字段完整（${validCount} 个组件），直接照抄以下 JSON，无需再验证：\n\`\`\`\n${JSON.stringify(spec)}\n\`\`\``
       return `✅ dsh-ui spec 合法（${validCount} 个组件），可以发出围栏。`
     },
     presentCall(): GenericCallView | undefined {

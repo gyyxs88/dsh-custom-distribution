@@ -95,6 +95,13 @@ export interface GenuiValidation {
  */
 export declare function repairGenuiSpec(value: unknown): GenuiSpec | null;
 /**
+ * Diagnose actual content loss using the SAME repair functions as rendering.
+ * The existing validator describes failed nodes only; repaired aliases and
+ * defaulted optional fields never become false failures. Paths address raw
+ * input, including tabs.content's singleton and array forms.
+ */
+export declare function diagnoseGenuiSpec(value: unknown): GenuiValidation;
+/**
  * Count the nodes of a spec tree (every item, descending into tabs /
  * accordion / file-tree / list containers — the same descent
  * `validateGenuiSpec` walks). Shared by the panel fold (node-budget gate)

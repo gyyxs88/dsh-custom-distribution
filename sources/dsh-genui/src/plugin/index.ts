@@ -18,6 +18,8 @@ import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createRenderUiTool, createValidateDshUiTool } from './tool.ts'
+import { GENUI_AUTHORING_RULE, GENUI_RETRY_RULE } from './contract.ts'
+import { loadGenuiSkill, type GenuiSkills } from './skill.ts'
 
 /** Convention: tool guidance uses 100–199; bash's section is 104. */
 export const GENUI_SECTION_ORDER = 105
@@ -104,14 +106,15 @@ The spec is a white-listed component tree rendered inline where the fence sits. 
 
 Rules:
 - 触发: 结构化表达优于纯文本时主动用（要点、强调、对比、流程、步骤、状态、数据、演示），纯问答与一句话不套 UI；一个主题一个主组件，每次 3–8 个组件，同一数据不重复出现。
-- JSON 严格: 坏围栏降级为代码块；≥3 节点或含 table 的围栏发出前调用 validate_dsh_ui，❌ 修好再发（若附「已自动修复」JSON 照抄即可）。
+- 字段规范: ${GENUI_AUTHORING_RULE}
+- JSON 严格: ≥3 节点或含 table 的围栏发出前调用 validate_dsh_ui；只有通过字段完整性检查的「已自动修复」JSON 可照抄发出，无需再验证。${GENUI_RETRY_RULE}
 - 规模: ≤200 节点、嵌套≤8 层（超出被截断）；3D mesh 1–5；plot 给合理 xMin/xMax。
 - LOCAL-FIRST + actions: UI 能自己做的状态变化（判卷、判题、重置、展开、选中）就地完成，零往返；action 只用于必须模型参与的事。交互组件带 "action":"name"，交互以 [genui-action] name + 组件数据回传，届时重渲染更新 UI；无 action 的按钮禁用。
 - Durable state: 交互状态按「会话+内容指纹」持久化——刷新/重放恢复；重渲染相同内容保留，新内容重置。
 - 卷子模式: 每题一个 radio（group+answer+explanation）+ 一个 submit（groups 全列），本地判分。
 - Secrets ban: 不索取密码、API Key、Token、恢复码；需要时拒绝并解释。
 - Tool channel: render_ui 工具把同一 spec 渲染为工具行卡片（交付物型界面用）；围栏用于回答内联 UI。
-- Panel: "panel":true 只渲染进会话面板 dock 并原地更新；"append":true 追加合并（同标签 tabs 追加/新标签加入/尾部追加）；上限 200 节点/200 次追加，满了发 replace 重建。面板组件来的 [genui-action] 只回一个 panel:true 围栏 + 至多一行 10 字内确认，不解释、不用普通围栏。`
+- Panel: "panel":true 只渲染进会话面板 dock 并原地更新；"append":true 追加合并（同标签 tabs 追加/新标签加入/尾部追加）；上限 200 节点/200 次追加，满了发 replace 重建。面板组件来的 [genui-action] 只回一个 panel:true 围栏 + 至多一行 10 字内确认，不解释、不用普通围栏；验证失败时仍遵守上述 Markdown 降级规则。`
 
 /**
  * Register the GenUI output-language section and the render_ui tool.
@@ -129,6 +132,23 @@ export function apply(ctx: Context): void {
     order: GENUI_SECTION_ORDER,
     text: GENUI_SECTION_TEXT,
   })
+  // Optional, like tools: subscribe with the plugin context so the registry
+  // captures its lifecycle. Reset on removal/replacement, not just first bind.
+  let skills: GenuiSkills | undefined
+  let disposeSkill: (() => void) | undefined
+  const tryRegisterSkill = (): void => {
+    const next = ctx.reflect.get('skills', false) as GenuiSkills | undefined
+    if (next === skills) return
+    disposeSkill?.()
+    disposeSkill = undefined
+    skills = next
+    if (next !== undefined) disposeSkill = next.register(loadGenuiSkill())
+  }
+  tryRegisterSkill()
+  ctx.on('internal/service', (name: string) => {
+    if (name === 'skills') tryRegisterSkill()
+  })
+  ctx.effect(() => () => { disposeSkill?.(); disposeSkill = undefined; skills = undefined })
   // The tools service is optional: hosts without tool access (or minimal
   // compositions) keep the fence channel; only when the registry exists does
   // the render_ui tool join the model's tool set. `reflect.get(name, false)`

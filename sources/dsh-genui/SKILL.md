@@ -5,6 +5,10 @@ description: "Render structured interactive UI inline in your reply via the dsh-
 
 # GenUI — 生成式 UI 输出规范
 
+先获取字段说明：加载 genui 技能正文后再编写 spec；技能不可用时直接用普通 Markdown 交付内容。常用字段：callout.content 为字符串（兼容 text 别名）；keyvalue.pairs 为 [{"key":"名称","value":"内容"}]；table.columns 为字符串数组、rows 为二维数组；tabs.tabs 为 [{"label":"名称","items":[]}]。
+
+同一展示总共最多 2 次 validate_dsh_ui（初次 + 1 次修复验证；包括同一个 run_code 中的批量调用）。初次失败只按诊断修正一次；修复后仍失败，立即用普通 Markdown 交付原本内容，停止 UI 尝试。不得枚举组件变体探测、换组件继续凑次数或无限重试。
+
 你可以**在回答正文中间**输出可交互 UI 组件：写一个 `dsh-ui` 围栏（fenced block with language tag `dsh-ui`），内含 JSON 规格，渲染器会把这一整块画成真实组件，文字照常穿插在前后。组件**就是回答的一部分**，不是工具调用。
 
 ```dsh-ui
@@ -112,4 +116,4 @@ description: "Render structured interactive UI inline in your reply via the dsh-
 8. **规格要紧凑**：整棵组件树 ≤200 节点、≤8 层嵌套（超出部分会被渲染器裁掉），避免巨型 spec
 9. **一个主题选一个主组件**：命中映射表后选**一种**组件承载，同一信息不要用两种组件重复表达（同一批数据又画 bars 又画 donut = 冗余）
 10. **数量纪律**：一条回答 3–8 个组件为宜，宁缺毋滥。反例：该用 `table` 对比时写三段 `text`；一个 `stat` 能说清的事套 `card`+`grid`；与内容无关的 `scene3d` 炫技——3D 只在内容本身就是几何/空间时才用
-11. **先验后发（复杂 UI）**：发出 ```dsh-ui 围栏前，若 spec ≥3 个组件或含 `table`（长表格最易括号错位），先调用 `validate_dsh_ui` 工具（参数 `spec` 传围栏内的 JSON 文本）验证；返回 ❌ 就按错误信息（位置、括号计数、常见原因）修正后重新验证，✅ 再发出；**若 ❌ 回复里附了「已自动修复」的 JSON，直接照抄那份发出，无需再验证**；简单 UI（≤2 个组件）不必验证，渲染器会自动修复大部分标点/括号错误
+11. **先验后发（复杂 UI）**：获取以上字段规范后，若 spec ≥3 个组件或含 `table`，先调用 `validate_dsh_ui`（`spec` 传围栏内 JSON）。同一展示最多 2 次验证（初次 + 1 次修复，run_code 批量调用同样计入），失败后只按准确字段路径修正一次，仍失败立即普通 Markdown 交付内容，不换组件或枚举变体继续尝试。只有通过字段完整性检查、返回 ✅ 的「已自动修复」JSON 可直接照抄，无需再验证。简单 UI（≤2 个组件且无 table）不强制验证，失败同样降级 Markdown。

@@ -333,22 +333,7 @@ function repairNode(value: unknown, ctx: RepairCtx, depth: number): GenuiNode | 
       return { type: 'list', items }
     }
     case 'table': {
-      let rawCols = v.columns as unknown
-      let rawRows = v.rows !== undefined ? v.rows : (v as Record<string, unknown>).data
-      // Self-heal model-shaped tables: antd-style object columns
-      // ({title,key}) become header strings, and object-array rows (or a
-      // `data` alias) flatten to 2D rows keyed by the column keys — without
-      // this the whole node is dropped for "missing 2D rows" and the user
-      // sees nothing (issue #42).
-      if (Array.isArray(rawCols) && rawCols.length > 0 && typeof rawCols[0] === 'object' && rawCols[0] !== null) {
-        rawCols = rawCols.map(c => columnHeaderText(c))
-      }
-      if (Array.isArray(rawRows) && rawRows.length > 0 && typeof rawRows[0] === 'object' && rawRows[0] !== null && !Array.isArray(rawRows[0])) {
-        const keys = Array.isArray(v.columns) && v.columns.length > 0 && typeof v.columns[0] === 'object' && v.columns[0] !== null
-          ? v.columns.map(c => columnKeyOf(c)).filter((k): k is string => k !== undefined)
-          : Object.keys(rawRows[0] as Record<string, unknown>)
-        rawRows = rawRows.map(row => keys.map(k => cellText((row as Record<string, unknown>)[k])))
-      }
+      const { rawCols, rawRows } = normalizeTableFields(v)
       const columns = repairStrings(rawCols, GENUI_LIMITS.maxTableCols, 128)
       const rows = repairRows(rawRows, GENUI_LIMITS.maxTableRows, GENUI_LIMITS.maxTableCols)
       if (columns === undefined || rows === undefined) return null
@@ -718,6 +703,44 @@ function cellText(v: unknown): string | number {
   return JSON.stringify(v)
 }
 
+/** Table aliases and row/column diagnostics share the renderer normalization. */
+function normalizeTableFields(v: Record<string, unknown>, report?: (field: string, expected: string, actual: unknown) => void): { rawCols: unknown; rawRows: unknown } {
+  const rowField = v.rows !== undefined ? 'rows' : 'data'
+  let rawCols = v.columns
+  let rawRows = v[rowField]
+  if (Array.isArray(rawCols)) rawCols = rawCols.map((column, i) => {
+    if (typeof column === 'string') return column
+    if (obj(column) !== undefined) {
+      if (columnKeyOf(column) === undefined) report?.(`columns[${i}]`, 'string or object with title/label/key/dataIndex', column)
+      return columnHeaderText(column)
+    }
+    report?.(`columns[${i}]`, 'string or named column object', column)
+    return column
+  })
+  if (Array.isArray(rawRows)) {
+    const first = rawRows.find(row => obj(row) !== undefined)
+    const keys = Array.isArray(v.columns) && obj(v.columns[0]) !== undefined
+      ? v.columns.map(columnKeyOf).filter((key): key is string => key !== undefined)
+      : first === undefined ? [] : Object.keys(first as Record<string, unknown>)
+    rawRows = rawRows.map((row, i) => {
+      const record = obj(row)
+      let cells = row
+      let path = `${rowField}[${i}]`
+      if (record !== undefined) {
+        if ('cells' in record) { cells = record.cells; path += '.cells' }
+        else cells = keys.map(key => cellText(record[key]))
+      }
+      if (!Array.isArray(cells)) { report?.(path, 'cell array or row object', cells); return cells }
+      for (let j = 0; j < Math.min(cells.length, GENUI_LIMITS.maxTableCols); j++) {
+        const cell = cells[j]
+        if (typeof cell !== 'string' && !(typeof cell === 'number' && Number.isFinite(cell))) report?.(`${path}[${j}]`, 'string or finite number', cell)
+      }
+      return cells
+    })
+  }
+  return { rawCols, rawRows }
+}
+
 function repairPlotSeries(v: unknown, cap: number): GenuiPlot['series'] | undefined {
   if (!Array.isArray(v)) return undefined
   const out: GenuiPlot['series'] = []
@@ -763,15 +786,22 @@ function repairSteps(v: unknown): Array<{ title: string; desc?: string }> | unde
   return out
 }
 
-function repairPairs(v: unknown, cap: number): Array<{ key: string; value: string }> | undefined {
+function repairPairs(v: unknown, cap: number, report?: (index: number, field: string, expected: string, actual: unknown) => void): Array<{ key: string; value: string }> | undefined {
   if (!Array.isArray(v)) return undefined
   const out: Array<{ key: string; value: string }> = []
-  for (const p of v) {
+  for (const [index, p] of v.entries()) {
     if (out.length >= cap) break
     const o = obj(p)
     const key = o === undefined ? undefined : str(o.key, 256)
     const value = o === undefined ? undefined : str(o.value, GENUI_LIMITS.maxString)
-    if (key === undefined || value === undefined) continue
+    if (key === undefined || value === undefined) {
+      if (o === undefined) report?.(index, '', 'object', p)
+      else {
+        if (key === undefined) report?.(index, '.key', 'string', o.key)
+        if (value === undefined) report?.(index, '.value', 'string', o.value)
+      }
+      continue
+    }
     out.push({ key, value })
   }
   return out
@@ -1105,6 +1135,140 @@ export function repairGenuiSpec(value: unknown): GenuiSpec | null {
 }
 
 /* ---------------- validation ---------------- */
+
+/** Static examples never echo user data (which can contain secrets). */
+const DIAGNOSTIC_EXAMPLES: Record<string, unknown> = {
+  spec: { items: [{ type: 'text', content: '内容' }] },
+  node: { type: 'text', content: '内容' },
+  callout: { type: 'callout', content: '说明' },
+  keyvalue: { type: 'keyvalue', pairs: [{ key: '名称', value: '内容' }] },
+  table: { type: 'table', columns: ['名称'], rows: [['内容']] },
+  tabs: { type: 'tabs', tabs: [{ label: '标题', items: [{ type: 'text', content: '内容' }] }] },
+  accordion: { type: 'accordion', items: [{ title: '标题', items: [] }] },
+  text: { type: 'text', content: '内容' },
+  stat: { type: 'stat', label: '数量', value: '1' },
+  steps: { type: 'steps', steps: [{ title: '开始' }] },
+  button: { type: 'button', label: '继续', action: 'continue' },
+  checkbox: { type: 'checkbox', label: '选项' },
+  switch: { type: 'switch', label: '开关' },
+  link: { type: 'link', label: '链接', href: 'https://example.com' },
+  audio: { type: 'audio', src: '/example.mp3' },
+  video: { type: 'video', src: '/example.mp4' },
+  select: { type: 'select', options: ['选项'] },
+  radio: { type: 'radio', options: ['选项'] },
+  submit: { type: 'submit', label: '提交', action: 'submit' },
+  badge: { type: 'badge', label: '状态' },
+  progress: { type: 'progress', value: 50 },
+  avatar: { type: 'avatar', name: '姓名' },
+  list: { type: 'list', items: ['内容'] },
+  chart: { type: 'chart', data: [{ label: '数量', value: 1 }] },
+  plot: { type: 'plot', series: [{ expr: 'x' }] },
+  diff: { type: 'diff', diffs: [{ path: 'example.txt', oldText: null, newText: '内容' }] },
+  json: { type: 'json', value: {} },
+  code: { type: 'code', code: 'example' },
+  copy: { type: 'copy', text: '内容' },
+  mermaid: { type: 'mermaid', code: 'graph TD\nA-->B' },
+  scene3d: { type: 'scene3d', meshes: [{ shape: 'box' }] },
+  timeline: { type: 'timeline', items: [{ title: '开始' }] },
+  'file-tree': { type: 'file-tree', items: [{ name: 'example.txt', type: 'file' }] },
+  breadcrumb: { type: 'breadcrumb', items: ['首页'] },
+  quiz: { type: 'quiz', question: '选择', options: [{ label: 'A', correct: true }] },
+  diagram: { type: 'diagram', kind: 'architecture', nodes: [], edges: [] },
+  echart: { type: 'echart', preset: 'bar', data: [{ label: '数量', value: 1 }] },
+}
+
+function diagnosticType(value: unknown): string {
+  return value === undefined ? 'missing' : value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value
+}
+
+/**
+ * Diagnose actual content loss using the SAME repair functions as rendering.
+ * The existing validator describes failed nodes only; repaired aliases and
+ * defaulted optional fields never become false failures. Paths address raw
+ * input, including tabs.content's singleton and array forms.
+ */
+export function diagnoseGenuiSpec(value: unknown): GenuiValidation {
+  const errors: string[] = []
+  const root = obj(value)
+  if (root === undefined) return { ok: false, errors: ['$: expected object; got ' + diagnosticType(value)] }
+  const add = (path: string, type: string, expected: string, actual: unknown): void => {
+    if (errors.length >= 12) return
+    const example = DIAGNOSTIC_EXAMPLES[type]
+    errors.push(`${path} (${type}): ${actual === undefined ? 'missing field' : 'type/format error'}; expected ${expected}; got ${diagnosticType(actual)}`
+      + (example === undefined ? '' : `; example: ${JSON.stringify(example)}`))
+  }
+  let visited = 0
+  const walk = (node: unknown, at: string, depth: number): void => {
+    if (visited++ >= GENUI_LIMITS.maxNodes || depth > GENUI_LIMITS.maxDepth) {
+      add(at, 'spec', `at most ${GENUI_LIMITS.maxNodes} nodes / depth ${GENUI_LIMITS.maxDepth}`, node)
+      return
+    }
+    const v = obj(node)
+    if (v === undefined) { add(at, 'node', 'object', node); return }
+    if (typeof v.type !== 'string') { add(`${at}.type`, 'node', 'string', v.type); return }
+    // Never reflect arbitrary type strings into diagnostics.
+    const type = GENUI_NODE_TYPES.has(v.type) ? v.type : 'custom'
+    if (type === 'table') normalizeTableFields(v, (field, expected, actual) => add(`${at}.${field}`, type, expected, actual))
+    const repaired = repairNode(v, { remaining: GENUI_LIMITS.maxNodes }, depth)
+    if (repaired === null) {
+      const reasons: string[] = []
+      validateNode(v, depth, at, reasons, () => {})
+      for (const reason of reasons.slice(0, 4)) {
+        const field = /requires ([\w]+)|'([\w]+)' must/.exec(reason)
+        const key = field?.[1] ?? field?.[2]
+        if (key !== undefined) {
+          const expected = /\(([^)]+)\)/.exec(reason)?.[1] ?? 'valid field value'
+          add(`${at}.${key}`, type, expected, v[key])
+        }
+      }
+      if (reasons.length === 0 || !reasons.some(r => /requires |'\w+' must/.test(r))) add(at, type, 'renderable component fields (see genui skill)', node)
+      return
+    }
+    if (type === 'keyvalue') {
+      repairPairs(v.pairs, GENUI_LIMITS.maxKeyValuePairs, (index, field, expected, actual) => {
+        add(`${at}.pairs[${index}]${field}`, type, expected, actual)
+      })
+    }
+    if (type === 'steps' && Array.isArray(v.steps)) {
+      for (let i = 0; i < Math.min(v.steps.length, GENUI_LIMITS.maxSteps); i++) {
+        const step = obj(v.steps[i])
+        if (step === undefined) add(`${at}.steps[${i}]`, type, 'object with title (string)', v.steps[i])
+        else if (typeof step.title !== 'string') add(`${at}.steps[${i}].title`, type, 'string', step.title)
+      }
+    }
+    const children = (items: unknown, path: string): void => {
+      if (!Array.isArray(items)) { add(path, type, 'array', items); return }
+      for (let i = 0; i < items.length && visited <= GENUI_LIMITS.maxNodes; i++) walk(items[i], `${path}[${i}]`, depth + 1)
+    }
+    if (['row', 'col', 'grid', 'card'].includes(type)) children(v.items, `${at}.items`)
+    else if (type === 'list' && Array.isArray(v.items)) {
+      for (let i = 0; i < v.items.length && visited <= GENUI_LIMITS.maxNodes; i++) {
+        const item = obj(v.items[i])
+        if (item !== undefined && typeof item.type === 'string' && typeof item.title !== 'string') walk(item, `${at}.items[${i}]`, depth + 1)
+      }
+    } else if ((type === 'tabs' && Array.isArray(v.tabs)) || (type === 'accordion' && Array.isArray(v.items))) {
+      const field = type === 'tabs' ? 'tabs' : 'items'
+      const holders = v[field] as unknown[]
+      const cap = type === 'tabs' ? GENUI_LIMITS.maxTabs : GENUI_LIMITS.maxAccordionItems
+      for (let i = 0; i < Math.min(holders.length, cap); i++) {
+        const holder = obj(holders[i])
+        const path = `${at}.${field}[${i}]`
+        if (holder === undefined) { add(path, type, 'object', holders[i]); continue }
+        const label = type === 'tabs' ? 'label' : 'title'
+        if (typeof holder[label] !== 'string') { add(`${path}.${label}`, type, 'string', holder[label]); continue }
+        if (type === 'tabs' && holder.items === undefined && holder.content !== undefined) {
+          if (Array.isArray(holder.content)) children(holder.content, `${path}.content`)
+          else walk(holder.content, `${path}.content`, depth + 1)
+        } else children(holder.items, `${path}.items`)
+      }
+    }
+  }
+  if (Array.isArray(root.items)) {
+    for (let i = 0; i < root.items.length && visited <= GENUI_LIMITS.maxNodes; i++) walk(root.items[i], `$.items[${i}]`, 0)
+  } else if (wrapSingleComponentRoot(value) !== null) walk(value, '$', 0)
+  else add('$.items', 'spec', 'array', root.items)
+  return { ok: errors.length === 0, errors }
+}
 
 /**
  * Count the nodes of a spec tree (every item, descending into tabs /
