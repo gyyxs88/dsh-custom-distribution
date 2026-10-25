@@ -22,12 +22,23 @@ const forbidden = [
   new RegExp("session-142920bb-6a3c-455b-" + "a4e3-e8567aa0a249", "iu"),
 ];
 
+// Verbatim accepted archive sources; their CRLF text matches the public GitHub
+// blobs in gyyxs88/dsh-remote-control (docs/ with the same basenames).
+// See desktop/releases/0.2.1-rc.3.1/source/upstream-examples.json for verification.
+// Only the old project-path matcher is exempted; private-value rules still run.
+const frozenPublicUpstreamDocs = new Set([
+  "desktop/releases/0.2.1-rc.3.1/build-inputs/dsh-remote-control/docs/install-and-development.md",
+  "desktop/releases/0.2.1-rc.3.1/build-inputs/dsh-remote-control/docs/stage-b-acceptance.md",
+  "desktop/releases/0.2.1-rc.3.1/build-inputs/dsh-remote-control/docs/stage-c-acceptance.md",
+]);
+
 for (const file of files) {
   const full = join(root, file);
   if (!existsSync(full)) continue;
   if (!statSync(full).isFile() || !textExtensions.has(extname(file).toLowerCase())) continue;
   const source = readFileSync(full, "utf8");
   for (const pattern of forbidden) {
+    if (pattern === forbidden[0] && frozenPublicUpstreamDocs.has(file)) continue;
     assert.ok(!pattern.test(source), `${file} contains a machine-specific or private value`);
   }
 }

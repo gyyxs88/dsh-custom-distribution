@@ -13,6 +13,7 @@ if(!process.argv[2]||!process.argv[3]) {
   await test('TPS exact candidate replay requires Test-Tps021.mjs', {skip:true},()=>{});
 } else {
 const ready=JSON.parse(fs.readFileSync(process.argv[2])),out=process.argv[3];
+const builtPackage=path.resolve(process.argv[4] ?? path.join(out,'../build/verified-package'));
 const base=ready.archive.replaceAll('\\','/')+'/dsh/node_modules/';
 const officialRequire=createRequire(base+'@deepseek-ai/dsh/package.json');
 const redirects=new Map(['zod',...['cordis','dsh-client-modules','dsh-client-ui-chat','dsh-client-ui-trajectory'].flatMap(pkg=>['@deepseek-ai/'+pkg,'@deepseek-ai/'+pkg+'/package.json'])].map(spec=>[spec,officialRequire.resolve(spec)]));
@@ -87,7 +88,7 @@ await test('route A B A, reload/pagination and schema do not mix output or store
   const a=make(),b=make({model:'B',rate:300,step:2}),a2=make({rate:200,step:3});const events=[...timeline(a),...timeline(b),...timeline(a2)];
   const r=record('route-A-B-A',events);assert.equal(r.corrected.estimate.tps,150);assert.equal(r.corrected.eligible,2);assert.deepEqual(streamStateView(JSON.parse(JSON.stringify(r.state))),r.corrected);
   assert.doesNotMatch(JSON.stringify(r.state),/aaaa|stream|content/);
-  const plugin=await import(pathToFileURL(path.resolve('temp/upgrade-021rc2-20261017/tps/build/verified-package/index.js')));let registered;plugin.apply({sessionProjections:{register:d=>{registered=d;}}});assert.equal(registered.key,'tpsCorrectionV2');registered.stateSchema.parse(r.state);registered.wire.viewSchema.parse(r.corrected);
+  const plugin=await import(pathToFileURL(path.join(builtPackage,'index.js')));let registered;plugin.apply({sessionProjections:{register:d=>{registered=d;}}});assert.equal(registered.key,'tpsCorrectionV2');registered.stateSchema.parse(r.state);registered.wire.viewSchema.parse(r.corrected);
 });
 
 // Actual shipped client factory functions, with rendering dependencies stubbed.
@@ -104,7 +105,7 @@ function loadFactory(source,expose=''){
 function expand(node){if(node==null||node===false)return null;if(Array.isArray(node))return node.map(expand);if(typeof node!=='object')return node;if(typeof node.type==='function')return expand(node.type(node.props));return {type:node.type,props:{...node.props,children:expand(node.props?.children)}};}
 function texts(node){if(node==null||node===false)return '';if(Array.isArray(node))return node.map(texts).join(' ');if(typeof node!=='object')return String(node);return texts(node.props?.children);}
 await test('generated public activity replaces only activity; detailed, compact and missing show one speed',()=>{
- const client=loadFactory(fs.readFileSync('temp/upgrade-021rc2-20261017/tps/build/verified-package/client.js','utf8'));
+ const client=loadFactory(fs.readFileSync(path.join(builtPackage,'client.js'),'utf8'));
  const rows=[];client.apply({configForms:{get:()=>({getSnapshot:()=>({value:{performanceUsage:'detailed'}}),subscribe:()=>()=>{}})},slots:{inject:(_slot,fn)=>fn(),register:(opts,component)=>{rows.push({opts,component});}}});
  assert.equal(rows.length,1);assert.equal(rows[0].opts.id,'activity');assert.equal(rows[0].opts.priority,-100);
  const stats=replay(timeline(make()));const t=(key,args)=>key==='stats.counts'?`${args.turns}轮 ${args.steps}步`:key;
@@ -141,7 +142,7 @@ await test('real official bundle composition and client-module service select on
  const {ClientModuleRegistry}=await import(pathToFileURL(base+'@deepseek-ai/dsh-client-modules/lib/index.js'));
  const {composeEntries}=await import(pathToFileURL(base+'@deepseek-ai/dsh-app-boot/lib/index.js'));
  const yaml=officialRequire('js-yaml');
- const packageRoot=path.resolve('temp/upgrade-021rc2-20261017/tps/build/verified-package');
+ const packageRoot=builtPackage;
  const patches=yaml.load(fs.readFileSync(path.join(packageRoot,'cordis.patch.yml'),'utf8'));
  const composed=composeEntries([[{insert:[{id:'ui-trajectory',name:'@deepseek-ai/dsh-client-ui-trajectory'}]}],patches]);
  assert.equal(composed.find(x=>x.id==='ui-trajectory').disabled,true);
@@ -179,7 +180,7 @@ await test('real official bundle composition and client-module service select on
 await test('actual official Loader activates external bundle, unloads it and boots the original source after withdrawal',async()=>{
  const appBoot=await import(pathToFileURL(base+'@deepseek-ai/dsh-app-boot/lib/index.js'));
  const rootFile=path.join(out,'loader-root.yml');
- const packageRoot=path.resolve('temp/upgrade-021rc2-20261017/tps/build/verified-package');
+ const packageRoot=builtPackage;
  fs.writeFileSync(rootFile,'- id: client-modules\n  name: "@deepseek-ai/dsh-client-modules"\n- id: ui-chat\n  name: "@deepseek-ai/dsh-client-ui-chat"\n- id: ui-trajectory\n  name: "@deepseek-ai/dsh-client-ui-trajectory"\n');
  const patches=appBoot.loadOverlayPatches('tps-test',path.join(packageRoot,'cordis.patch.yml'));
  const prepare=ctx=>{ctx.provide('sessionProjections',{register:()=>()=>{}});};

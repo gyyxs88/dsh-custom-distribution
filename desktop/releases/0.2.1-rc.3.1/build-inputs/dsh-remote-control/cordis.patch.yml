@@ -1,0 +1,7 @@
+# Tools require each live agent's current official danger-full-access preset.
+# Missing permission services fail closed; no controller Session list is used.
+- insert:
+    - id: dsh-remote-control
+      name: 'dsh-remote-control/plugin'
+      config:
+        stateDir: '.dsh-remote-control'

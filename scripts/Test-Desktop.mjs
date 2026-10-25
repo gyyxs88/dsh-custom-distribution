@@ -2,17 +2,18 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
-import { defaultArchive, defaultElectron, installation } from '../desktop/official-runtime.mjs';
+import { installation } from '../desktop/official-runtime.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const output = path.resolve(process.argv[2] ?? path.join(root, '../../temp/desktop-repair-20260930'));
-const archive = process.argv[3] ?? defaultArchive, electron = process.argv[4] ?? defaultElectron;
+if (!process.argv[3] || !process.argv[4]) throw Error('Explicit isolated official ASAR and Electron required');
+const archive = process.argv[3], electron = process.argv[4];
 const official = installation(archive);
-if (official.some(pkg => pkg.version !== (pkg.name.endsWith('/cordis') ? '4.0.5' : '0.2.1-rc.2'))) throw Error('Unsupported official installation');
+if (official.some(pkg => pkg.version !== (pkg.name.endsWith('/cordis') ? '4.0.5' : '0.2.1-rc.3'))) throw Error('Unsupported official installation');
 fs.mkdirSync(output, { recursive: true });
 const entry = process.argv[5] ?? path.join(root, 'sources/dsh-desktop-compat/lib/index.js');
 for (const [test, prefix] of [['desktop-compat.test.mjs', 'desktop-test'], ['desktop-errors.test.mjs', 'desktop-errors']]) {
 const result = spawnSync(electron, [path.join(root, 'tests', test), archive, output, entry], {
-  cwd: root, encoding: 'utf8', timeout: 120000,
+  cwd: root, encoding: 'utf8', timeout: 120000, windowsHide: true,
   // Explicit isolated launch environment. Never inspect or inherit provider credentials/proxy env.
   env: { ELECTRON_RUN_AS_NODE: '1', SystemRoot: 'C:\\Windows', WINDIR: 'C:\\Windows',
     TEMP: output, TMP: output, USERPROFILE: output, HOME: output, DSH_HOME: path.join(output, 'home'), PATH: 'C:\\Windows\\System32;C:\\Windows' }

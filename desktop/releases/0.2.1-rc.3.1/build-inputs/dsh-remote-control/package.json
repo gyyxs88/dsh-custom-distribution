@@ -1,0 +1,100 @@
+{
+  "name": "dsh-remote-control",
+  "version": "0.3.3-dsh021.3",
+  "description": "DSH remote project control, trusted Desired State/runtime sync and Model Gateway bridge",
+  "type": "module",
+  "engines": {
+    "node": ">=22",
+    "dsh": "0.2.0-rc.2 || 0.2.1-rc.2 || 0.2.1-rc.3"
+  },
+  "bin": {
+    "dsh-remote-host": "bin/dsh-remote-host.mjs",
+    "dsh-model-gateway": "bin/dsh-model-gateway.mjs",
+    "dsh-remote-host-installer": "bin/dsh-remote-host-installer.mjs",
+    "dsh-remote-dsh-installer": "bin/dsh-remote-dsh-installer.mjs",
+    "dsh-remote-artifact-installer": "bin/dsh-remote-artifact-installer.mjs"
+  },
+  "exports": {
+    ".": "./lib/index.mjs",
+    "./plugin": "./lib/dsh-plugin.mjs",
+    "./package.json": "./package.json",
+    "./protocol": "./lib/protocol.mjs",
+    "./connector": "./lib/connector.mjs",
+    "./connector-identity": "./lib/connector-identity.mjs",
+    "./remote-host": "./lib/remote-host.mjs",
+    "./gateway": "./lib/gateway.mjs",
+    "./ssh": "./lib/ssh.mjs",
+    "./bootstrap": "./lib/bootstrap.mjs",
+    "./dsh-host-bootstrap": "./lib/dsh-host-bootstrap.mjs",
+    "./dsh-http-client": "./lib/dsh-http-client.mjs",
+    "./host-registry": "./lib/host-registry.mjs",
+    "./ssh-discovery": "./lib/ssh-discovery.mjs",
+    "./control-artifacts": "./lib/control-artifacts.mjs",
+    "./managed-host": "./lib/managed-host.mjs",
+    "./remote-project-controller": "./lib/remote-project-controller.mjs",
+    "./desired-state": "./lib/desired-state.mjs",
+    "./runtime-requirement": "./lib/runtime-requirement.mjs",
+    "./desired-state-registry": "./lib/desired-state-registry.mjs",
+    "./plugin-sync": "./lib/plugin-sync.mjs",
+    "./remote-artifact-installer": "./lib/remote-artifact-installer.mjs",
+    "./runtime-manager": "./lib/runtime-manager.mjs",
+    "./runtime-manager-service": "./lib/runtime-manager-service.mjs"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "docs",
+    "skills",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "check": "node scripts/check.mjs",
+    "test": "node scripts/run-tests.mjs",
+    "test:stage-a": "node scripts/run-tests.mjs",
+    "test:stage-b": "node scripts/run-tests.mjs",
+    "test:stage-c": "node scripts/run-tests.mjs",
+    "pack:check": "node scripts/pack-check.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "control": {
+      "manifestVersion": "1.0",
+      "pluginId": "dsh-remote-control",
+      "version": "0.3.3-dsh021.2",
+      "placements": [
+        "control"
+      ],
+      "protocolVersion": "1.0",
+      "apiVersion": "1.0",
+      "dshCompatibility": {
+        "min": "0.1.0-rc.6",
+        "max": "0.2.1-rc.2"
+      },
+      "capabilities": [
+        "remote.host.registry",
+        "remote.host.bootstrap",
+        "remote.project.open",
+        "remote.project.reconcile",
+        "remote.schedule.create",
+        "remote.schedule.delete"
+      ],
+      "bundledSkills": [
+        {
+          "id": "dsh-remote-project",
+          "version": "0.1.4",
+          "sha256": "ebed44d15f473f25f928494562d9463fda8bf75a5cb5eac04acfb09b64a60ecf"
+        }
+      ]
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/schemastery": "3.18.2 || ~3.18.4",
+    "@deepseek-ai/dsh-tools": ">=0.1.0-rc.6 || 0.1.5-rc.2 || 0.2.0-rc.2 || 0.2.1-rc.2 || 0.2.1-rc.3",
+    "dsh-session-control": ">=0.8.0 <0.9.0 || 0.8.5-dsh021.1 || 0.8.5-dsh021.2"
+  },
+  "license": "MIT"
+}

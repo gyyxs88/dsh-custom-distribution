@@ -25,9 +25,8 @@ export function readTpsPacked(archive, member) {
   } finally { if(fd!==undefined)fs.closeSync(fd);if(process.versions.electron)process.noAsar=previous; }
 }
 export function assertTpsOutput(output) {
-  const root = path.resolve(new URL('../', import.meta.url).pathname.replace(/^\/(\w:)/, '$1'));
-  const scoped = path.join(root, 'temp/upgrade-021rc2-20261017/tps');
+  if (!output) throw Error('Explicit TPS output directory required');
   const target = path.resolve(output);
-  if (target !== scoped && !target.startsWith(scoped + path.sep)) throw Error('TPS output must stay in assigned evidence directory');
+  if (fs.existsSync(target) && (!fs.statSync(target).isDirectory() || fs.readdirSync(target).length)) throw Error('TPS output must be a new or empty directory');
   return target;
 }

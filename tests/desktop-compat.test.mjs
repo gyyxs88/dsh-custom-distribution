@@ -353,7 +353,7 @@ async function regionIntegration() {
     add('region-supplement-unload-restores-official-AUTH');
   } finally { streamError = undefined; await fixture.close(); }
 }
-await test('real rc2 ASAR adapter compatibility', async () => {
+await test('real rc3 ASAR adapter compatibility', async () => {
 try {
   for (const api of protocols) {
     const old = await setup(api);

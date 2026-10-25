@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "releaseTag": "desktop-v0.2.1-rc.3.1",
+  "runtimeVersion": "0.2.1-rc.3",
+  "official": {
+    "windowsX64": {
+      "url": "https://download.deepseek.com/dsh-desk/bin/win-x64/deepseek-harness-0.2.1-rc.3-win-x64.exe",
+      "sha512Base64": "q5IGr2Bf+TvvCpagHj49Ypn/ZrqR7kqrYpLjqXP7VfDINmddlqZQmG+YfsdL3q3EdTRMRlKz/a3jDAEzdNdDOw==",
+      "size": 289415960,
+      "appAsarSha256": "04b32e3a872826ba15cfb2081c6a929a8d4ecaa65e09a2543e5a6b30e2eff1f0",
+      "exeSha256": "fd7d298f4ba03ee9bab1719a892afeaef5c09bf50c574a592a64c85f64574c0c"
+    }
+  },
+  "packages": [
+    {
+      "name": "@omdsh-dev/dsh-genui",
+      "version": "0.9.1-dsh021.3",
+      "file": "packages/omdsh-dev-dsh-genui-0.9.1-dsh021.3.tgz",
+      "sha256": "c13187a35da2519b89fbe69b4ff4cd7e285c257785114257145aee21003a2ad7"
+    },
+    {
+      "name": "dsh-desktop-compat",
+      "version": "0.2.1-rc.3.1",
+      "file": "packages/dsh-desktop-compat-0.2.1-rc.3.1.tgz",
+      "sha256": "d31fc4265e4f6d6c4d337943d0730410d8b889e60c857470f7998440395d5883"
+    },
+    {
+      "name": "dsh-remote-control",
+      "version": "0.3.3-dsh021.3",
+      "file": "packages/dsh-remote-control-0.3.3-dsh021.3.tgz",
+      "sha256": "2955b2d4b20a792a144f9cb27034d3aeff257e465752bf13e4c144992a9da8d6"
+    },
+    {
+      "name": "dsh-session-control",
+      "version": "0.8.5-dsh021.2",
+      "file": "packages/dsh-session-control-0.8.5-dsh021.2.tgz",
+      "sha256": "02561793a5baadd6275ee0b21989c0a6589a7226a105e0e1d4ff4b8f8639f318"
+    },
+    {
+      "name": "dsh-subagent-code-agents",
+      "version": "0.2.4-dsh021.1",
+      "file": "packages/dsh-subagent-code-agents-0.2.4-dsh021.1.tgz",
+      "sha256": "8f2923e4d76a9b6c8af58b75e912f0aa12a0f4933da778d996816c731e33632b"
+    },
+    {
+      "name": "dsh-tps-correction",
+      "version": "0.2.1-rc.3.1",
+      "file": "packages/dsh-tps-correction-0.2.1-rc.3.1.tgz",
+      "sha256": "e41e88ab1f1a423905896d4a53593459d983b7647783f594b21c02a83d0c1cf2"
+    }
+  ],
+  "compatibility": {
+    "@omdsh-dev/dsh-genui@0.9.1-dsh021.3": [
+      "0.2.1-rc.3"
+    ],
+    "dsh-session-control@0.8.5-dsh021.2": [
+      "0.2.1-rc.3"
+    ],
+    "dsh-subagent-code-agents@0.2.4-dsh021.1": [
+      "0.2.1-rc.3"
+    ]
+  },
+  "bundles": [
+    "dsh-session-control",
+    "dsh-remote-control",
+    "dsh-subagent-code-agents",
+    "@omdsh-dev/dsh-genui",
+    "dsh-desktop-compat",
+    "dsh-tps-correction"
+  ],
+  "validation": {
+    "scope": "Previously accepted isolated mock, plugin loading and data-preservation checks; fixed archive bytes verified against ARTIFACTS.json. Targeted source and reproducibility checks are recorded separately.",
+    "realProviderCalls": 0,
+    "sshCalls": 0,
+    "externalCodingCalls": 0,
+    "realProviderUsageValidated": false
+  }
+}

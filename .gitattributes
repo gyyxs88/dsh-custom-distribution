@@ -13,3 +13,6 @@
 sources/** -whitespace
 # Preserve the reviewed archive member byte-for-byte across Git checkouts.
 sources/dsh-desktop-compat/README.md -text
+# rc.3 accepted package members include mixed/CRLF bytes; never normalize them.
+sources/dsh-desktop-compat/** -text
+desktop/releases/0.2.1-rc.3.1/build-inputs/** -text

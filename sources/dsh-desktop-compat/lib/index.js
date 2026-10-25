@@ -31,11 +31,11 @@ function scopedSnapshot(snapshot, provider, sessionId) {
 export function apply(ctx) {
   assertOfficial();
   const llm = ctx.llm;
-  if (versions.some(version => version !== '0.2.1-rc.2') ||
+  if (versions.some(version => version !== '0.2.1-rc.3') ||
       require('@deepseek-ai/cordis/package.json').version !== '4.0.5' ||
       ['registration', 'listProviders', 'listConfigurableProviders', 'discoverModels'].some(method => typeof llm[method] !== 'function') ||
       ['current', 'profileOf', 'modelOf', 'stream', 'prepareCall', 'streamWithSnapshot'].some(method => typeof PiAiAdapter.prototype[method] !== 'function')) {
-    throw new LlmError('Desktop compatibility supplement supports the verified official 0.2.1-rc.2 shape only', 'UNSUPPORTED_ADAPTER');
+    throw new LlmError('Desktop compatibility supplement supports the verified official 0.2.1-rc.3 shape only', 'UNSUPPORTED_ADAPTER');
   }
   if (llm[owner]) throw new LlmError('Desktop compatibility supplement already attached', 'DUPLICATE_SUPPLEMENT');
   const installed = new Map();

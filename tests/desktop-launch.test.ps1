@@ -1,4 +1,4 @@
-$ErrorActionPreference = 'Stop'
+﻿$ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot '../scripts/Start-Desktop.ps1')
 function Assert-Value($condition, $label) { if (-not $condition) { throw $label } }
 $caller = @{ https_proxy='http://caller.invalid:81'; NO_PROXY='keep.invalid'; unrelated='kept'; ALL_PROXY='' }

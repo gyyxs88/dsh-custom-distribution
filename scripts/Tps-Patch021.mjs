@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 import vm from 'node:vm';
 import { sha256 } from './Tps-Official.mjs';
-export const trajectory021Sha256 = '0f2f622e264c8e64996df5bfde6efdc233f19e4d9f597e69d9c0c1faa75c7b72';
-export const chat021Sha256 = 'a130b58fd24ea9b1e2a6a0f516009e9f9bfa9dc289cc8ebf004a735496fa52ca';
+export const trajectory021Sha256 = 'a6f2ffae255381c302364ec9d04ce69d300ea58738582661870db984b9b55bec';
+export const chat021Sha256 = '42795539e0240e774c5cb66e693ac951208efe13eaa9421ec83324d3850cf3ff';
 export function replaceTpsOnce(source, before, after) {
   if (source.split(before).length !== 2) throw Error(`TPS anchor must be unique: ${before.slice(0, 80)}`);
   return source.replace(before, after);

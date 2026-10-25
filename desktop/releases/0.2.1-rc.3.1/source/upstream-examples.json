@@ -1,0 +1,37 @@
+{
+  "verifiedOn": "2026-10-25",
+  "repository": "https://github.com/gyyxs88/dsh-remote-control",
+  "documents": [
+    {
+      "file": "../build-inputs/dsh-remote-control/docs/install-and-development.md",
+      "upstreamUrl": "https://github.com/gyyxs88/dsh-remote-control/blob/main/docs/install-and-development.md",
+      "sha256": "a1ccf07c0d71806a2df57d22dc698bdf1b0f71050a1b5e806d45f96e794a00c8",
+      "publicVerification": "GitHub fetch_file returned base64 content and blob SHA; decoded content Git blob hash matches returned SHA. Local accepted CRLF file normalized to LF has the same Git blob SHA; all text is identical, only line endings differ. Frozen local bytes remain unchanged.",
+      "githubBlobSha": "808c29fe8c2628f5edcc781db0ca592be7a0cb61",
+      "localGitBlobSha": "06ee99ed9274331f076f4feb4746555dfc563561",
+      "localLfGitBlobSha": "808c29fe8c2628f5edcc781db0ca592be7a0cb61"
+    },
+    {
+      "file": "../build-inputs/dsh-remote-control/docs/stage-b-acceptance.md",
+      "upstreamUrl": "https://github.com/gyyxs88/dsh-remote-control/blob/main/docs/stage-b-acceptance.md",
+      "sha256": "086c09cf09313a178e94f881a12dc89bae26d18bc12933a3251333ea436e38da",
+      "publicVerification": "GitHub fetch_file returned base64 content and blob SHA; decoded content Git blob hash matches returned SHA. Local accepted CRLF file normalized to LF has the same Git blob SHA; all text is identical, only line endings differ. Frozen local bytes remain unchanged.",
+      "githubBlobSha": "66cf0ad91b5e2867b8701a15a879432f1dc97e78",
+      "localGitBlobSha": "4dc0bf1cf706d837e733cea5fa4c1de3f1f91509",
+      "localLfGitBlobSha": "66cf0ad91b5e2867b8701a15a879432f1dc97e78"
+    },
+    {
+      "file": "../build-inputs/dsh-remote-control/docs/stage-c-acceptance.md",
+      "upstreamUrl": "https://github.com/gyyxs88/dsh-remote-control/blob/main/docs/stage-c-acceptance.md",
+      "sha256": "4cb68b1d03de40a9df526281329a033a95951a5ca37ced0b8a696bb54735f3a6",
+      "publicVerification": "GitHub fetch_file returned base64 content and blob SHA; decoded content Git blob hash matches returned SHA. Local accepted CRLF file normalized to LF has the same Git blob SHA; all text is identical, only line endings differ. Frozen local bytes remain unchanged.",
+      "githubBlobSha": "656679a7102f6f33c157fab369dd352760ae46ab",
+      "localGitBlobSha": "49e06942513959279e95412183308a1cb921ffa8",
+      "localLfGitBlobSha": "656679a7102f6f33c157fab369dd352760ae46ab"
+    }
+  ],
+  "classification": "Historical public upstream development/acceptance examples retained in the unchanged accepted archive and frozen source inputs.",
+  "consumerDependsOnExamplePaths": false,
+  "archiveModified": false,
+  "checkStatus": "PASSED: npm run check in clean export, 588 files and 17 PowerShell scripts. Exact three-path exception applies only to the old project-path matcher. Four negative probes confirmed private-value and nonexempt-path protections remain active."
+}

@@ -4,9 +4,21 @@
 
 > 本项目不是 DeepSeek 官方发行版。DeepSeek Harness 和各组件仍受各自许可证约束。
 
-## 在另一台电脑安装
+## 安装 Desktop rc.3（桌面版入口）
 
-推荐方式：打开 [Releases](https://github.com/gyyxs88/dsh-custom-distribution/releases)，下载最新版本中的 `Install-DSH.ps1`，然后右键使用 PowerShell 运行。安装器会：
+家中电脑首次安装或从 rc.2 升级：先正常退出 Desktop，下载
+[Install-Desktop.ps1](https://github.com/gyyxs88/dsh-custom-distribution/releases/download/desktop-v0.2.1-rc.3.1/Install-Desktop.ps1)，
+右键“使用 PowerShell 运行”。无需管理员、Node/npm 或重新检查插件适配。
+脚本复用已安装的官方 rc.3；缺失或版本不符时，校验固定官方签名安装器后打开安装向导。
+向导完成时取消立即启动，插件安装完成后再打开桌面。
+
+固定 [Desktop prerelease](https://github.com/gyyxs88/dsh-custom-distribution/releases/tag/desktop-v0.2.1-rc.3.1)
+提供六包 ZIP、安装/检查/回退入口；现有用户配置、会话、provider 与凭据保留。
+此入口与 GitHub Latest 的旧 Web v0.5.1 分开。详情见 [桌面安装发行说明](docs/桌面安装发行说明.md)。
+
+## 旧 Web 版安装（v0.5.1）
+
+仅安装旧 Web 版时：打开 [v0.5.1](https://github.com/gyyxs88/dsh-custom-distribution/releases/tag/v0.5.1)，下载 `Install-DSH.ps1`，然后右键使用 PowerShell 运行。安装器会：
 
 1. 下载同一 Release 的完整 Windows 离线包；
 2. 校验 SHA-256 后才解压；

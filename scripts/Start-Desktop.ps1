@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param([string]$Executable = 'D:/DSH/DeepSeek Harness.exe')
 $ErrorActionPreference = 'Stop'
 

@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "runtimeVersion": "0.2.1-rc.3",
+  "origin": {
+    "release": "dsh-desktop-0.2.1-rc.3/upgrade-20261025",
+    "inventory": "ARTIFACTS.json",
+    "status": "PACKED_AND_BYTE_VERIFIED"
+  },
+  "reproduction": {
+    "command": "node desktop/releases/0.2.1-rc.3.1/Reproduce.mjs <official-app.asar> <new-output-directory>",
+    "inputs": [
+      "../build-inputs/dsh-desktop-compat",
+      "../build-inputs/dsh-remote-control",
+      "../build-inputs/tps"
+    ],
+    "runtime": "Node.js 24.21.0 (accepted official desktop embedded Node); plain Node.js supported when generated hashes match",
+    "officialArchive": "Caller supplies unmodified official rc.3 resources/app.asar; not bundled",
+    "verifiedNode": "22.15.0: three regenerated archive hashes match; accepted desktop embedded Node is 24.21.0"
+  },
+  "packages": {
+    "adapted": [
+      "dsh-desktop-compat",
+      "dsh-remote-control",
+      "dsh-tps-correction"
+    ],
+    "reusedOriginal": [
+      "@omdsh-dev/dsh-genui",
+      "dsh-session-control",
+      "dsh-subagent-code-agents"
+    ]
+  },
+  "licenses": {
+    "distribution": "../../../../LICENSE",
+    "remote": "../build-inputs/dsh-remote-control/LICENSE",
+    "officialDerivedTps": "../build-inputs/tps/sources/dsh-tps-correction/LICENSE.deepseek",
+    "reusedPackages": "Original notices and source metadata retained inside the unchanged package archives"
+  },
+  "sourceChanges": "Compatibility exact-version/hash contract and TPS rc.3 build inputs only; no new runtime behavior beyond previously accepted packages.",
+  "historicalPackageDocuments": "Unchanged package payloads retain historical developer/acceptance examples, including machine paths. These are not manifest paths or build/install inputs. New release entrypoints do not depend on them.",
+  "validation": "Isolated mock/loading/data-preservation acceptance only. Real provider calls = 0; SSH and external coding calls = 0; not evidence of full real-provider usage.",
+  "historicalExamplesSource": "./upstream-examples.json"
+}
