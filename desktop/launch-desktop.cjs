@@ -2,7 +2,17 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { spawn } = require('node:child_process');
-const osNames = ['SystemRoot','WINDIR','COMSPEC','PATH','PATHEXT','TEMP','TMP','PROCESSOR_ARCHITECTURE','NUMBER_OF_PROCESSORS','USERPROFILE','HOME','HOMEDRIVE','HOMEPATH','APPDATA','LOCALAPPDATA'];
+// Stable Windows machine facts a child may need to run ordinary tooling. ProgramData is not
+// optional: Windows OpenSSH resolves its default config directory from %ProgramData% and
+// exits 255 without printing anything when the variable is absent, which is indistinguishable
+// from a broken binary. Secrets, provider overrides and Node/Electron execution switches stay out.
+const osNames = [
+  'SystemRoot','WINDIR','COMSPEC','PATH','PATHEXT','TEMP','TMP','SystemDrive','OS',
+  'PROCESSOR_ARCHITECTURE','PROCESSOR_IDENTIFIER','PROCESSOR_LEVEL','PROCESSOR_REVISION','NUMBER_OF_PROCESSORS',
+  'USERPROFILE','HOME','HOMEDRIVE','HOMEPATH','APPDATA','LOCALAPPDATA','USERNAME','USERDOMAIN','COMPUTERNAME',
+  'ProgramData','ALLUSERSPROFILE','PUBLIC',
+  'ProgramFiles','ProgramFiles(x86)','ProgramW6432','CommonProgramFiles','CommonProgramFiles(x86)','CommonProgramW6432',
+];
 function productionEnvironment(caller) {
   const result = {};
   for (const name of Object.keys(caller)) {
