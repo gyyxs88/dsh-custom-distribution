@@ -8,8 +8,8 @@ param(
     [string]$BackupId
 )
 $ErrorActionPreference = 'Stop'
-$releaseTag = 'desktop-v0.2.1-rc.3.1'
-$assetName = 'dsh-desktop-v0.2.1-rc.3.1-win-x64.zip'
+$releaseTag = 'desktop-v0.2.1-rc.5.1'
+$assetName = 'dsh-desktop-v0.2.1-rc.5.1-win-x64.zip'
 $releaseBase = "https://github.com/gyyxs88/dsh-custom-distribution/releases/download/$releaseTag"
 # The bundle builder substitutes the digest in the separately downloadable bootstrap.
 $bundleSha256 = '__DESKTOP_BUNDLE_SHA256__'
@@ -108,30 +108,38 @@ try {
     }
     $BundlePath = (Resolve-Path -LiteralPath $BundlePath).Path
     $manifest = Get-Content -LiteralPath (Join-Path $BundlePath 'manifest.json') -Raw -Encoding UTF8 | ConvertFrom-Json
-    if ($manifest.schemaVersion -ne 1 -or $manifest.releaseTag -ne $releaseTag -or $manifest.runtimeVersion -ne '0.2.1-rc.3') { throw 'Unexpected Desktop release manifest.' }
+    if ($manifest.schemaVersion -ne 1 -or $manifest.releaseTag -ne $releaseTag -or $manifest.runtimeVersion -ne '0.2.1-rc.5') { throw 'Unexpected Desktop release manifest.' }
     $official = $manifest.official.windowsX64
+    # Pin the official installer and program independently of downloaded metadata.
+    if ($official.url -ne 'https://download.deepseek.com/dsh-desk/bin/win-x64/deepseek-harness-0.2.1-rc.5-win-x64.exe' -or
+        $official.size -ne 289408544 -or
+        $official.sha512Base64 -cne 'gu2dH+aTr678c0P8DGAH/h4B1GaWfQIjpsPrLjl/ukLrQIh6DLVq/MhX4FZvJ8o1GCMocOhix6XbLa6KmtjXXg==' -or
+        $official.exeSha256 -ne '7ae939b5a82b220fbd8ad04dfbafaaedb5a49ab43dc884a5db6381f678dd0cc4' -or
+        $official.appAsarSha256 -ne 'e1b6f25fa937da98086c3e77af77aa14791105963c4d337a1c42179d232c6915') {
+        throw 'Unexpected official rc.5 download or program identity.'
+    }
     $program = Find-Desktop $official
     if (-not $program) {
-        if ($Action -ne 'Install') { throw 'Install official Desktop 0.2.1-rc.3 first, or specify -DesktopPath.' }
+        if ($Action -ne 'Install') { throw 'Install official Desktop 0.2.1-rc.5 first, or specify -DesktopPath.' }
         $cache = Join-Path $env:LOCALAPPDATA ('DSH-Desktop-Install\' + [guid]::NewGuid().ToString('N'))
         Protect-DesktopDirectory $cache
-        $installer = Join-Path $cache 'deepseek-harness-0.2.1-rc.3-win-x64.exe'
-        if ($official.url -ne 'https://download.deepseek.com/dsh-desk/bin/win-x64/deepseek-harness-0.2.1-rc.3-win-x64.exe') { throw 'Unexpected official download URL.' }
+        $installer = Join-Path $cache 'deepseek-harness-0.2.1-rc.5-win-x64.exe'
+        if ($official.url -ne 'https://download.deepseek.com/dsh-desk/bin/win-x64/deepseek-harness-0.2.1-rc.5-win-x64.exe') { throw 'Unexpected official download URL.' }
         [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
-        Write-Host 'Installing official Desktop rc.3 for the current user. Finish the wizard and leave its launch checkbox unchecked.'
+        Write-Host 'Installing official Desktop rc.5 for the current user. Finish the wizard and leave its launch checkbox unchecked.'
         Invoke-WebRequest -UseBasicParsing -Uri $official.url -OutFile $installer
         if ((Get-Item -LiteralPath $installer).Length -ne $official.size) { throw 'Official installer size mismatch.' }
         $sha512 = [Security.Cryptography.SHA512]::Create()
         $stream = [IO.File]::OpenRead($installer)
         try { $digest = [Convert]::ToBase64String($sha512.ComputeHash($stream)) }
         finally { $stream.Dispose(); $sha512.Dispose() }
-        if ($digest -ne $official.sha512Base64) { throw 'Official installer SHA512 mismatch.' }
+        if ($digest -cne $official.sha512Base64) { throw 'Official installer SHA512 mismatch.' }
         Assert-DesktopSignature $installer
         # Use the signed current-user NSIS wizard, without guessed switches or elevation.
         $setup = Start-Process -FilePath $installer -PassThru -Wait
         if ($setup.ExitCode -ne 0) { throw 'Official installer did not finish successfully. Re-run after completing official installation.' }
         $program = Find-Desktop $official
-        if (-not $program) { throw 'Official rc.3 was not found. Re-run with -DesktopPath pointing to the directory selected in the wizard.' }
+        if (-not $program) { throw 'Official rc.5 was not found. Re-run with -DesktopPath pointing to the directory selected in the wizard.' }
     }
     Assert-DesktopStopped $program
     $saved = @{}

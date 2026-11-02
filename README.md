@@ -4,17 +4,22 @@
 
 > 本项目不是 DeepSeek 官方发行版。DeepSeek Harness 和各组件仍受各自许可证约束。
 
-## 安装 Desktop rc.3（桌面版入口）
+## 安装 Desktop rc.5（桌面版入口）
 
-家中电脑首次安装或从 rc.2 升级：先正常退出 Desktop，下载
-[Install-Desktop.ps1](https://github.com/gyyxs88/dsh-custom-distribution/releases/download/desktop-v0.2.1-rc.3.1/Install-Desktop.ps1)，
+首次安装或从旧桌面版升级：先正常退出 Desktop，下载
+[Install-Desktop.ps1](https://github.com/gyyxs88/dsh-custom-distribution/releases/download/desktop-v0.2.1-rc.5.1/Install-Desktop.ps1)，
 右键“使用 PowerShell 运行”。无需管理员、Node/npm 或重新检查插件适配。
-脚本复用已安装的官方 rc.3；缺失或版本不符时，校验固定官方签名安装器后打开安装向导。
+脚本复用已安装的官方 rc.5；缺失或版本不符时，校验固定官方签名安装器后打开安装向导。
 向导完成时取消立即启动，插件安装完成后再打开桌面。
 
-固定 [Desktop prerelease](https://github.com/gyyxs88/dsh-custom-distribution/releases/tag/desktop-v0.2.1-rc.3.1)
+固定 [Desktop prerelease](https://github.com/gyyxs88/dsh-custom-distribution/releases/tag/desktop-v0.2.1-rc.5.1)
 提供六包 ZIP、安装/检查/回退入口；现有用户配置、会话、provider 与凭据保留。
 此入口与 GitHub Latest 的旧 Web v0.5.1 分开。详情见 [桌面安装发行说明](docs/桌面安装发行说明.md)。
+
+桌面版固定为 runtime `0.2.1-rc.5`、compat/TPS `0.2.1-rc.5.1`，其余四包复用原始 tgz。
+六包与精确兼容许可见 [Desktop manifest](desktop/releases/0.2.1-rc.5.1/manifest.json)，
+重现方法和验收范围见 [Desktop README](desktop/README.md)。已验收范围包括隔离模拟、加载和本机安装数据检查；
+真实 provider 调用、NSIS 实际交互向导与 UI 目视尚未验收。
 
 ## 旧 Web 版安装（v0.5.1）
 
@@ -76,7 +81,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Install-Bundle.ps1
 
 ## 开发与发布
 
-版本事实源是 [release-lock.json](manifest/release-lock.json)。所有内置 tgz、Node 运行时和上游提交均固定版本与 SHA-256。构建命令只在维护发行版时使用：
+旧 Web 版的版本事实源是 [release-lock.json](manifest/release-lock.json)。所有内置 tgz、Node 运行时和上游提交均固定版本与 SHA-256。以下构建命令用于维护旧 Web 发行版；Desktop 使用上方独立入口：
 
 ```powershell
 npm ci --ignore-scripts

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "runtimeVersion": "0.2.1-rc.5",
+  "origin": {
+    "release": "dsh-desktop-0.2.1-rc.5/upgrade-20261102",
+    "inventory": "ARTIFACTS.json",
+    "status": "PACKED_AND_BYTE_VERIFIED"
+  },
+  "reproduction": {
+    "command": "node desktop/releases/0.2.1-rc.5.1/Reproduce.mjs <official-app.asar> <new-output-directory>",
+    "inputs": [
+      "../build-inputs/dsh-desktop-compat",
+      "../build-inputs/tps"
+    ],
+    "runtime": "Node.js; deterministic archive hashes must match manifest.json",
+    "officialArchive": "Caller supplies the unmodified official rc.5 resources/app.asar; official binaries are not bundled"
+  },
+  "packages": {
+    "adapted": [
+      "dsh-desktop-compat",
+      "dsh-tps-correction"
+    ],
+    "reusedOriginal": [
+      "@omdsh-dev/dsh-genui",
+      "dsh-remote-control",
+      "dsh-session-control",
+      "dsh-subagent-code-agents"
+    ]
+  },
+  "licenses": {
+    "distribution": "../../../../LICENSE",
+    "officialDerivedTps": "../build-inputs/tps/sources/dsh-tps-correction/LICENSE.deepseek",
+    "reusedPackages": "Original notices and source metadata retained inside the unchanged package archives"
+  },
+  "sourceChanges": "Compat exact rc.5 runtime/peer contract and diagnostics only. TPS is generated from the exact rc.5 chat/trajectory sources using the accepted five trajectory transforms. Four original archives are copied without rebuilding.",
+  "publicInputs": "Only seven compat source files, three TPS build scripts and four TPS runtime/license files are frozen here. No machine state or raw acceptance logs are included. The portable TPS output guard replaces the private staging-directory constraint without changing package payloads.",
+  "historicalPackageDocuments": "Unchanged package payloads retain historical developer examples and README version wording. The current release identity is manifest.json and each package contract; historical examples are not build or install inputs.",
+  "validation": "Previously accepted isolated mock/loading checks and local installation data checks; not real-provider, interactive NSIS wizard or visual UI acceptance."
+}

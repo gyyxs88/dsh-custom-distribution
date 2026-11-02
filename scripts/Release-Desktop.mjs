@@ -3,15 +3,15 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { unpack, packageFiles } from '../desktop/package.mjs';
-import { packSource } from '../desktop/releases/0.2.1-rc.3.1/Reproduce.mjs';
+import { packSource } from '../desktop/releases/0.2.1-rc.5.1/Reproduce.mjs';
 import { sha256 } from '../desktop/official-runtime.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url));
 if (!process.argv[2] || !process.argv[3] || !process.argv[4]) throw Error('Usage: node scripts/Release-Desktop.mjs <new-output-directory> <official-app.asar> <official-electron.exe>');
 const output = path.resolve(process.argv[2]);
 const archive = path.resolve(process.argv[3]);
 const electron = path.resolve(process.argv[4]);
-const release = JSON.parse(fs.readFileSync(path.join(root, 'desktop/releases/0.2.1-rc.3.1/manifest.json')));
-if (sha256(fs.readFileSync(archive)) !== release.official.windowsX64.appAsarSha256 || sha256(fs.readFileSync(electron)) !== release.official.windowsX64.exeSha256) throw Error('Exact official rc.3 ASAR and Electron required');
+const release = JSON.parse(fs.readFileSync(path.join(root, 'desktop/releases/0.2.1-rc.5.1/manifest.json')));
+if (sha256(fs.readFileSync(archive)) !== release.official.windowsX64.appAsarSha256 || sha256(fs.readFileSync(electron)) !== release.official.windowsX64.exeSha256) throw Error('Exact official rc.5 ASAR and Electron required');
 if (fs.existsSync(output)) throw Error('Choose a new release output directory');
 const candidate = path.join(output, '候选');
 const run = (file, args, allowed = [0]) => {
@@ -25,8 +25,8 @@ const manifest = JSON.parse(fs.readFileSync(path.join(candidate, 'candidate-mani
 const bytes = fs.readFileSync(path.resolve(candidate, manifest.archive.path));
 const expected = release.packages.find(row => row.name === 'dsh-desktop-compat');
 function verifySource() {
-  if (manifest.version !== expected.version || manifest.archive.sha256 !== expected.sha256 || sha256(bytes) !== expected.sha256) throw Error('Accepted rc.3 archive mismatch');
-  const source = path.join(root, 'sources/dsh-desktop-compat'), members = unpack(bytes);
+  if (manifest.version !== expected.version || manifest.archive.sha256 !== expected.sha256 || sha256(bytes) !== expected.sha256) throw Error('Accepted rc.5 archive mismatch');
+  const source = path.join(root, 'desktop/releases/0.2.1-rc.5.1/build-inputs/dsh-desktop-compat'), members = unpack(bytes);
   if (members.size !== packageFiles.length) throw Error('Package member count mismatch');
   for (const file of packageFiles) {
     if (!members.get('package/' + file)?.equals(fs.readFileSync(path.join(source, file)))) throw Error('Source mismatch: ' + file);

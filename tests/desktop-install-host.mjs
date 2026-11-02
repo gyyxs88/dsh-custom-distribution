@@ -14,7 +14,7 @@ const profile = path.join(home, 'profiles/desktop');
 const result = { status: 'RUNNING', officialHost: true, realProviderCalls: 0, sshCalls: 0, externalCodingCalls: 0 };
 let output = '';
 const child = spawn(path.join(app, 'DeepSeek Harness.exe'), ['--expose-internals', '--import', pathToFileURL(fileURLToPath(new URL('./desktop-install-network.mjs', import.meta.url))).href, path.join(runtime, 'node_modules/@deepseek-ai/dsh-desktop-host/lib/index.js'), runtime, profile, path.join(app, 'resources/runtime/primary-runtime')], {
-  cwd: path.dirname(home), env: { ...process.env, DSH_CLIENT_VERSION: '0.2.1-rc.3', USERPROFILE: path.dirname(home), HOME: path.dirname(home), APPDATA: path.join(home, 'test-appdata'), LOCALAPPDATA: path.join(home, 'test-localappdata'), DSH_TELEMETRY_DISABLED: '1' }, stdio: ['ignore', 'pipe', 'pipe', 'ipc'], windowsHide: true,
+  cwd: path.dirname(home), env: { ...process.env, DSH_CLIENT_VERSION: '0.2.1-rc.5', USERPROFILE: path.dirname(home), HOME: path.dirname(home), APPDATA: path.join(home, 'test-appdata'), LOCALAPPDATA: path.join(home, 'test-localappdata'), DSH_TELEMETRY_DISABLED: '1' }, stdio: ['ignore', 'pipe', 'pipe', 'ipc'], windowsHide: true,
 });
 child.stdout.on('data', b => output += b);
 child.stderr.on('data', b => output += b);

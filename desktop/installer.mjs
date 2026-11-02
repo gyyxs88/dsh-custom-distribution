@@ -57,13 +57,25 @@ function privateDir(dir) {
   if (acl.status !== 0) throw Error('Cannot protect private backup.');
 }
 const packageName = /^(?:@[a-z0-9_.-]+\/)?[a-z0-9_.-]+$/;
-if (manifest.schemaVersion !== 1 || manifest.releaseTag !== 'desktop-v0.2.1-rc.3.1' || manifest.runtimeVersion !== '0.2.1-rc.3' || manifest.packages.length !== 6) throw Error('Unexpected Desktop release manifest.');
+if (manifest.schemaVersion !== 1 || manifest.releaseTag !== 'desktop-v0.2.1-rc.5.1' || manifest.runtimeVersion !== '0.2.1-rc.5' || manifest.packages.length !== 6) throw Error('Unexpected Desktop release manifest.');
+const expectedVersions = {
+  '@omdsh-dev/dsh-genui': '0.9.1-dsh021.3',
+  'dsh-desktop-compat': '0.2.1-rc.5.1',
+  'dsh-remote-control': '0.3.3-dsh021.3',
+  'dsh-session-control': '0.8.5-dsh021.2',
+  'dsh-subagent-code-agents': '0.2.4-dsh021.1',
+  'dsh-tps-correction': '0.2.1-rc.5.1',
+};
+const expectedGrants = ['@omdsh-dev/dsh-genui', 'dsh-remote-control', 'dsh-session-control', 'dsh-subagent-code-agents'].map(name => `${name}@${expectedVersions[name]}`);
+// A manifest may retain the three previously verified rc.3 annotations. Only
+// this installation's exact runtime is granted; existing old records stay intact.
+if (!equal(Object.keys(manifest.compatibility).sort(), expectedGrants.sort()) || Object.entries(manifest.compatibility).some(([key, versions]) => !Array.isArray(versions) || !versions.includes(manifest.runtimeVersion) || new Set(versions).size !== versions.length || versions.some(v => v !== manifest.runtimeVersion && (v !== '0.2.1-rc.3' || key.startsWith('dsh-remote-control@'))))) throw Error('Unexpected exact compatibility grants.');
 if (new Set(manifest.packages.map(p => p.name)).size !== 6 || !equal([...manifest.bundles].sort(), manifest.packages.map(p => p.name).sort())) throw Error('Invalid bundle set.');
 for (const pkg of manifest.packages) {
-  if (!packageName.test(pkg.name) || pkg.name.split('/').some(p => p === '.' || p === '..') || !/^packages\/[a-z0-9.-]+\.tgz$/.test(pkg.file) || !/^[a-f0-9]{64}$/.test(pkg.sha256)) throw Error('Invalid package identity.');
+  if (!Object.hasOwn(expectedVersions, pkg.name) || pkg.version !== expectedVersions[pkg.name] || !packageName.test(pkg.name) || pkg.name.split('/').some(p => p === '.' || p === '..') || !/^packages\/[a-z0-9.-]+\.tgz$/.test(pkg.file) || !/^[a-f0-9]{64}$/.test(pkg.sha256)) throw Error('Invalid package identity.');
   if (hash(path.join(bundle, pkg.file)) !== pkg.sha256) throw Error(`Package checksum mismatch: ${pkg.name}`);
 }
-if (hash(path.join(app, 'resources/app.asar')) !== manifest.official.windowsX64.appAsarSha256 || hash(path.join(app, 'DeepSeek Harness.exe')) !== manifest.official.windowsX64.exeSha256) throw Error('Exact official rc.3 program required.');
+if (manifest.official.windowsX64.appAsarSha256 !== 'e1b6f25fa937da98086c3e77af77aa14791105963c4d337a1c42179d232c6915' || manifest.official.windowsX64.exeSha256 !== '7ae939b5a82b220fbd8ad04dfbafaaedb5a49ab43dc884a5db6381f678dd0cc4' || hash(path.join(app, 'resources/app.asar')) !== manifest.official.windowsX64.appAsarSha256 || hash(path.join(app, 'DeepSeek Harness.exe')) !== manifest.official.windowsX64.exeSha256) throw Error('Exact official rc.5 program required.');
 plain(profile);
 const official = await import(pathToFileURL(path.join(app, 'resources/app.asar/dsh/node_modules/@deepseek-ai/dsh-app-boot/lib/index.js')));
 if (official.getDshRuntimeVersion() !== manifest.runtimeVersion) throw Error('Unexpected official runtime.');
@@ -81,13 +93,10 @@ function inspect() {
     if (meta.name !== p.name || meta.version !== p.version || pkg.dependencies?.[p.name] !== desiredSpec(p) || !pkg.dsh?.profile?.bundles?.includes(p.name)) throw Error(`Package not installed: ${p.name}`);
     return { name: p.name, version: p.version };
   });
-  for (const [key, versions] of Object.entries(manifest.compatibility)) for (const version of versions) {
-    if (!exemptions[key]?.includes(version)) throw Error('Missing exact official compatibility grant.');
-  }
-  if (fs.existsSync(receiptFile)) {
-    const receipt = read(receiptFile);
-    for (const p of manifest.packages) if (!equal(tree(path.join(profile, 'node_modules', p.name)), receipt.installedTrees[p.name])) throw Error(`Installed package changed: ${p.name}`);
-  }
+  for (const key of expectedGrants) if (!exemptions[key]?.includes(manifest.runtimeVersion)) throw Error('Missing exact official compatibility grant.');
+  const receipt = read(receiptFile);
+  if (receipt.status !== 'INSTALLED' || receipt.releaseTag !== manifest.releaseTag) throw Error('Missing matching installation receipt.');
+  for (const p of manifest.packages) if (!equal(tree(path.join(profile, 'node_modules', p.name)), receipt.installedTrees[p.name])) throw Error(`Installed package changed: ${p.name}`);
   return { status: 'VERIFIED', runtimeVersion: manifest.runtimeVersion, packages: installed, realProviderCalls: 0 };
 }
 function snapshot(kind) {
@@ -140,13 +149,23 @@ if (action !== 'verify') {
 try {
   if (action === 'verify') console.log(JSON.stringify(inspect()));
   else if (action === 'install') {
+    let alreadyInstalled = false;
     if (fs.existsSync(receiptFile)) {
       const current = read(receiptFile);
       if (current.releaseTag === manifest.releaseTag && current.status === 'INSTALLED') {
         console.log(JSON.stringify({ ...inspect(), status: 'ALREADY_INSTALLED', backupId: current.backupId }));
         process.exitCode = 0;
-      } else throw Error('Existing distribution receipt requires its own rollback before replacement.');
-    } else {
+        alreadyInstalled = true;
+      } else if (current.releaseTag === 'desktop-v0.2.1-rc.3.1' && current.status === 'INSTALLED') {
+        // Preserve the previous distribution receipt and managed bytes as part of
+        // this installation's backup, so plugin rollback can restore the pair.
+        const metadata = read(packageFile);
+        for (const p of manifest.packages) {
+          if (metadata.dependencies?.[p.name] !== current.after?.dependencies?.[p.name] || !equal(tree(path.join(profile, 'node_modules', p.name)), current.installedTrees?.[p.name])) throw Error('Previous distribution changed; repair managed plugins before upgrading.');
+        }
+      } else throw Error('Unsupported existing distribution receipt.');
+    }
+    if (!alreadyInstalled) {
       // Parse before writes, so malformed user metadata cannot be overwritten.
       const before = fs.existsSync(packageFile) ? read(packageFile) : { name: 'dsh-profile-desktop', private: true, dependencies: {}, dsh: { profile: { bundles: ['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app'] } } };
       if (before.dependencies && (typeof before.dependencies !== 'object' || Array.isArray(before.dependencies))) throw Error('Invalid profile dependencies.');
@@ -157,13 +176,16 @@ try {
       try {
         // Prepare every package before replacing any active module directory.
         const stage = path.join(backup.dir, 'stage');
+        const tar = path.join(process.env.SystemRoot, 'System32/tar.exe');
         for (const p of manifest.packages) {
           const archive = path.join(bundle, p.file);
-          const listing = spawnSync('tar.exe', ['-tf', archive], { encoding: 'utf8' });
+          const listing = spawnSync(tar, ['-tf', path.toNamespacedPath(archive)], { encoding: 'utf8', windowsHide: true });
           if (listing.status !== 0 || listing.stdout.trim().split(/\r?\n/).some(n => !n.startsWith('package/') || n.split('/').includes('..') || n.includes('\\'))) throw Error('Unsafe package archive.');
           const dest = path.join(stage, p.name);
           fs.mkdirSync(dest, { recursive: true });
-          const extract = spawnSync('tar.exe', ['-xf', archive, '-C', dest, '--strip-components', '1'], { encoding: 'utf8' });
+          // Windows tar's -C rejects long Unicode paths. CreateProcess accepts
+          // an extended-length cwd, and archive members then stay relative.
+          const extract = spawnSync(tar, ['-xf', path.toNamespacedPath(archive), '--strip-components', '1'], { cwd: path.toNamespacedPath(dest), encoding: 'utf8', windowsHide: true });
           if (extract.status !== 0) throw Error(`Cannot extract ${p.name}`);
           const meta = read(path.join(dest, 'package.json'));
           if (meta.name !== p.name || meta.version !== p.version) throw Error('Archive identity mismatch.');
@@ -193,7 +215,8 @@ try {
         write(packageFile, after);
         // Same official locked, atomic API as the accepted Merge-Compatibility.mjs.
         const grants = [];
-        for (const [key, versions] of Object.entries(manifest.compatibility)) for (const version of versions) {
+        for (const key of expectedGrants) {
+          const version = manifest.runtimeVersion;
           if (!compatibility.exemptions[key]?.includes(version)) grants.push([key, version]);
           await official.setProfileVersionExemption(profile, key, version, true, true);
         }
@@ -214,6 +237,7 @@ try {
       console.log(JSON.stringify({ status: 'ALREADY_ROLLED_BACK' }));
     } else {
       const receipt = read(receiptFile);
+      if (receipt.releaseTag !== manifest.releaseTag || receipt.status !== 'INSTALLED') throw Error('Use the installer matching the current distribution receipt.');
       if (backupArg && backupArg !== receipt.backupId) throw Error('Backup ID is not the current installation.');
       if (!/^[a-zA-Z0-9-]+$/.test(receipt.backupId)) throw Error('Invalid backup ID.');
       const original = path.join(store, 'backups', receipt.backupId);
@@ -241,6 +265,7 @@ try {
           } else copy(path.join(original, 'before/node_modules', p.name), dest);
         }
         fs.renameSync(receiptFile, path.join(latest.dir, 'rolled-back-receipt.json'));
+        copy(path.join(original, 'prior-receipt.json'), receiptFile);
         write(path.join(latest.dir, 'operation.json'), { kind: 'rollback', id: latest.id, status: 'ROLLED_BACK', original: receipt.backupId });
         console.log(JSON.stringify({ status: 'ROLLED_BACK', backupId: latest.id, realProviderCalls: 0 }));
       } catch (error) { restoreExact(latest); throw error; }
