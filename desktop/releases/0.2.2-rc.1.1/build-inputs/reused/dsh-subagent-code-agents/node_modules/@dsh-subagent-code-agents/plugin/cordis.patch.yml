@@ -1,0 +1,19 @@
+# DSH 0.2.0-rc.2 already supplies Codex and Claude Code one-shot providers,
+# delegation tools, background Jobs, and native/PTC presentation in its full
+# presets. Keep this bundle supplemental: register the skill and the dormant
+# Grok Build provider only. Installation adds no model-facing tools.
+#
+# For product-session resume/steer, strict roles, or plugin-owned run receipts,
+# explicitly mount dsh-subagent-code-agents/tool in the desired agent preset
+# and add the required coding-agent/codex or coding-agent/claude-code provider
+# row. ACP instances likewise require explicit provider rows. The exported
+# auto-tool policy remains available for existing opt-in compositions.
+- insert:
+    - id: coding-agent-skill
+      name: 'dsh-subagent-code-agents/skill'
+      config: {}
+    - id: coding-agent-grok-build
+      name: 'dsh-subagent-code-agents'
+      config:
+        channel: grok-build
+        providerName: coding-agent/grok-build

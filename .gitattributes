@@ -17,3 +17,5 @@ sources/dsh-desktop-compat/README.md -text
 sources/dsh-desktop-compat/** -text
 desktop/releases/0.2.1-rc.3.1/build-inputs/** -text
 desktop/releases/0.2.1-rc.5.1/build-inputs/** -text
+desktop/releases/0.2.2-rc.1.1/build-inputs/** -text -whitespace
+sources/dsh-desktop-0.2.2-rc.1.1/** -text

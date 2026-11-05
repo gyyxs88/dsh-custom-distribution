@@ -1,0 +1,45 @@
+{
+  "status": "FROZEN_CANDIDATE",
+  "frozen": true,
+  "upstreamStatus": "CANDIDATE_READY",
+  "artifactInventorySha256": "39d93feab0a85c048cf3d01863cabcf50892d1f46bb8c953753a69e9642635a5",
+  "runtimeVersion": "0.2.2-rc.1",
+  "packages": [
+    {
+      "name": "@omdsh-dev/dsh-genui",
+      "version": "0.9.1-dsh021.3",
+      "sha256": "c13187a35da2519b89fbe69b4ff4cd7e285c257785114257145aee21003a2ad7",
+      "reusedOriginal": true
+    },
+    {
+      "name": "dsh-desktop-compat",
+      "version": "0.2.2-rc.1.1",
+      "sha256": "fe8cd7a213991721920bd5aae6189b1f589fc065b1af225d3a8738fee5b4f970",
+      "reusedOriginal": false
+    },
+    {
+      "name": "dsh-remote-control",
+      "version": "0.3.4-dsh022.1",
+      "sha256": "52d8fc2919f844c139dfbefbf8a7b1ed065f339e79b5243b55b91166f7936224",
+      "reusedOriginal": false
+    },
+    {
+      "name": "dsh-session-control",
+      "version": "0.8.6-dsh022.1",
+      "sha256": "e176ff7163ce2b54038e45a34cfe166cdcaae614eeabe2797e5cf9d4924af13e",
+      "reusedOriginal": false
+    },
+    {
+      "name": "dsh-subagent-code-agents",
+      "version": "0.2.4-dsh021.1",
+      "sha256": "8f2923e4d76a9b6c8af58b75e912f0aa12a0f4933da778d996816c731e33632b",
+      "reusedOriginal": true
+    },
+    {
+      "name": "dsh-tps-correction",
+      "version": "0.2.2-rc.1.1",
+      "sha256": "6b3e3ba90dccc4416fe1c2f4134317ed188d72ed46e191a35b3224e6534e882e",
+      "reusedOriginal": false
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "name": "dsh-subagent-code-agents",
+  "version": "0.2.4-dsh021.1",
+  "description": "Multi-channel coding-agent subagent plugin for DeepSeek Harness: Codex, Claude Code, Grok Build and configurable ACP agents",
+  "type": "module",
+  "main": "packages/plugin/lib/index.js",
+  "types": "packages/plugin/lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./packages/plugin/lib/index.d.ts",
+      "default": "./packages/plugin/lib/index.js"
+    },
+    "./tool": {
+      "types": "./packages/plugin/lib/tool.d.ts",
+      "default": "./packages/plugin/lib/tool.js"
+    },
+    "./auto-tool": {
+      "types": "./packages/plugin/lib/auto-tool.d.ts",
+      "default": "./packages/plugin/lib/auto-tool.js"
+    },
+    "./skill": {
+      "types": "./packages/plugin/lib/skill.d.ts",
+      "default": "./packages/plugin/lib/skill.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./packages/plugin/cordis.patch.yml"
+    }
+  },
+  "workspaces": [
+    "packages/core",
+    "packages/channel-codex",
+    "packages/channel-claude-code",
+    "packages/channel-grok-build",
+    "packages/channel-acp",
+    "packages/plugin"
+  ],
+  "scripts": {
+    "test": "node --test --experimental-test-isolation=none packages/*/test/*.test.js",
+    "test:core": "node --test --experimental-test-isolation=none packages/core/test/*.test.js",
+    "test:codex": "node --test --experimental-test-isolation=none packages/channel-codex/test/*.test.js",
+    "test:claude": "node --test --experimental-test-isolation=none packages/channel-claude-code/test/*.test.js",
+    "test:grok": "node --test --experimental-test-isolation=none packages/channel-grok-build/test/*.test.js",
+    "test:acp": "node --test --experimental-test-isolation=none packages/channel-acp/test/*.test.js",
+    "test:plugin": "node --test --experimental-test-isolation=none packages/plugin/test/*.test.js",
+    "check": "node scripts/check.js",
+    "pack:check": "node scripts/pack-check.js"
+  },
+  "engines": {
+    "node": ">=24",
+    "dsh": "0.2.0-rc.2 || 0.2.1-rc.2"
+  },
+  "files": [
+    "packages/plugin/lib",
+    "packages/plugin/skills",
+    "packages/plugin/cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "@deepseek-ai/schemastery": "3.18.2",
+    "@dsh-subagent-code-agents/channel-acp": "0.1.6",
+    "@dsh-subagent-code-agents/channel-claude-code": "0.1.6",
+    "@dsh-subagent-code-agents/channel-codex": "0.1.9",
+    "@dsh-subagent-code-agents/channel-grok-build": "0.1.6",
+    "@dsh-subagent-code-agents/core": "0.1.5",
+    "@dsh-subagent-code-agents/plugin": "0.2.4"
+  },
+  "bundleDependencies": [
+    "@dsh-subagent-code-agents/core",
+    "@dsh-subagent-code-agents/channel-codex",
+    "@dsh-subagent-code-agents/channel-claude-code",
+    "@dsh-subagent-code-agents/channel-grok-build",
+    "@dsh-subagent-code-agents/channel-acp",
+    "@dsh-subagent-code-agents/plugin"
+  ],
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "~4.0.4 || ~4.0.5",
+    "@deepseek-ai/dsh-jobs": "0.2.0-rc.2 || 0.2.1-rc.2",
+    "@deepseek-ai/dsh-llm": "0.2.0-rc.2 || 0.2.1-rc.2",
+    "@deepseek-ai/dsh-permission-presets": "0.2.0-rc.2 || 0.2.1-rc.2",
+    "@deepseek-ai/dsh-skill": "0.2.0-rc.2 || 0.2.1-rc.2",
+    "@deepseek-ai/dsh-subagent": "0.2.0-rc.2 || 0.2.1-rc.2",
+    "@deepseek-ai/dsh-system-prompt": "0.2.0-rc.2 || 0.2.1-rc.2",
+    "@deepseek-ai/dsh-tools": "0.2.0-rc.2 || 0.2.1-rc.2"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "4.0.4",
+    "@deepseek-ai/dsh-jobs": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-llm": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-permission-presets": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-session": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-skill": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-subagent": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-system-prompt": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-tools": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-util-values": "0.2.0-rc.2"
+  },
+  "license": "MIT",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "cordis",
+    "subagent",
+    "codex",
+    "claude-code",
+    "grok-build",
+    "agent-client-protocol"
+  ]
+}

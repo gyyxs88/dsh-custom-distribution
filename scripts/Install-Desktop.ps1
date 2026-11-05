@@ -8,8 +8,19 @@ param(
     [string]$BackupId
 )
 $ErrorActionPreference = 'Stop'
+# BEGIN DESKTOP RELEASE IDENTITY
 $releaseTag = 'desktop-v0.2.1-rc.5.1'
+$runtimeVersion = '0.2.1-rc.5'
 $assetName = 'dsh-desktop-v0.2.1-rc.5.1-win-x64.zip'
+$manifestSha256 = '9eca18f33a51176f8a6c242f714a8d1ebe1c5921b7c3bbb5ea20e4b642105578'
+$officialIdentity = @{
+    url = 'https://download.deepseek.com/dsh-desk/bin/win-x64/deepseek-harness-0.2.1-rc.5-win-x64.exe'
+    size = 289408544
+    sha512Base64 = 'gu2dH+aTr678c0P8DGAH/h4B1GaWfQIjpsPrLjl/ukLrQIh6DLVq/MhX4FZvJ8o1GCMocOhix6XbLa6KmtjXXg=='
+    exeSha256 = '7ae939b5a82b220fbd8ad04dfbafaaedb5a49ab43dc884a5db6381f678dd0cc4'
+    appAsarSha256 = 'e1b6f25fa937da98086c3e77af77aa14791105963c4d337a1c42179d232c6915'
+}
+# END DESKTOP RELEASE IDENTITY
 $releaseBase = "https://github.com/gyyxs88/dsh-custom-distribution/releases/download/$releaseTag"
 # The bundle builder substitutes the digest in the separately downloadable bootstrap.
 $bundleSha256 = '__DESKTOP_BUNDLE_SHA256__'
@@ -107,26 +118,25 @@ try {
         }
     }
     $BundlePath = (Resolve-Path -LiteralPath $BundlePath).Path
-    $manifest = Get-Content -LiteralPath (Join-Path $BundlePath 'manifest.json') -Raw -Encoding UTF8 | ConvertFrom-Json
-    if ($manifest.schemaVersion -ne 1 -or $manifest.releaseTag -ne $releaseTag -or $manifest.runtimeVersion -ne '0.2.1-rc.5') { throw 'Unexpected Desktop release manifest.' }
+    $manifestFile = Join-Path $BundlePath 'manifest.json'
+    if ((Get-FileHash -LiteralPath $manifestFile -Algorithm SHA256).Hash -ne $manifestSha256) { throw 'Desktop release manifest checksum mismatch.' }
+    $manifest = Get-Content -LiteralPath $manifestFile -Raw -Encoding UTF8 | ConvertFrom-Json
+    if ($manifest.schemaVersion -ne 1 -or $manifest.releaseTag -ne $releaseTag -or $manifest.runtimeVersion -ne $runtimeVersion) { throw 'Unexpected Desktop release manifest.' }
     $official = $manifest.official.windowsX64
     # Pin the official installer and program independently of downloaded metadata.
-    if ($official.url -ne 'https://download.deepseek.com/dsh-desk/bin/win-x64/deepseek-harness-0.2.1-rc.5-win-x64.exe' -or
-        $official.size -ne 289408544 -or
-        $official.sha512Base64 -cne 'gu2dH+aTr678c0P8DGAH/h4B1GaWfQIjpsPrLjl/ukLrQIh6DLVq/MhX4FZvJ8o1GCMocOhix6XbLa6KmtjXXg==' -or
-        $official.exeSha256 -ne '7ae939b5a82b220fbd8ad04dfbafaaedb5a49ab43dc884a5db6381f678dd0cc4' -or
-        $official.appAsarSha256 -ne 'e1b6f25fa937da98086c3e77af77aa14791105963c4d337a1c42179d232c6915') {
-        throw 'Unexpected official rc.5 download or program identity.'
+    if ($official.url -cne $officialIdentity.url -or $official.size -ne $officialIdentity.size -or
+        $official.sha512Base64 -cne $officialIdentity.sha512Base64 -or
+        $official.exeSha256 -cne $officialIdentity.exeSha256 -or $official.appAsarSha256 -cne $officialIdentity.appAsarSha256) {
+        throw 'Unexpected official download or program identity.'
     }
     $program = Find-Desktop $official
     if (-not $program) {
-        if ($Action -ne 'Install') { throw 'Install official Desktop 0.2.1-rc.5 first, or specify -DesktopPath.' }
+        if ($Action -ne 'Install') { throw "Install official Desktop $runtimeVersion first, or specify -DesktopPath." }
         $cache = Join-Path $env:LOCALAPPDATA ('DSH-Desktop-Install\' + [guid]::NewGuid().ToString('N'))
         Protect-DesktopDirectory $cache
-        $installer = Join-Path $cache 'deepseek-harness-0.2.1-rc.5-win-x64.exe'
-        if ($official.url -ne 'https://download.deepseek.com/dsh-desk/bin/win-x64/deepseek-harness-0.2.1-rc.5-win-x64.exe') { throw 'Unexpected official download URL.' }
+        $installer = Join-Path $cache ([IO.Path]::GetFileName($officialIdentity.url))
         [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
-        Write-Host 'Installing official Desktop rc.5 for the current user. Finish the wizard and leave its launch checkbox unchecked.'
+        Write-Host "Installing official Desktop $runtimeVersion for the current user. Finish the wizard and leave its launch checkbox unchecked."
         Invoke-WebRequest -UseBasicParsing -Uri $official.url -OutFile $installer
         if ((Get-Item -LiteralPath $installer).Length -ne $official.size) { throw 'Official installer size mismatch.' }
         $sha512 = [Security.Cryptography.SHA512]::Create()
@@ -139,7 +149,7 @@ try {
         $setup = Start-Process -FilePath $installer -PassThru -Wait
         if ($setup.ExitCode -ne 0) { throw 'Official installer did not finish successfully. Re-run after completing official installation.' }
         $program = Find-Desktop $official
-        if (-not $program) { throw 'Official rc.5 was not found. Re-run with -DesktopPath pointing to the directory selected in the wizard.' }
+        if (-not $program) { throw "Official Desktop $runtimeVersion was not found. Re-run with -DesktopPath pointing to the directory selected in the wizard." }
     }
     Assert-DesktopStopped $program
     $saved = @{}
@@ -160,7 +170,13 @@ try {
             else { [Environment]::SetEnvironmentVariable($name, $saved[$name], 'Process') }
         }
     }
-    Write-Host 'Done. You may now open DeepSeek Harness from its official shortcut.'
+    if ($Action -eq 'Rollback') {
+        Write-Host 'Plugin rollback complete. Preserve the latest complete home, attachments, pending and configuration, then review data-format compatibility and restore the matching official program. New history is not automatically merged into an old backup. See the installation instructions before opening Desktop.'
+    } elseif ($manifest.preStartGate) {
+        Write-Host 'Done. Existing histories require a complete cold backup and offline Schedule migration before the first Desktop start. See the bundled installation instructions. This installer does not start Desktop or migrate histories.'
+    } else {
+        Write-Host 'Done. You may now open DeepSeek Harness from its official shortcut.'
+    }
 } catch {
     Write-Error $_
     exit 1

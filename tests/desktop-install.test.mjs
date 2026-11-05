@@ -7,14 +7,18 @@ import test from 'node:test';
 import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
 import { spawn } from 'node:child_process';
+import { renderPowerShell, renderInstaller } from '../desktop/release-contract.mjs';
 
 const repo = fileURLToPath(new URL('../', import.meta.url));
 const app = process.env.DSH_INSTALL_TEST_APP;
 const bundle = process.env.DSH_INSTALL_TEST_BUNDLE;
 const base = process.env.DSH_INSTALL_TEST_ROOT;
 const enabled = !!(app && bundle && base);
-const runtimeVersion = '0.2.1-rc.5';
-const releaseTag = 'desktop-v0.2.1-rc.5.1';
+const accepted = bundle ? JSON.parse(fs.readFileSync(path.join(bundle, 'manifest.json'))) : null;
+const runtimeVersion = accepted?.runtimeVersion ?? '0.2.1-rc.5';
+const releaseTag = accepted?.releaseTag ?? 'desktop-v0.2.1-rc.5.1';
+const assetName = `dsh-${releaseTag}-win-x64.zip`;
+const managedName = accepted?.packages[0].name ?? 'dsh-desktop-compat';
 const digest = file => createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 const write = (file, text) => { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, text); };
 const json = file => JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -26,12 +30,12 @@ function cleanEnv(extra = {}) {
 test('Built standalone bootstrap downloads a pinned ZIP as a standard user', { skip: !enabled }, async () => {
   const root = path.join(base, 'desktop-install-bootstrap-' + Date.now() + '-下载 空格 中文');
   fs.mkdirSync(root, { recursive: true });
-  const zip = path.join(path.dirname(bundle), 'dsh-desktop-v0.2.1-rc.5.1-win-x64.zip');
+  const zip = path.join(path.dirname(bundle), assetName);
   const bytes = fs.readFileSync(zip);
   let downloads = 0;
   let corruptDownload = false;
   const server = createServer((request, response) => {
-    assert.equal(request.url, '/dsh-desktop-v0.2.1-rc.5.1-win-x64.zip');
+    assert.equal(request.url, '/' + assetName);
     downloads++;
     response.writeHead(200, { 'content-length': bytes.length, 'content-type': 'application/zip' });
     const downloaded = Buffer.from(bytes);
@@ -80,7 +84,7 @@ test('Installer guards and caller environment restoration', { skip: !enabled }, 
     const command = `$env:DSH_HOME='CALLER_SENTINEL'; [Environment]::SetEnvironmentVariable('NODE_OPTIONS',[NullString]::Value,'Process'); [Environment]::SetEnvironmentVariable('NODE_PATH',[NullString]::Value,'Process'); [Environment]::SetEnvironmentVariable('ELECTRON_RUN_AS_NODE',[NullString]::Value,'Process'); & ${quote(installer)} -Action Verify -DesktopPath ${quote(app)} -DshHome ${quote(home)}; if($env:DSH_HOME -ne 'CALLER_SENTINEL' -or (Test-Path Env:NODE_OPTIONS) -or (Test-Path Env:NODE_PATH) -or (Test-Path Env:ELECTRON_RUN_AS_NODE)) {throw 'Environment changed'}; Write-Output 'ENV_RESTORED'`;
     assert.match(run(shell, ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', command]).stdout, /ENV_RESTORED/);
   }
-  const marker = path.join(profile, 'node_modules/dsh-desktop-compat/installer-test-edit.txt');
+  const marker = path.join(profile, 'node_modules', managedName, 'installer-test-edit.txt');
   write(marker, 'synthetic later user change');
   const conflict = invoke('powershell.exe', 'Rollback', 1);
   assert.match(conflict.stdout + conflict.stderr, /latest state saved/);
@@ -88,7 +92,7 @@ test('Installer guards and caller environment restoration', { skip: !enabled }, 
   const backupRoot = path.join(profile, '.desktop-distribution/backups');
   const backups = fs.readdirSync(backupRoot);
   assert.ok(backups.length >= 2);
-  assert.ok(backups.some(id => fs.existsSync(path.join(backupRoot, id, 'before/node_modules/dsh-desktop-compat/installer-test-edit.txt'))));
+  assert.ok(backups.some(id => fs.existsSync(path.join(backupRoot, id, 'before/node_modules', managedName, 'installer-test-edit.txt'))));
   assert.ok(!fs.existsSync(path.join(profile, '.desktop-distribution/operation.lock')));
   // Corrupt metadata cannot be replaced. These are synthetic files only.
   const invalid = path.join(root, 'invalid-home'), invalidProfile = path.join(invalid, 'profiles/desktop');
@@ -113,7 +117,7 @@ function run(file, args, env = cleanEnv(), expected = 0) {
   return result;
 }
 run.sequence = 0;
-test('Pinned rc.5 metadata, four exact grants and failed-install restoration', { skip: !enabled }, () => {
+test('Pinned release metadata, exact grants and failed-install restoration', { skip: !enabled }, () => {
   const root = path.join(base, 'desktop-install-rejection-' + Date.now());
   for (const mode of ['runtime', 'official-size', 'official-digest-case', 'missing-remote', 'wildcard-grant', 'archive-checksum', 'archive-identity']) {
     const fixture = path.join(root, mode), altered = path.join(fixture, 'bundle');
@@ -131,26 +135,35 @@ test('Pinned rc.5 metadata, four exact grants and failed-install restoration', {
     if (mode === 'wildcard-grant') manifest.compatibility['dsh-remote-control@0.3.3-dsh021.3'] = ['*'];
     if (mode === 'archive-checksum') fs.appendFileSync(path.join(altered, manifest.packages[0].file), 'synthetic corruption');
     if (mode === 'archive-identity') {
-      const pkg = manifest.packages.find(p => p.name === 'dsh-desktop-compat');
-      write(path.join(fixture, 'input/package/package.json'), '{"name":"dsh-desktop-compat","version":"0.0.0"}');
+      const pkg = manifest.packages[0];
+      write(path.join(fixture, 'input/package/package.json'), JSON.stringify({ name: pkg.name, version: '0.0.0-wrong-identity' }));
       const tar = spawnSync('tar.exe', ['-czf', path.join(altered, pkg.file), '-C', path.join(fixture, 'input'), 'package'], { encoding: 'utf8' });
       assert.equal(tar.status, 0, tar.stderr);
       pkg.sha256 = digest(path.join(altered, pkg.file));
     }
-    write(manifestFile, JSON.stringify(manifest));
+    if (mode !== 'archive-checksum') write(manifestFile, JSON.stringify(manifest));
+    if (mode === 'archive-identity') {
+      // Deliberately seal a malformed synthetic archive to exercise the later
+      // extraction/identity failure and restoration, after the metadata guard.
+      const pin = digest(manifestFile);
+      for (const [relative, render] of [['scripts/Install-Desktop.ps1', s => renderPowerShell(s, manifest, pin)], ['desktop/installer.mjs', s => renderInstaller(s, pin)]]) {
+        const file = path.join(altered, relative);
+        write(file, render(fs.readFileSync(file, 'utf8')));
+      }
+    }
     const failure = run('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(altered, 'scripts/Install-Desktop.ps1'), '-BundlePath', altered, '-DesktopPath', app, '-DshHome', home], cleanEnv(), 1);
-    const expected = { runtime: /Unexpected Desktop release manifest/, 'official-size': /Unexpected official rc.5/, 'official-digest-case': /Unexpected official rc.5/, 'missing-remote': /Unexpected exact compatibility/, 'wildcard-grant': /Unexpected exact compatibility/, 'archive-checksum': /Package checksum mismatch/, 'archive-identity': /Archive identity mismatch/ }[mode];
+    const expected = { 'archive-checksum': /Package checksum mismatch/, 'archive-identity': /Archive identity mismatch/ }[mode] ?? /manifest checksum mismatch/;
     assert.match(failure.stdout + failure.stderr, expected);
     assert.equal(fs.readFileSync(path.join(profile, 'package.json'), 'utf8'), meta);
     assert.equal(fs.readFileSync(path.join(profile, 'compatibility.json'), 'utf8'), grants);
-    assert.ok(!fs.existsSync(path.join(profile, 'node_modules/dsh-desktop-compat')));
+    assert.ok(!fs.existsSync(path.join(profile, 'node_modules', managedName)));
     assert.ok(!fs.existsSync(path.join(profile, '.desktop-distribution/operation.lock')));
     if (mode === 'archive-identity') {
       const backups = path.join(profile, '.desktop-distribution/backups');
       assert.ok(fs.readdirSync(backups).some(id => json(path.join(backups, id, 'operation.json')).status === 'RESTORED_AFTER_FAILURE'));
     }
   }
-  write(path.join(base, 'rejection-results.json'), JSON.stringify({ status: 'PASSED', exactRuntime: true, pinnedOfficialMetadata: true, caseSensitiveSha512: true, fourExactGrants: true, packageChecksum: true, restoredAfterStagingFailure: true, realProviderCalls: 0 }, null, 2));
+  write(path.join(base, 'rejection-results.json'), JSON.stringify({ status: 'PASSED', exactRuntime: true, pinnedManifestAndOfficialMetadata: true, exactGrantsPinned: true, packageChecksum: true, restoredAfterStagingFailure: true, realProviderCalls: 0 }, null, 2));
 });
 
 test('Existing rc.3.1 distribution upgrades and restores old bytes and receipt', { skip: !enabled }, () => {
@@ -180,7 +193,7 @@ test('Existing rc.3.1 distribution upgrades and restores old bytes and receipt',
     write(path.join(store, 'current.json'), JSON.stringify(oldReceipt));
     const invoke = (action, expected = 0) => run(shell, ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(bundle, 'scripts/Install-Desktop.ps1'), '-Action', action, '-DesktopPath', app, '-DshHome', home], cleanEnv(), expected);
     // Changed old managed modules cannot silently be replaced during upgrade.
-    const marker = path.join(profile, 'node_modules/dsh-desktop-compat/synthetic-change.txt');
+    const marker = path.join(profile, 'node_modules', managedName, 'synthetic-change.txt');
     write(marker, 'changed after old install');
     const changed = invoke('Install', 1);
     assert.match(changed.stdout + changed.stderr, /Previous distribution changed/);
@@ -212,7 +225,7 @@ for (const shell of ['powershell.exe', 'pwsh.exe']) {
     fs.mkdirSync(root, { recursive: true });
     // Run downloaded/built contents under a fresh path with Unicode and spaces.
     const consume = path.join(root, '解压 发行包');
-    run(shell, ['-NoProfile', '-Command', `Expand-Archive -LiteralPath '${path.join(path.dirname(bundle), 'dsh-desktop-v0.2.1-rc.5.1-win-x64.zip').replaceAll("'", "''")}' -DestinationPath '${consume.replaceAll("'", "''")}'`]);
+    run(shell, ['-NoProfile', '-Command', `Expand-Archive -LiteralPath '${path.join(path.dirname(bundle), assetName).replaceAll("'", "''")}' -DestinationPath '${consume.replaceAll("'", "''")}'`]);
     const installer = path.join(consume, 'scripts/Install-Desktop.ps1');
     const invoke = (home, action, expected = 0, extra = []) => run(shell, ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', installer, '-Action', action, '-DesktopPath', app, '-DshHome', home, ...extra], cleanEnv(), expected);
     const identity = run(shell, ['-NoProfile', '-Command', '[Security.Principal.WindowsPrincipal]::new([Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)']);
@@ -221,19 +234,21 @@ for (const shell of ['powershell.exe', 'pwsh.exe']) {
       const home = path.join(root, `${kind} 用户`), profile = path.join(home, 'profiles/desktop');
       let custom, link, target;
       const preserved = [];
+      const initialGrants = { 'user-plugin@1.0.0': ['0.2.1-rc.2'], 'dsh-session-control@0.8.5-dsh021.2': ['0.2.1-rc.2', '0.2.1-rc.3'], 'dsh-remote-control@0.3.3-dsh021.3': ['0.2.1-rc.3'] };
       if (kind !== 'empty') {
-        custom = { name: 'synthetic', private: true, dependencies: { 'user-plugin': 'file:./custom', 'dsh-session-control': 'file:./old-session' }, dsh: { profile: { bundles: ['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app', 'user-plugin', 'dsh-session-control'], custom: 'keep' } }, userField: { keep: true } };
+        custom = { name: 'synthetic', private: true, dependencies: { 'user-plugin': 'file:./custom', [managedName]: 'file:./old-plugin' }, dsh: { profile: { bundles: ['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app', 'user-plugin', managedName], custom: 'keep' } }, userField: { keep: true } };
         write(path.join(profile, 'package.json'), JSON.stringify(custom));
         for (const [relative, text] of [
           ['cordis.yml', '[]\n# synthetic custom root\n'],
           ['cordis.patch.yml', '- id: llm-pi-ai\n  config:\n    providers:\n      offline-fixture:\n        api: openai-completions\n        baseURL: http://127.0.0.1:1/v1\n        apiKeyEnv: UNUSED_FIXTURE_KEY\n        models:\n          - id: fixture-model\n            input: [text]\n- id: agent-default-model\n  config:\n    provider: offline-fixture\n    model: fixture-model\n'],
-          ['compatibility.json', JSON.stringify({ 'user-plugin@1.0.0': ['0.2.1-rc.2'], 'dsh-session-control@0.8.5-dsh021.2': ['0.2.1-rc.2', '0.2.1-rc.3'], 'dsh-remote-control@0.3.3-dsh021.3': ['0.2.1-rc.3'] })],
+          ['compatibility.json', JSON.stringify(initialGrants)],
         ]) write(path.join(profile, relative), text);
         for (const [relative, text] of [['sessions/synthetic.jsonl', '{"synthetic":true}\n'], ['pending/synthetic.json', '{"synthetic":true}\n'], ['.credentials.yaml', 'fixture: NOT_A_REAL_CREDENTIAL\n']]) write(path.join(home, relative), text);
-        target = path.join(profile, 'node_modules/.pnpm/synthetic-session/node_modules/dsh-session-control');
-        write(path.join(target, 'package.json'), '{"name":"dsh-session-control","version":"0.0.0"}');
+        target = path.join(profile, 'node_modules/.pnpm/synthetic-plugin/node_modules', managedName);
+        write(path.join(target, 'package.json'), JSON.stringify({ name: managedName, version: '0.0.0' }));
         write(path.join(target, 'marker.txt'), 'original pnpm target: must stay unchanged');
-        link = path.join(profile, 'node_modules/dsh-session-control');
+        link = path.join(profile, 'node_modules', managedName);
+        fs.mkdirSync(path.dirname(link), { recursive: true });
         fs.symlinkSync(target, link, 'junction');
         for (const file of [path.join(profile, 'cordis.yml'), path.join(profile, 'cordis.patch.yml'), path.join(home, '.credentials.yaml'), path.join(home, 'sessions/synthetic.jsonl'), path.join(home, 'pending/synthetic.json'), path.join(target, 'marker.txt')]) preserved.push([file, digest(file)]);
       }
@@ -245,8 +260,7 @@ for (const shell of ['powershell.exe', 'pwsh.exe']) {
       for (const key of Object.keys(json(path.join(bundle, 'manifest.json')).compatibility)) assert.ok(granted[key]?.includes(runtimeVersion));
       if (!custom) for (const versions of Object.values(granted)) assert.deepEqual(versions, [runtimeVersion]);
       if (custom) {
-        assert.deepEqual(granted['dsh-session-control@0.8.5-dsh021.2'], ['0.2.1-rc.2', '0.2.1-rc.3', runtimeVersion]);
-        assert.deepEqual(granted['dsh-remote-control@0.3.3-dsh021.3'], ['0.2.1-rc.3', runtimeVersion]);
+        for (const [key, versions] of Object.entries(initialGrants)) assert.deepEqual(granted[key], [...new Set([...versions, ...(Object.hasOwn(accepted.compatibility, key) ? [runtimeVersion] : [])])]);
       }
       const repeat = invoke(home, 'Install');
       assert.match(repeat.stdout, /ALREADY_INSTALLED/);
@@ -255,7 +269,7 @@ for (const shell of ['powershell.exe', 'pwsh.exe']) {
       if (kind === 'empty') {
         assert.ok(!fs.existsSync(path.join(home, '.credentials.yaml')));
         const hostEvidence = path.join(root, 'empty-official-host.json');
-        const host = run(path.join(app, 'DeepSeek Harness.exe'), [path.join(repo, 'tests/desktop-install-host.mjs'), app, home, hostEvidence], cleanEnv({ ELECTRON_RUN_AS_NODE: '1', DSH_HOME: home, DSH_TELEMETRY_DISABLED: '1' }));
+        const host = run(path.join(app, 'DeepSeek Harness.exe'), [path.join(repo, 'tests/desktop-install-host.mjs'), app, home, hostEvidence, path.join(bundle, 'manifest.json')], cleanEnv({ ELECTRON_RUN_AS_NODE: '1', DSH_HOME: home, DSH_TELEMETRY_DISABLED: '1' }));
         write(path.join(root, 'empty-host.log'), host.stdout + host.stderr);
         assert.equal(json(hostEvidence).status, 'PASSED');
       }
@@ -267,7 +281,7 @@ for (const shell of ['powershell.exe', 'pwsh.exe']) {
       write(packageFile, JSON.stringify(later));
       // New unrelated compatibility record must survive rollback as well.
       const comp = json(path.join(profile, 'compatibility.json'));
-      comp['later-plugin@1.0.0'] = ['0.2.1-rc.5'];
+      comp['later-plugin@1.0.0'] = [runtimeVersion];
       write(path.join(profile, 'compatibility.json'), JSON.stringify(comp));
       invoke(home, 'Rollback');
       const rolled = json(packageFile);
@@ -281,7 +295,7 @@ for (const shell of ['powershell.exe', 'pwsh.exe']) {
         for (const [file, hash] of preserved) assert.equal(digest(file), hash);
       }
       const rolledComp = json(path.join(profile, 'compatibility.json'));
-      assert.deepEqual(rolledComp['later-plugin@1.0.0'], ['0.2.1-rc.5']);
+      assert.deepEqual(rolledComp['later-plugin@1.0.0'], [runtimeVersion]);
       if (custom) {
         assert.deepEqual(rolledComp['dsh-session-control@0.8.5-dsh021.2'], ['0.2.1-rc.2', '0.2.1-rc.3']);
         assert.deepEqual(rolledComp['dsh-remote-control@0.3.3-dsh021.3'], ['0.2.1-rc.3']);

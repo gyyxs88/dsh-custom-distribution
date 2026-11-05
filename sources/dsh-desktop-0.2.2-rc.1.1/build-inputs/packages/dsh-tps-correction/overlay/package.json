@@ -1,0 +1,32 @@
+{
+  "name": "@deepseek-ai/dsh-client-ui-trajectory",
+  "description": "DSH custom TPS supplement (generated overlay, not an unmodified official package)",
+  "version": "0.2.2-rc.1",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json"
+  },
+  "license": "MIT",
+  "dsh": {
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-api-session-controller",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-renderer",
+        "@deepseek-ai/dsh-client-ui-session"
+      ],
+      "platform": "web"
+    }
+  },
+  "dshLocalPatch": {
+    "id": "tps-receipt-021.1",
+    "baseVersion": "0.2.2-rc.1",
+    "sourceSha256": "83f6be8c1a721f75cbd8b4cebb5adbcac7f6bc810b2dcd304f8be7caa4c22a92",
+    "generated": true,
+    "canonicalIdentityReason": "Preserves the static client module ID and dependency references; exactly one active source."
+  }
+}

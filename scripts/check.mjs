@@ -30,6 +30,13 @@ const frozenPublicUpstreamDocs = new Set([
   "desktop/releases/0.2.1-rc.3.1/build-inputs/dsh-remote-control/docs/install-and-development.md",
   "desktop/releases/0.2.1-rc.3.1/build-inputs/dsh-remote-control/docs/stage-b-acceptance.md",
   "desktop/releases/0.2.1-rc.3.1/build-inputs/dsh-remote-control/docs/stage-c-acceptance.md",
+  "desktop/releases/0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/docs/install-and-development.md",
+  "desktop/releases/0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/docs/stage-b-acceptance.md",
+  "desktop/releases/0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/docs/stage-c-acceptance.md",
+  "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/docs/install-and-development.md",
+  "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/docs/stage-b-acceptance.md",
+  "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/docs/stage-c-acceptance.md",
+  "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/README.md",
 ]);
 
 for (const file of files) {

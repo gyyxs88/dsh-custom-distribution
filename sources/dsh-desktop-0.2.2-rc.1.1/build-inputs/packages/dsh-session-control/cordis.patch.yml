@@ -1,0 +1,15 @@
+# Only the current official danger-full-access preset admits management tools.
+- insert:
+    - id: schedule
+      name: '@deepseek-ai/dsh-schedule'
+
+    - id: authorized-session-control
+      name: 'dsh-session-control'
+      config:
+        stateDir: '.dsh-session-control'
+        sameWorkspaceOnly: false
+        maxPendingPerTarget: 3
+        maxPendingPerSource: 10
+        rateLimitPerMinute: 5
+        maxOperations: 500
+        approvalDelegationTimeoutMs: 900000

@@ -15,7 +15,11 @@ if (!process.versions.electron) throw Error('Use the official Desktop runtime.')
 const bundle = path.resolve(bundleArg), app = path.resolve(appArg), home = path.resolve(homeArg);
 const profile = path.join(home, 'profiles/desktop');
 const store = path.join(profile, '.desktop-distribution');
-const manifest = JSON.parse(fs.readFileSync(path.join(bundle, 'manifest.json'), 'utf8'));
+// Replaced by the bundle builder only after the selected release is frozen.
+const manifestSha256 = '9eca18f33a51176f8a6c242f714a8d1ebe1c5921b7c3bbb5ea20e4b642105578';
+const manifestBytes = fs.readFileSync(path.join(bundle, 'manifest.json'));
+if (createHash('sha256').update(manifestBytes).digest('hex') !== manifestSha256) throw Error('Desktop release manifest checksum mismatch.');
+const manifest = JSON.parse(manifestBytes);
 const hash = file => createHash('sha256').update((file.endsWith('.asar') ? originalFs : fs).readFileSync(file)).digest('hex');
 const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const read = file => JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, ''));
@@ -56,30 +60,20 @@ function privateDir(dir) {
   const acl = spawnSync('icacls.exe', [dir, '/inheritance:r', '/grant:r', `*${sid}:(OI)(CI)F`, '*S-1-5-18:(OI)(CI)F'], { encoding: 'utf8' });
   if (acl.status !== 0) throw Error('Cannot protect private backup.');
 }
-const packageName = /^(?:@[a-z0-9_.-]+\/)?[a-z0-9_.-]+$/;
-if (manifest.schemaVersion !== 1 || manifest.releaseTag !== 'desktop-v0.2.1-rc.5.1' || manifest.runtimeVersion !== '0.2.1-rc.5' || manifest.packages.length !== 6) throw Error('Unexpected Desktop release manifest.');
-const expectedVersions = {
-  '@omdsh-dev/dsh-genui': '0.9.1-dsh021.3',
-  'dsh-desktop-compat': '0.2.1-rc.5.1',
-  'dsh-remote-control': '0.3.3-dsh021.3',
-  'dsh-session-control': '0.8.5-dsh021.2',
-  'dsh-subagent-code-agents': '0.2.4-dsh021.1',
-  'dsh-tps-correction': '0.2.1-rc.5.1',
-};
-const expectedGrants = ['@omdsh-dev/dsh-genui', 'dsh-remote-control', 'dsh-session-control', 'dsh-subagent-code-agents'].map(name => `${name}@${expectedVersions[name]}`);
-// A manifest may retain the three previously verified rc.3 annotations. Only
-// this installation's exact runtime is granted; existing old records stay intact.
-if (!equal(Object.keys(manifest.compatibility).sort(), expectedGrants.sort()) || Object.entries(manifest.compatibility).some(([key, versions]) => !Array.isArray(versions) || !versions.includes(manifest.runtimeVersion) || new Set(versions).size !== versions.length || versions.some(v => v !== manifest.runtimeVersion && (v !== '0.2.1-rc.3' || key.startsWith('dsh-remote-control@'))))) throw Error('Unexpected exact compatibility grants.');
-if (new Set(manifest.packages.map(p => p.name)).size !== 6 || !equal([...manifest.bundles].sort(), manifest.packages.map(p => p.name).sort())) throw Error('Invalid bundle set.');
+// Names, versions, retirement decisions and exact grants are pinned together.
+// Do not infer new-runtime grants from a previous release's exceptions.
+const expectedGrants = Object.keys(manifest.compatibility);
+const retired = manifest.retiredPackages ?? [];
+const managedNames = [...manifest.packages.map(p => p.name), ...retired];
 for (const pkg of manifest.packages) {
-  if (!Object.hasOwn(expectedVersions, pkg.name) || pkg.version !== expectedVersions[pkg.name] || !packageName.test(pkg.name) || pkg.name.split('/').some(p => p === '.' || p === '..') || !/^packages\/[a-z0-9.-]+\.tgz$/.test(pkg.file) || !/^[a-f0-9]{64}$/.test(pkg.sha256)) throw Error('Invalid package identity.');
   if (hash(path.join(bundle, pkg.file)) !== pkg.sha256) throw Error(`Package checksum mismatch: ${pkg.name}`);
 }
-if (manifest.official.windowsX64.appAsarSha256 !== 'e1b6f25fa937da98086c3e77af77aa14791105963c4d337a1c42179d232c6915' || manifest.official.windowsX64.exeSha256 !== '7ae939b5a82b220fbd8ad04dfbafaaedb5a49ab43dc884a5db6381f678dd0cc4' || hash(path.join(app, 'resources/app.asar')) !== manifest.official.windowsX64.appAsarSha256 || hash(path.join(app, 'DeepSeek Harness.exe')) !== manifest.official.windowsX64.exeSha256) throw Error('Exact official rc.5 program required.');
+if (hash(path.join(app, 'resources/app.asar')) !== manifest.official.windowsX64.appAsarSha256 || hash(path.join(app, 'DeepSeek Harness.exe')) !== manifest.official.windowsX64.exeSha256) throw Error(`Exact official ${manifest.runtimeVersion} program required.`);
 plain(profile);
 const official = await import(pathToFileURL(path.join(app, 'resources/app.asar/dsh/node_modules/@deepseek-ai/dsh-app-boot/lib/index.js')));
 if (official.getDshRuntimeVersion() !== manifest.runtimeVersion) throw Error('Unexpected official runtime.');
-const managed = ['package.json', 'compatibility.json', ...manifest.packages.map(p => `node_modules/${p.name}`)];
+for (const name of ['readProfileCompatibility', 'readProfileVersionExemptions', 'setProfileVersionExemption']) if (typeof official[name] !== 'function') throw Error(`Official compatibility API unavailable: ${name}`);
+const managed = ['package.json', 'compatibility.json', ...managedNames.map(name => `node_modules/${name}`)];
 for (const rel of managed) plain(path.dirname(path.join(profile, rel)));
 const packageFile = path.join(profile, 'package.json');
 const receiptFile = path.join(store, 'current.json');
@@ -94,6 +88,7 @@ function inspect() {
     return { name: p.name, version: p.version };
   });
   for (const key of expectedGrants) if (!exemptions[key]?.includes(manifest.runtimeVersion)) throw Error('Missing exact official compatibility grant.');
+  for (const name of retired) if (pkg.dependencies?.[name] || pkg.dsh?.profile?.bundles?.includes(name) || fs.existsSync(path.join(profile, 'node_modules', name))) throw Error(`Retired plugin still installed: ${name}`);
   const receipt = read(receiptFile);
   if (receipt.status !== 'INSTALLED' || receipt.releaseTag !== manifest.releaseTag) throw Error('Missing matching installation receipt.');
   for (const p of manifest.packages) if (!equal(tree(path.join(profile, 'node_modules', p.name)), receipt.installedTrees[p.name])) throw Error(`Installed package changed: ${p.name}`);
@@ -156,12 +151,12 @@ try {
         console.log(JSON.stringify({ ...inspect(), status: 'ALREADY_INSTALLED', backupId: current.backupId }));
         process.exitCode = 0;
         alreadyInstalled = true;
-      } else if (current.releaseTag === 'desktop-v0.2.1-rc.3.1' && current.status === 'INSTALLED') {
+      } else if ((manifest.releaseTag === 'desktop-v0.2.1-rc.5.1' ? ['desktop-v0.2.1-rc.3.1'] : ['desktop-v0.2.1-rc.3.1', 'desktop-v0.2.1-rc.5.1']).includes(current.releaseTag) && current.status === 'INSTALLED') {
         // Preserve the previous distribution receipt and managed bytes as part of
         // this installation's backup, so plugin rollback can restore the pair.
         const metadata = read(packageFile);
-        for (const p of manifest.packages) {
-          if (metadata.dependencies?.[p.name] !== current.after?.dependencies?.[p.name] || !equal(tree(path.join(profile, 'node_modules', p.name)), current.installedTrees?.[p.name])) throw Error('Previous distribution changed; repair managed plugins before upgrading.');
+        for (const name of managedNames.filter(name => Object.hasOwn(current.installedTrees ?? {}, name))) {
+          if (metadata.dependencies?.[name] !== current.after?.dependencies?.[name] || !equal(tree(path.join(profile, 'node_modules', name)), current.installedTrees[name]) || metadata.dsh?.profile?.bundles?.includes(name) !== current.after?.dsh?.profile?.bundles?.includes(name)) throw Error('Previous distribution changed; repair managed plugins before upgrading.');
         }
       } else throw Error('Unsupported existing distribution receipt.');
     }
@@ -170,6 +165,10 @@ try {
       const before = fs.existsSync(packageFile) ? read(packageFile) : { name: 'dsh-profile-desktop', private: true, dependencies: {}, dsh: { profile: { bundles: ['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app'] } } };
       if (before.dependencies && (typeof before.dependencies !== 'object' || Array.isArray(before.dependencies))) throw Error('Invalid profile dependencies.');
       if (before.dsh?.profile?.bundles && !Array.isArray(before.dsh.profile.bundles)) throw Error('Invalid profile bundles.');
+      for (const name of retired) {
+        const present = Object.hasOwn(before.dependencies ?? {}, name) || before.dsh?.profile?.bundles?.includes(name) || fs.existsSync(path.join(profile, 'node_modules', name));
+        if (present && (!fs.existsSync(receiptFile) || !Object.hasOwn(read(receiptFile).installedTrees ?? {}, name))) throw Error(`Retired plugin is not managed by the previous distribution: ${name}`);
+      }
       const compatibility = official.readProfileCompatibility(profile);
       if (!compatibility.rewritable) throw Error('Repair the existing compatibility metadata before installing.');
       const backup = snapshot('install');
@@ -183,9 +182,9 @@ try {
           if (listing.status !== 0 || listing.stdout.trim().split(/\r?\n/).some(n => !n.startsWith('package/') || n.split('/').includes('..') || n.includes('\\'))) throw Error('Unsafe package archive.');
           const dest = path.join(stage, p.name);
           fs.mkdirSync(dest, { recursive: true });
-          // Windows tar's -C rejects long Unicode paths. CreateProcess accepts
-          // an extended-length cwd, and archive members then stay relative.
-          const extract = spawnSync(tar, ['-xf', path.toNamespacedPath(archive), '--strip-components', '1'], { cwd: path.toNamespacedPath(dest), encoding: 'utf8', windowsHide: true });
+          // Keep members relative instead of tar's Unicode-sensitive -C.
+          // A namespaced cwd can itself fail process creation near MAX_PATH.
+          const extract = spawnSync(tar, ['-xf', path.toNamespacedPath(archive), '--strip-components', '1'], { cwd: dest, encoding: 'utf8', windowsHide: true });
           if (extract.status !== 0) throw Error(`Cannot extract ${p.name}`);
           const meta = read(path.join(dest, 'package.json'));
           if (meta.name !== p.name || meta.version !== p.version) throw Error('Archive identity mismatch.');
@@ -210,6 +209,16 @@ try {
         after.dependencies ??= {};
         after.dsh ??= {}; after.dsh.profile ??= {};
         after.dsh.profile.bundles ??= ['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app'];
+        for (const name of retired) {
+          const dest = path.join(profile, 'node_modules', name);
+          if (fs.existsSync(dest)) {
+            const old = path.join(backup.dir, 'replaced', name);
+            fs.mkdirSync(path.dirname(old), { recursive: true });
+            fs.renameSync(dest, old);
+          }
+          delete after.dependencies[name];
+          after.dsh.profile.bundles = after.dsh.profile.bundles.filter(n => n !== name);
+        }
         for (const p of manifest.packages) after.dependencies[p.name] = desiredSpec(p);
         for (const name of manifest.bundles) if (!after.dsh.profile.bundles.includes(name)) after.dsh.profile.bundles.push(name);
         write(packageFile, after);
@@ -245,24 +254,35 @@ try {
       // Only undo fields this installer changed. Later user edits are retained;
       // conflicting edits to these very fields stop rollback after latest backup.
       const current = read(packageFile);
-      for (const p of manifest.packages) {
-        if (current.dependencies?.[p.name] !== receipt.after.dependencies[p.name] || !equal(tree(path.join(profile, 'node_modules', p.name)), receipt.installedTrees[p.name])) throw Error('Managed plugin changed since installation; latest state saved, automatic rollback refused.');
-        if (Object.hasOwn(receipt.before.dependencies ?? {}, p.name)) current.dependencies[p.name] = receipt.before.dependencies[p.name];
-        else delete current.dependencies[p.name];
+      for (const name of managedNames) {
+        if (current.dependencies?.[name] !== receipt.after.dependencies[name] || !equal(tree(path.join(profile, 'node_modules', name)), receipt.installedTrees[name] ?? null) || current.dsh?.profile?.bundles?.includes(name) !== receipt.after.dsh.profile.bundles.includes(name)) throw Error('Managed plugin changed since installation; latest state saved, automatic rollback refused.');
+        if (Object.hasOwn(receipt.before.dependencies ?? {}, name)) current.dependencies[name] = receipt.before.dependencies[name];
+        else delete current.dependencies[name];
       }
       const added = manifest.bundles.filter(n => !receipt.before.dsh?.profile?.bundles?.includes(n));
       current.dsh.profile.bundles = current.dsh.profile.bundles.filter(n => !added.includes(n));
+      const originalBundles = receipt.before.dsh?.profile?.bundles ?? [];
+      for (const name of originalBundles.filter(n => retired.includes(n))) {
+        if (current.dsh.profile.bundles.includes(name)) continue;
+        const originalIndex = originalBundles.indexOf(name);
+        const next = originalBundles.slice(originalIndex + 1).find(n => current.dsh.profile.bundles.includes(n));
+        const previous = originalBundles.slice(0, originalIndex).reverse().find(n => current.dsh.profile.bundles.includes(n));
+        const index = next ? current.dsh.profile.bundles.indexOf(next) : previous ? current.dsh.profile.bundles.indexOf(previous) + 1 : 0;
+        current.dsh.profile.bundles.splice(index, 0, name);
+      }
       try {
         for (const [key, version] of receipt.grants) await official.setProfileVersionExemption(profile, key, version, false, true);
         write(packageFile, current);
-        for (const p of manifest.packages) {
-          const dest = path.join(profile, 'node_modules', p.name), moved = path.join(latest.dir, 'removed', p.name);
-          fs.mkdirSync(path.dirname(moved), { recursive: true });
-          fs.renameSync(dest, moved);
+        for (const name of managedNames) {
+          const dest = path.join(profile, 'node_modules', name), moved = path.join(latest.dir, 'removed', name);
+          if (fs.existsSync(dest)) {
+            fs.mkdirSync(path.dirname(moved), { recursive: true });
+            fs.renameSync(dest, moved);
+          }
           const links = read(path.join(original, 'before-links.json'));
-          if (Object.hasOwn(links, `node_modules/${p.name}`)) {
-            fs.renameSync(path.join(original, 'replaced', p.name), dest);
-          } else copy(path.join(original, 'before/node_modules', p.name), dest);
+          if (Object.hasOwn(links, `node_modules/${name}`)) {
+            fs.renameSync(path.join(original, 'replaced', name), dest);
+          } else copy(path.join(original, 'before/node_modules', name), dest);
         }
         fs.renameSync(receiptFile, path.join(latest.dir, 'rolled-back-receipt.json'));
         copy(path.join(original, 'prior-receipt.json'), receiptFile);

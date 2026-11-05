@@ -1,0 +1,37 @@
+{
+  "target": "0.2.2-rc.1",
+  "commit": null,
+  "archiveSha256": "5fa8a6b21bceb8f3e99e30efa2270efd0cc773a11e42aa0488f804a64b34e637",
+  "trajectoryDelivery": "generated-external-loader-overlay",
+  "asarModified": false,
+  "official": [
+    {
+      "name": "@deepseek-ai/cordis",
+      "version": "4.1.0"
+    },
+    {
+      "name": "@deepseek-ai/dsh-client-ui-chat",
+      "version": "0.2.2-rc.1",
+      "clientSha256": "1533ace9d805604cf89d575900ea4b0a1dced9b2c7eaaba619c3909bb9f0fe58"
+    },
+    {
+      "name": "@deepseek-ai/dsh-client-ui-trajectory",
+      "version": "0.2.2-rc.1",
+      "clientSha256": "83f6be8c1a721f75cbd8b4cebb5adbcac7f6bc810b2dcd304f8be7caa4c22a92",
+      "patchedSha256": "0c6ff1ac56879f266e0d67c0d32592cd9239b46c400563bea7568d49ec0c38bd"
+    }
+  ],
+  "activitySlot": {
+    "name": "conversation.composer.dock",
+    "id": "activity",
+    "priority": -100
+  },
+  "retainedOfficialSlots": [
+    "usage"
+  ],
+  "legacyStatsSlot": false,
+  "labels": {
+    "speed": "输出速度（估算）",
+    "missing": "暂无法计算"
+  }
+}

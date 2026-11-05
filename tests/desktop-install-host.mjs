@@ -6,15 +6,24 @@ import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const [app, home, evidence] = process.argv.slice(2);
+const [app, home, evidence, manifestArg] = process.argv.slice(2);
 assert.ok(home.includes('desktop-install-'));
 assert.equal(process.env.DSH_HOME, home);
 const runtime = path.join(app, 'resources/app.asar/dsh');
+const runtimeVersion = JSON.parse(fs.readFileSync(path.join(runtime, 'node_modules/@deepseek-ai/dsh-app-boot/package.json'))).version;
+// New releases provide accepted checks; official-only probes need no plugin assets.
+const accepted = manifestArg && manifestArg !== 'official-only' ? JSON.parse(fs.readFileSync(manifestArg)) : null;
+if (accepted) assert.equal(accepted.runtimeVersion, runtimeVersion);
+const checks = manifestArg === 'official-only' ? { modules: [], entrySuffixes: [] } : accepted?.hostChecks ?? (runtimeVersion === '0.2.1-rc.5' ? {
+  modules: ['dsh-session-control', 'dsh-remote-control/plugin', 'dsh-subagent-code-agents', '@omdsh-dev/dsh-genui', 'dsh-desktop-compat'],
+  entrySuffixes: ['tps-correction-021', 'tps-trajectory-021'],
+} : null);
+assert.ok(checks && Array.isArray(checks.modules) && Array.isArray(checks.entrySuffixes), 'Accepted Host checks required for this release');
 const profile = path.join(home, 'profiles/desktop');
-const result = { status: 'RUNNING', officialHost: true, realProviderCalls: 0, sshCalls: 0, externalCodingCalls: 0 };
+const result = { status: 'RUNNING', officialHost: true, runtimeVersion, pluginChecks: checks, realProviderCalls: 0, sshCalls: 0, externalCodingCalls: 0 };
 let output = '';
 const child = spawn(path.join(app, 'DeepSeek Harness.exe'), ['--expose-internals', '--import', pathToFileURL(fileURLToPath(new URL('./desktop-install-network.mjs', import.meta.url))).href, path.join(runtime, 'node_modules/@deepseek-ai/dsh-desktop-host/lib/index.js'), runtime, profile, path.join(app, 'resources/runtime/primary-runtime')], {
-  cwd: path.dirname(home), env: { ...process.env, DSH_CLIENT_VERSION: '0.2.1-rc.5', USERPROFILE: path.dirname(home), HOME: path.dirname(home), APPDATA: path.join(home, 'test-appdata'), LOCALAPPDATA: path.join(home, 'test-localappdata'), DSH_TELEMETRY_DISABLED: '1' }, stdio: ['ignore', 'pipe', 'pipe', 'ipc'], windowsHide: true,
+  cwd: path.dirname(home), env: { ...process.env, DSH_CLIENT_VERSION: runtimeVersion, USERPROFILE: path.dirname(home), HOME: path.dirname(home), APPDATA: path.join(home, 'test-appdata'), LOCALAPPDATA: path.join(home, 'test-localappdata'), DSH_TELEMETRY_DISABLED: '1' }, stdio: ['ignore', 'pipe', 'pipe', 'ipc'], windowsHide: true,
 });
 child.stdout.on('data', b => output += b);
 child.stderr.on('data', b => output += b);
@@ -35,8 +44,8 @@ child.on('message', async message => {
       }
       const inventory = await rpc('pluginInventory/list', {});
       result.entries = inventory.entries.map(({ entryId, moduleName, enabled, fiberPhase }) => ({ entryId, moduleName, enabled, fiberPhase }));
-      for (const name of ['dsh-session-control', 'dsh-remote-control/plugin', 'dsh-subagent-code-agents', '@omdsh-dev/dsh-genui', 'dsh-desktop-compat']) assert.ok(result.entries.some(e => e.moduleName === name && e.enabled && e.fiberPhase === 'active'), name);
-      for (const name of ['tps-correction-021', 'tps-trajectory-021']) assert.ok(result.entries.some(e => e.entryId.endsWith(':' + name) && e.enabled && e.fiberPhase === 'active'), name);
+      for (const name of checks.modules) assert.ok(result.entries.some(e => e.moduleName === name && e.enabled && e.fiberPhase === 'active'), name);
+      for (const name of checks.entrySuffixes) assert.ok(result.entries.some(e => e.entryId.endsWith(':' + name) && e.enabled && e.fiberPhase === 'active'), name);
       const sessions = await rpc('session/list', { _request: {} });
       assert.equal(sessions.items.length, 0);
       result.status = 'PASSED'; result.authenticatedHttp = true; result.syntheticEmptySessions = true;

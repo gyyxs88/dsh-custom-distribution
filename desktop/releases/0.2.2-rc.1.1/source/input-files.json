@@ -1,0 +1,1390 @@
+[
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/CHANGELOG.md",
+    "sha256": "1780eb50e331350072c1c486868d37241a029c8a458ba5c2d97ec78c3ddfe8cb"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/cordis.patch.yml",
+    "sha256": "b561de91f24f574f9fb0a7f3030f244b18297b030882a39523373ab3d3ba0c5a"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/demo-prompts.md",
+    "sha256": "bfa31fe8e0abf0f067524344ad199944d133a4cbc61327c79d69b1a0fa29b28d"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/assets/echarts.js",
+    "sha256": "783e4ffb68e764344d2b24f44e498ea6c13d9962ace553539ca256bff79a339a"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/assets/mermaid.js",
+    "sha256": "12c6d6a64a5b674f8804fb7bba00d00d6a32bb1d01e02f271931a7f7a59b2b09"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/assets/three.js",
+    "sha256": "b687f4687154aafab53f9503da86ce7e1e1454b1962d643c8fd07bfddbc71ef1"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/client.js",
+    "sha256": "56ce211abb3b2e2810a3b3a4bafb45add22a0926c1dc50c997575e7378e649c2"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/index.js",
+    "sha256": "37a707311ebf2b33d20924afd60a637473bdbb3f1d34e8a69fc43b286716a33a"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/invariant.js",
+    "sha256": "77d0982561c0127a8ada80737b5cf3d883728e6e9d710a3675cdb3cfe8a49163"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/action-context.d.ts",
+    "sha256": "6bcd95676a1ae46e25f3c0ce627e4a5379d7d03c4c388f67a9b12c9a862b814a"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/asset-echarts.d.ts",
+    "sha256": "69fba21da377267d7f9f0087f2ac5838d7be68de7301baefb7a8caacf99cd50e"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/asset-loader.d.ts",
+    "sha256": "56680cf8262b7db1225d9f5adac7744e3830f88a2b1972995a7b7f9bb67aa527"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/asset-mermaid.d.ts",
+    "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/asset-three.d.ts",
+    "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/blocks/advanced.d.ts",
+    "sha256": "1178a000319393bcafd1b29613bfa23d230f0c2857c5b719e8fda199a022d1bb"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/blocks/basic.d.ts",
+    "sha256": "9945e46ecd5e16e18ec4e83552d763e8f43ca6b7780e779cb2b2644b741883fd"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/blocks/charts.d.ts",
+    "sha256": "47a7e8e899b208c4e76be072c4e87b589261103a1a4ea2240b85f2b709a04192"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/blocks/diagram/geometry.d.ts",
+    "sha256": "d0e1efb230a582f905fa6b8174eaff34fbae58eb17a30188e53943aeea909aac"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/blocks/diagram/index.d.ts",
+    "sha256": "b3b927ce5b9f46ee3d52dd0f8fa1f136b9928a9ae8939fc67a2fed8842df7b3b"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/blocks/diagram/layout.d.ts",
+    "sha256": "be285e6dbfa5e3414ab1fb35c24d973641249c59586fb06ad62f54e0a3baf614"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/blocks/diagram/theme.d.ts",
+    "sha256": "b7a69be98f6a9187607e90757157fd112e112d3642e0a3ef28466e70428037ef"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/blocks/forms.d.ts",
+    "sha256": "607e337e4aa3a1fd92f2b6c39f2ce235735944fb05bf2f9efd4237cc1352e6fb"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/blocks/render-node.d.ts",
+    "sha256": "5da5447a1be5c14366b4c9ad93242c96bb7a3b19d038e94d94d68af8c34658e6"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/blocks/state.d.ts",
+    "sha256": "123d5cdf7459a2c7d990922d6e87be79debf9b99108c6f5396af2e5813d3e4ad"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/dom-fence.d.ts",
+    "sha256": "ceb8ae58130b1f8c472d20b67a08f464bec13f52c4131aa31a9e616ebba1df8d"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/EChartNode.d.ts",
+    "sha256": "5ad8ff26eaf530446238c37146d5235e1d97bb62653a5b45b7e8a75d72659fe2"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/echarts-lazy.d.ts",
+    "sha256": "fe92a82d13ea72fb41a6b586dd1084363d00c3670bc0a36ab09571ea19803ec2"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/ErrorBoundary.d.ts",
+    "sha256": "d6e08f6e2015e609a8b3ad230c24b360e3f9ab08a24e7764fc88bfd382b131ed"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/fence-render.d.ts",
+    "sha256": "f8f69ebeb3a9d8321768b40bc4095bed6c7592fcf2afe2610ec92fe7406ddeb0"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/fence-source.d.ts",
+    "sha256": "c5974ce795533b7a94c17eebfad24e3b0d66d0e0a94f89d03e999e5ce8405935"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/gallery.d.ts",
+    "sha256": "ed03fa0a03cb3b484290293ccff4045d70a3b2f9bc81c56b2ec28d99ffcd525d"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/GenuiBlock.d.ts",
+    "sha256": "8248c8fff492a23f2c931e40fd87453e9f577188b43503b6f25af1ed007a3b41"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/guard.d.ts",
+    "sha256": "d5ec36645167beba46fe92dbff3ce65b2d6b09a3ab409746a6bd2b37593176aa"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/index.d.ts",
+    "sha256": "969a30959f6c6241f26f7ff2f6ce3669c6cd02f0d8dd254cb8e4ea435569b15d"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/interaction-store.d.ts",
+    "sha256": "d494efc560680011f16351f50a4d86e4adeaa146e10887d4a7d37559a08a2e39"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/mermaid-core.d.ts",
+    "sha256": "a00d93932a368f5843135b0f23934ce6310f97276c666e449c578753617598de"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/mermaid-lazy.d.ts",
+    "sha256": "5c3131fb839669f4971aa6c3888afca21dfac400882f983d12e5ba9efe9d6ff5"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/mermaid-safe.d.ts",
+    "sha256": "6d90d665166fd7784225c62fd1fc0b561e3b9e0e7593a2ddaa9f665c4602f8b2"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/panel-command.d.ts",
+    "sha256": "9c9ff00d5e736d776c120dbd433db7f7cb242ceb68473a0e6fe40f25efadb414"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/panel-store.d.ts",
+    "sha256": "1bbf301e869ee79c3427a60267f959ae7e83cf32fd6a894ecef918f3d9e6d7bd"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/panel.d.ts",
+    "sha256": "635178f6178cf1169bf90b3a2834311a33e134b6354798c2c202306c6bc73b55"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/parse-partial.d.ts",
+    "sha256": "ade9c4ea0f06a175f23eed8312818bbfc61444adc13d5d6a08cd2821a1811fd3"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/PlotBlock.d.ts",
+    "sha256": "9eec11fe4b958194aab1ed2a5e29680508111af6bb7af3b0d715530dc0b1f900"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/safe-math.d.ts",
+    "sha256": "ed9690f77b6c439330c459d5e710dcbca708fe91549b088076267c4cd181bfdd"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/scene3d-core.d.ts",
+    "sha256": "30d4082ec7bd96d7ed7a92e265e244676b3b6b5d354cdfeebc0659f1da64f6c3"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/scene3d-lazy.d.ts",
+    "sha256": "db6c2623d03ed375aaff561bab709c0cefa8209f96fb536d14ea9635663ff529"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/spec.d.ts",
+    "sha256": "5c4952f6094f055fc70e972da332595ea573f473b44a398c2744b2883adf26fd"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/client/toolview.d.ts",
+    "sha256": "34c970a3d8be2fd10bd8399016484de1e8460e9fe7972ca6b70a3a713f0eba1f"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/index.d.ts",
+    "sha256": "54031bebb1aa1027e1cc4c6b09f594348145b3756e43d785f67c4bc17cca1971"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/plugin/contract.d.ts",
+    "sha256": "2ecc2c4381135165030ac498c9661234b8f481e019e7b561709f8e110ed35674"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/plugin/index.d.ts",
+    "sha256": "508e372951a883ad620259d9fcbfd24c2bd1b958afdcf3ece9488da84c051a6c"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/plugin/invariant.d.ts",
+    "sha256": "9526665c0b392b09de9c72afe512786a51e4d69fcb2832af29f242d1450e1d23"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/plugin/skill.d.ts",
+    "sha256": "35672a1bd36f650e7c746c290fdb7924c43e91670e28a8ce5ac2e3dfc2ae1cef"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/plugin/tool.d.ts",
+    "sha256": "98e022574ff56d522ad36700328faec6d8ba2bf61427f5f57c533d2da6ddc2cb"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/lib/types/shared/fence-repair.d.ts",
+    "sha256": "c51db405ab894fca9654d3fecb2c75314ee0dac9d3dfd6736fb51b807ec78365"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/LICENSE",
+    "sha256": "a9b922b8d247b78e8d64f791807124e044a56d37bde0c61fa8568701f8fcc73d"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/package.json",
+    "sha256": "c72f8f0d843c69de79862e4449490de37c38d930f4e1be46cb9ef397a2545aa6"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/README.md",
+    "sha256": "f7d4bd46aea12148234d221054e0ae849bf550e1edad8af6fad023558cbd9035"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/README.zh-CN.md",
+    "sha256": "f59c2f2d80b344e69ea9a2a39027d63bfc83dfda401de017a7deaf05b7b4ef5f"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/SKILL.md",
+    "sha256": "0285f4677f7f84af18e59bc4ebe595af3092720078d4bcd52640661693f73c9a"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/action-context.ts",
+    "sha256": "31c0e18531b9b603241e0326d3cd9ef75fbd5d52ef777ea73c1d4b94e019733b"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/asset-echarts.ts",
+    "sha256": "4279cd7376ed94ef6e73175268b4bf110ab3c0f7be75e686c144f1db9685e7a0"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/asset-loader.ts",
+    "sha256": "7e2b2cefb256202d847209d815366edc469d951ffe9aee640d075dc538faa652"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/asset-mermaid.ts",
+    "sha256": "870c774b99983433bdae42e2cd0349082f6fdf997d76752d2a6a53457405da83"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/asset-three.ts",
+    "sha256": "4e6f663bb6541ec36331ec5fcf242c972f8a162f9ca7eb5b9d7d3d70838b754b"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/blocks/advanced.tsx",
+    "sha256": "c1ad0386bd7988549d2538ce0b0d5b13c418e75c6e73e683d8766ee7c3fc0062"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/blocks/basic.tsx",
+    "sha256": "49df975198a1b66c909ff19b89b2de9981a6003544fb81993896d67b6bd3eab2"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/blocks/charts.tsx",
+    "sha256": "0fb4f638084c0448580031f1c71bf2e949162ef6f5aadfe39f2e8d7e271fe66f"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/blocks/diagram/geometry.ts",
+    "sha256": "8e47a653062e782621285693ca7b1285fe4c0c7528fc0361682660505d3114d0"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/blocks/diagram/index.tsx",
+    "sha256": "d2797980913a9ff4f49bfbe2019a8e98fed38b50d9b0c47927600daf866ae728"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/blocks/diagram/layout.ts",
+    "sha256": "7520ffd0ea5a2c22655d4a09e777a075371ce9c2dc85a76fc4ad133fac33344e"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/blocks/diagram/theme.ts",
+    "sha256": "fd55b63c16f9936076226c7b3a305797eb06887d9422d14e88f3658cad23bc4d"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/blocks/forms.tsx",
+    "sha256": "73d3cfcd4f71e34f3bf3e769c6386fb952633db7829cdb8b72dc606addcd1718"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/blocks/render-node.tsx",
+    "sha256": "ecf06fab8d1517662c11adc264b85f39ddcd16c8e6b821230f053a715e1a7be8"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/blocks/state.ts",
+    "sha256": "22c02fe0ef2b800bd19dd6ba7a6a04222254b553d451308c907aedbcee2aedd9"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/dom-fence.spec.tsx",
+    "sha256": "7caacb6025fdfc245b94f2cae3509b98ea6e2502f69719dbdca749e33e6fce6f"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/dom-fence.tsx",
+    "sha256": "ddc732bb53a4708b0094939a2607f950622a21cfcf2e569a1134859f0dbdd2bb"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/EChartNode.tsx",
+    "sha256": "cebc9c564cc054f0b30908ea79f53cdf1e08dedc9e7e4cd627699310a16d1d2a"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/echarts-lazy.ts",
+    "sha256": "217da70edac6cf96f91be80821e65de496015b0b8a5edd5a207f9bfeb5bd4eac"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/ErrorBoundary.tsx",
+    "sha256": "ee552107f274d98a94f397eb2f15adbfb870a43b6b68f10feb3dcbf649a496e4"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/fence-render.tsx",
+    "sha256": "0507b7245613d241a89662ba4bf0786e9c3a8a548501d4d6f8116288ba327679"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/fence-source.ts",
+    "sha256": "621d90115043da4cbf2f4d538d63c7712a0a9ab71ad427534c0f4f3540abf860"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/gallery.ts",
+    "sha256": "748e46e4181564ad108f0ce349376640d1f50466a81d37d08404409b48f7e10c"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/GenuiBlock.module.css",
+    "sha256": "1ede7bc1d956f13a96f83d26f055060b44de7313b16849543fffdf8c8c7d0b76"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/GenuiBlock.tsx",
+    "sha256": "d574de301937e0f1fea1b5295fa90b434fa2c7ce91463e9c0bb9984fabd18fa4"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/guard.ts",
+    "sha256": "97508325865b3191561abd068386cf28e073bea7950c4489430a8d5139d443d9"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/index.tsx",
+    "sha256": "6b46b238256260d3a3ba260d19551434c8bfa34fdd689ea276a710ff50a571a7"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/interaction-store.ts",
+    "sha256": "df7374f4ca8bc0e2f682ff329770e3a71ac2903fada15d6ab612620b613ba8e5"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/mermaid-core.ts",
+    "sha256": "e69dbffdc6424e7f51bf007651fb3f604d8fb9ecafb5435ff4b53a7c5dc11ee6"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/mermaid-lazy.ts",
+    "sha256": "9ed96ee94ad7c62826606891334826afcfc1b6bf50922bf3ba2fa9b1241723cf"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/mermaid-safe.ts",
+    "sha256": "2a1fa3395847d473374a4413d7ff84ae99472ce7777d9a936ee25800ee133c25"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/panel-command.ts",
+    "sha256": "992f60fd5d8f9b4eb0e4fc557dff5aec867ef6606ae89d86804db4a735cdc44d"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/panel-store.ts",
+    "sha256": "1e3b8194ac8aa1b2e7f90242b59fb52a2f49a11a0e732121bdc948041557a3cc"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/panel.tsx",
+    "sha256": "b5dda5fe1312bed3d3a335efd66c8130b16c49e5b797331428a2485e17ee7a73"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/parse-partial.ts",
+    "sha256": "291efff66386241fb496f545b378c554e53d74528faef42b46efb2874e8c2b18"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/PlotBlock.module.css",
+    "sha256": "d1166df1480188d673979c042933103e5a46f813fd007b45f816552922a0c107"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/PlotBlock.tsx",
+    "sha256": "089de7646bca21ac785e880bc7c48d696fd4aaf77d529c99608d1113e1815184"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/safe-math.ts",
+    "sha256": "fb7609de1e2774ee15cc7eee3c173d531ffb751da9eacfc92353144d01295a86"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/scene3d-core.ts",
+    "sha256": "ab8067926e30a18ce9a21405cea145af4af44406f7a8c3943f890cbdcf021e55"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/scene3d-lazy.ts",
+    "sha256": "b694243050f8094d4eddee7389fbccc063ec29f8d8fff3974d075e5d164a118d"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/spec.ts",
+    "sha256": "7e73200245eb1115f5e9b434b6f424ebd74634681078684451a3dccf8e63e55c"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/client/toolview.tsx",
+    "sha256": "d47fb21dfe56adde0afa41a64a39070af376031789a4c3261039a4855ca9199e"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/css-modules.d.ts",
+    "sha256": "8881bb16ae41f78497d4551e340d5392ad830eca79f8700f91a694f41c8def67"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/index.ts",
+    "sha256": "2c76d77efcd35628bc1a0f90020c5dda5c71e6dce0dde317e02e685b7c8c09d7"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/plugin/contract.ts",
+    "sha256": "02166d939eb82c2d15fc100ee41f361d10dd9f0bcb93a97f2bded7aeae541bea"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/plugin/index.ts",
+    "sha256": "40f5c6fec3b9af0f23c3561e5849fc8a49c863ee04dff86d97c9d4c72ec61ec1"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/plugin/invariant.ts",
+    "sha256": "8327716c845b93a400c94c2e66caa046bc2d59fe7ac092318211a693b8db44c6"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/plugin/node-shims.d.ts",
+    "sha256": "ecfa12b10fa6bea00ba52ac2b686d54781e0aa4b5f50ab5c296d5647e88e78c3"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/plugin/skill.ts",
+    "sha256": "92536208994c34e4e522d250fd00b056fdbb6e2720056e2abb6fa5cd7ce7a782"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/plugin/tool.ts",
+    "sha256": "869c805dfe986dc535b2bd32ccf282e203efc2f2d5f102aced8497b01352f23c"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/src/shared/fence-repair.ts",
+    "sha256": "4edb64540ce766dc7ee4f932739b1e5f0d9b0c5f319dc4bd087a953cf94274b3"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/tsconfig.json",
+    "sha256": "c5aa0f345727349a49896643cd60a73b1b609afaa7a87f03a10a03fca28983e8"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/@omdsh-dev/dsh-genui/tsdown.config.ts",
+    "sha256": "93e1095e2dbea417710373cca4f15fb2623c21c9e84c5c1f09de50f9e1cc23e9"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/LICENSE",
+    "sha256": "8f042607045e1010027ecec32d54971a4965764f68cf9cc4ca84180f72f37787"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@anthropic-ai/claude-agent-sdk/agentSdkTypes.d.ts",
+    "sha256": "1005d810b1bec12c856632bb7d54087af7c516251a4b557eb05ae8d474fc5a93"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@anthropic-ai/claude-agent-sdk/bridge.d.ts",
+    "sha256": "1139547d9eebdfb4928bc124f7c1860203dd276309f2b3d557dd74bbe989d63d"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@anthropic-ai/claude-agent-sdk/bridge.mjs",
+    "sha256": "01ed6d43766fd95321d2df2300e3554197c2492e71cfa0ed9c052b2d87e646de"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@anthropic-ai/claude-agent-sdk/browser-sdk.d.ts",
+    "sha256": "a8005d33d20f9b7ed540ad62653a94a5cea1a0678027a0198a2ee6bb4ac13bf1"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@anthropic-ai/claude-agent-sdk/browser-sdk.js",
+    "sha256": "976589e7b6db7f48e0b7f076736e5ee3a08016a847c6b2e6cbd2b51ca5848bdd"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@anthropic-ai/claude-agent-sdk/extractFromBunfs.d.ts",
+    "sha256": "eedc9d6a3adb2e0f12984ddf3d2cc3a72f56906b4a4069660bd08fd36c3d2984"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@anthropic-ai/claude-agent-sdk/extractFromBunfs.js",
+    "sha256": "1286171f98b1147a4ed46d48296a1ab8ee4f79cee2d893ace5210ebe361d8c27"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@anthropic-ai/claude-agent-sdk/LICENSE.md",
+    "sha256": "8ce94b9478bb9868f9641f818e06cd722fbe55d4c22e2d2ed11971b20146173a"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@anthropic-ai/claude-agent-sdk/manifest.json",
+    "sha256": "bc6dd66a82043cca6550d19bac1f2cb4ad61310de670426a938168940b5f6477"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@anthropic-ai/claude-agent-sdk/manifest.zst.json",
+    "sha256": "ffac8a553213e7ed262f888be3c91ef7dd63eb9c58b49f7e021dc6189c4633e7"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@anthropic-ai/claude-agent-sdk/package.json",
+    "sha256": "6212442deb18d6c4ef59edb7a1581dfad940774c31047435d492cb2c4176014c"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@anthropic-ai/claude-agent-sdk/README.md",
+    "sha256": "a923405f92c474ca40c62d0b5ffb2897aba56f779a7ea36807555b1553d0cdab"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@anthropic-ai/claude-agent-sdk/sdk-tools.d.ts",
+    "sha256": "8060faab6c27ba4e08b7057cb46ce13805728fd286d12a249d85e8929dfd9241"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@anthropic-ai/claude-agent-sdk/sdk.d.ts",
+    "sha256": "65ec4f17eb95dc6fa85d964249d4d27e31a150e4bfbaf94c531090862b7a1fd7"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@anthropic-ai/claude-agent-sdk/sdk.mjs",
+    "sha256": "95b896866946ac787293f1a9956ae4e41416da8e34fa3ae7d5da268b8a07d247"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/lib/index.js",
+    "sha256": "ba44c0871656e4c7cac2c3c8a2ff644e0d2eb9d6bda7f6355866d686d513268e"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/lib/types/array.d.ts",
+    "sha256": "f63b6a79179ea0f70902e1c9d8c98b3fd457b124c7c5dcb3adccc4fae5a8c5b6"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/lib/types/array.d.ts.map",
+    "sha256": "76e7996107ba6d4ea97eebe33c825e85f53392fd9b21e87248d0030903f5cdf1"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/lib/types/index.d.ts",
+    "sha256": "850b1bde1c4b0dd26069a365e3837180890205f243f962838c4b769302aa583b"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/lib/types/index.d.ts.map",
+    "sha256": "cc8b19e444b8d7a04697460273e5ace19f1ea4ca51bbc987b3397c0e261d5e5c"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/lib/types/misc.d.ts",
+    "sha256": "b3ffb1d306130b143d309b7621dc0f94446bf0d0721a5aeaae92f1112c3a852c"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/lib/types/misc.d.ts.map",
+    "sha256": "7fd470887c2b1a2c86c5b149fdfddc90d7a00bea047547391ad6d169d1bc468f"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/lib/types/string.d.ts",
+    "sha256": "018925218746fd81518276960ee5eaaf7664f7ac0a1bc01d6604903254186ced"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/lib/types/string.d.ts.map",
+    "sha256": "6f10c183f6f0c7aac796f6fd0ae3b16b30d455a86d7d2018ecf3641093adeeac"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/lib/types/time.d.ts",
+    "sha256": "2fb4faf4cb90b96c83a3282f6cad6eafd3395a251ae2d193a0a27c63cf4dfc78"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/lib/types/time.d.ts.map",
+    "sha256": "afad91a505bd82c857a69ad72718e59d4a08f05c35493854ac000ace760a3a51"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/lib/types/types.d.ts",
+    "sha256": "ecec322706391b1eed65497f97bb2ba53dfee289d276c35b91ad83550b61a2fa"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/lib/types/types.d.ts.map",
+    "sha256": "6da6f71fd5de4144c9f2862aad0951c5586e7b03e95a9624c4ec5730c39cd368"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/lib/types/volatile.d.ts",
+    "sha256": "9733d9ecf59e8b86a6e5605c830e2efacbd93e527c3fd8388aaf0d09649fef0c"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/lib/types/volatile.d.ts.map",
+    "sha256": "7f41de53d13986b169df89edba078f017f0acdaff8338d00ddc45596a19fefa4"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/LICENSE",
+    "sha256": "034fb52b1d57360ecbae6cb1632a88f86fd7c3d3f5631a5f082710203dda0be7"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/package.json",
+    "sha256": "eedc5e1a5575d05749e9bf3a22fa56e67a5fb8153ca02838fae961ddcd0cf4ef"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/README.md",
+    "sha256": "fa0a17f50f83cda52ce623c9d42afb4eec1b33689285a0b9d2f655acbca13286"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/src/array.ts",
+    "sha256": "cf4de899ecffd66a90d8cef6f4c7d127d31f77f776d8e173d41c30d2d7632cf7"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/src/index.ts",
+    "sha256": "1087da74b9c461984e547d524ee766eebcf329a78e4720bff5b60a004ccf6e8c"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/src/misc.ts",
+    "sha256": "117617943074ea57c15f216905dacd2f6d1c4c2ff16586f97a7a7a87dbf2141f"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/src/string.ts",
+    "sha256": "5564272b3e15e49235cbe3a8b453f27306baf282d23a893982841670f65d3c04"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/src/time.ts",
+    "sha256": "49957c4608465a1fbd738186a92c47fffcd1fc4ba59dbf89524f8a773fe16fe2"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/src/types.ts",
+    "sha256": "cc49c12e4a637f7b0754ff78a8299e9c42fa40ee8c678550af0c538a80146a92"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/cosmokit/src/volatile.ts",
+    "sha256": "937433215595f89da249ec7cabb89e331ff4135a40c6686a95666d2095315e55"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/schemastery/lib/index.cjs",
+    "sha256": "a4034371ae52de7a8f03ec151bfb5fbc799ef725acb6acf8b5d419262a15c09b"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/schemastery/lib/index.mjs",
+    "sha256": "d23d1f48ea69800c68fc8be592f5d1074c9c764b22f35a1d40b84f5eab39ac00"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/schemastery/lib/types/index.d.ts",
+    "sha256": "ac6e88d0b94b9613253276f1af84b3abfa1630c794c5de640a9a6c4cdc0de427"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/schemastery/lib/types/index.d.ts.map",
+    "sha256": "be656c47e9717c1ef310e9420be6d579237c922d0a457c9ad162fd3e3136e08e"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/schemastery/LICENSE",
+    "sha256": "034fb52b1d57360ecbae6cb1632a88f86fd7c3d3f5631a5f082710203dda0be7"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/schemastery/package.json",
+    "sha256": "a855e5b7a35f957c6d47497380f0b39659fcf362312703cce4fb94a7229ed307"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/schemastery/README.md",
+    "sha256": "6c6a5aa9dd09487305f0fd9b617c246e3c3c637ab88d95bb71dafb168d395abc"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@deepseek-ai/schemastery/src/index.ts",
+    "sha256": "cf8a4de0481969a1a6d44eac390015f3494be1ce19b84d4fcfb7e93e5072cee5"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-acp/lib/index.d.ts",
+    "sha256": "910451832da388e5a4b159d9eaf5eeac787b59801b0a77dbd52fbd1f6004a228"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-acp/lib/index.js",
+    "sha256": "d4c64659f0e0645d0bc292bb55448346ddfa8e078fd5480e3bce6ed54bee98ae"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-acp/LICENSE",
+    "sha256": "8f042607045e1010027ecec32d54971a4965764f68cf9cc4ca84180f72f37787"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-acp/package.json",
+    "sha256": "c262b63fbbf7a243d4473b0a2c7e8dbed92f9a7e69eb64e344fb7cd6ad95bfa3"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-claude-code/lib/index.d.ts",
+    "sha256": "8ed487fb42ad809b27ea89b992bf507b09b57cefe7825dbb9289b49c180c8817"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-claude-code/lib/index.js",
+    "sha256": "2a848bcad293dbf302ddce43e30bde774f165806582540ed4a758c44ee00e034"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-claude-code/LICENSE",
+    "sha256": "8f042607045e1010027ecec32d54971a4965764f68cf9cc4ca84180f72f37787"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-claude-code/package.json",
+    "sha256": "8312cd659f6ade0dd0cdae963031923f386da59c9336313c3f30898ade4fa92a"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/lib/app-server-channel.d.ts",
+    "sha256": "3a941c1a8fe79de9ae3d0991adfd8d5c9a2f31ef174d3d6cac39b022cdc5858d"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/lib/app-server-channel.js",
+    "sha256": "2e94fc735678b0f302fd7cbc51d270e91b73f1fd6c75afcfe262787491c1df7c"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/lib/app-server-protocol.js",
+    "sha256": "6965101a0a5e16e2994db2b9e499de29d168e06444702915038a813d531f7acf"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/lib/index.d.ts",
+    "sha256": "23edaf2ebdbd2e2ff53c244dcdc1e11d148d43420cacf75a0e7e3fdf75040d1a"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/lib/index.js",
+    "sha256": "2ecee42fc1adf622615ef21c292a286a257342353b26e3925ffe23ca7d42984f"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/LICENSE",
+    "sha256": "8f042607045e1010027ecec32d54971a4965764f68cf9cc4ca84180f72f37787"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/package.json",
+    "sha256": "382d2623536db92c18c31fdd55c2752a072c2dfd7088650c3ec645e0141cd0a2"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/protocol/codex-0.147.0/json/ClientRequest.json",
+    "sha256": "a53860c7fb5c1990a2ba89f750f5e9787fa710b99ff2768328032448df7b69e3"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/protocol/codex-0.147.0/json/codex_app_server_protocol.schemas.json",
+    "sha256": "d94a8c5b42f84323895bd7e85a47482fa79edc1c8d325919ca71c07c229046d9"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/protocol/codex-0.147.0/json/CommandExecutionRequestApprovalResponse.json",
+    "sha256": "d460b84eeaa939fd0cb880d08cc94815ab0d6166b50e3f79527273a8df4ac4b8"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/protocol/codex-0.147.0/json/FileChangeRequestApprovalResponse.json",
+    "sha256": "860b4739d5637a9a0f738c977ba24a319fce8d6c27d49fddfb0ee7190e81ad6f"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/protocol/codex-0.147.0/json/PermissionsRequestApprovalResponse.json",
+    "sha256": "a238ca901a63a43059536804d5077825d651ca7c1696f19ecfae79e1dcfac07b"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/protocol/codex-0.147.0/json/ServerRequest.json",
+    "sha256": "0ec8e2af2f2c3fd9c7897732c689b0599f49bc533753e4adcc0627ee8c5ad224"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/protocol/codex-0.147.0/ts/ClientRequest.ts",
+    "sha256": "7ba2d6930c1fbab95cae4ab9bfe4f25fd54d2e1c306dd5677ca0cbff0952ed17"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/protocol/codex-0.147.0/ts/ServerRequest.ts",
+    "sha256": "e8a94eaffc9a007e704263ef930922179d947a60ee18947a813d8e8b3cb0fa35"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/protocol/codex-0.147.0/ts/v2/CommandExecutionRequestApprovalParams.ts",
+    "sha256": "185d6a3190ff1b6c7051c5777241501ed158b904c108ce889d18d0d354b41403"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/protocol/codex-0.147.0/ts/v2/CommandExecutionRequestApprovalResponse.ts",
+    "sha256": "abdf4373ce3ec39298b730d7046dda05a12a288e21e7cb72d8ea7b28c91b2148"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/protocol/codex-0.147.0/ts/v2/FileChangeRequestApprovalParams.ts",
+    "sha256": "7afe4fb8c0f76ca1cb6a370488b0c2d8bd9d597180ab3bd13279d0cdeb620a58"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/protocol/codex-0.147.0/ts/v2/FileChangeRequestApprovalResponse.ts",
+    "sha256": "7cf5cdaf1b2d888888531e2174de362c479b21ce8dd908671556c490d3767a4e"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/protocol/codex-0.147.0/ts/v2/PermissionsRequestApprovalParams.ts",
+    "sha256": "c80b30dde9911be77f398662daf05e779ad654f06121d1039ae5a05fbe422922"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/protocol/codex-0.147.0/ts/v2/PermissionsRequestApprovalResponse.ts",
+    "sha256": "5c662efc16d5debe37c246e2bf9ea83a6f25631bc2a731401b7079a0d442cf93"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/protocol/codex-0.147.0/ts/v2/ThreadStartParams.ts",
+    "sha256": "ddcdc05a975ec34716775ae26a07590d8f2519b31a52b586a54f8d8c9cba494a"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/protocol/codex-0.147.0/ts/v2/ThreadStartResponse.ts",
+    "sha256": "5abdd04a6b49f90c839252708b55dde4ba7a0e201190126aded7722b3bd66d3b"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/protocol/codex-0.147.0/ts/v2/TurnStartParams.ts",
+    "sha256": "30c07f3d5ccaa3272542c294ce0f699ded7dd9dc1efb46f6ec93afc743f04e6e"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/protocol/codex-0.147.0/ts/v2/TurnStartResponse.ts",
+    "sha256": "f67bb85f79652aabc23897034d46f00e34f3098c9f94fe2437465168e86b833d"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-codex/protocol/codex-0.147.0/VERSION.txt",
+    "sha256": "9d9fd13fe5bcb64fe629523f71a957220146eef10e1ef4c6b3b5408a4164b32f"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-grok-build/lib/index.d.ts",
+    "sha256": "d94baa697dbd07450dc7e33aa74a2695e9b4a2ece73bf0a4ad0cf6f27865e7f4"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-grok-build/lib/index.js",
+    "sha256": "63d35d2ac0724018b71243445bb2b4dd356904326d736be87e18085df4956672"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-grok-build/LICENSE",
+    "sha256": "8f042607045e1010027ecec32d54971a4965764f68cf9cc4ca84180f72f37787"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/channel-grok-build/package.json",
+    "sha256": "2d60930711e7003b2ca00368a6c24db0e0d5e4843a806f79f927371447e87f91"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/core/lib/execution-policy.js",
+    "sha256": "0ce1e0cd4e5e5c5aa79eba354ae608278c60cdf46eb88cce4cbd2007d4cbec7d"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/core/lib/index.d.ts",
+    "sha256": "7006140b7ec5eed9bed31deb9936696daa37d93d7539e101a241561fc7612222"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/core/lib/index.js",
+    "sha256": "456eb6af40cb1de1e18704d8bde19960179d28f6bc74d96fb23052c8cb915fd6"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/core/lib/runtime-manager-client.js",
+    "sha256": "8468f7a7a3a2af13a07566120cb3efceaed75d8bbc785539e5e06b8ffc492896"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/core/LICENSE",
+    "sha256": "8f042607045e1010027ecec32d54971a4965764f68cf9cc4ca84180f72f37787"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/core/package.json",
+    "sha256": "17c1e90d915a1a7c553db996fae31f9985131f31ecb7c383d717f3da658c14ca"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/plugin/cordis.patch.yml",
+    "sha256": "80ddb3910778e65862f39278b079c05db517969e5b75db8cb7534c90d7bfec57"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/plugin/lib/auto-tool.d.ts",
+    "sha256": "608532d19f4934065717876bf32e2ae18a3c7dbd212960b63093c0401c39502f"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/plugin/lib/auto-tool.js",
+    "sha256": "d1138a00199e63a7af690c8bece963c75e4a9eb92522648e8faeabed979b98de"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/plugin/lib/index.d.ts",
+    "sha256": "bf48ab7c0a400c9479a40bef38b16910927b7f7131a4f23d5365ffaaedb9de34"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/plugin/lib/index.js",
+    "sha256": "0cf32db7735c47021b974003be6df3649ff0cd8b505df2b1221bdcddc7fa3724"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/plugin/lib/owned-runs.d.ts",
+    "sha256": "535debc1d6e266962b0cb0aaeeacddda69212626da05b6c844404cf7d16cc79a"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/plugin/lib/owned-runs.js",
+    "sha256": "133c2d9a4d866ddafed9df2e639b434d5dad6b0dfa111bc17b66b4475a3b84aa"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/plugin/lib/roles.d.ts",
+    "sha256": "73bed8406968e4d461420f30dc639a569c616d95b5e9dfbe06c91978a85bd5f5"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/plugin/lib/roles.js",
+    "sha256": "e2e9a2b593a7a03b8bd3e0e7a86ab4844318cd249791928d2a4c0aee9a5bf890"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/plugin/lib/run-notifier.d.ts",
+    "sha256": "263e06cc84beae6a1707fa2e971e29c5710ce356d17ce57ec32466415a58bd59"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/plugin/lib/run-notifier.js",
+    "sha256": "96796563c11848c322e4972689bf955833f166960c4f552c5fb9736196cdfd47"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/plugin/lib/skill.d.ts",
+    "sha256": "81e5413d5b47ed22aa40ba7954daa47f40c998dc80af6939802ffdcb61bc9eb6"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/plugin/lib/skill.js",
+    "sha256": "88377e36f6d28a3e492378d5ac6fdad246d2e9c70f5b4b322b696a3f1cf74d63"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/plugin/lib/tool.d.ts",
+    "sha256": "55ea8463d46e53eacd89f3c106ead123f5346b61bb3f777edfcd78f65250faac"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/plugin/lib/tool.js",
+    "sha256": "19951d539bf0bc87d663fb92bd8cf2a8aace0ad73fee217fb0c0a7e78eb389b6"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/plugin/LICENSE",
+    "sha256": "8f042607045e1010027ecec32d54971a4965764f68cf9cc4ca84180f72f37787"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/plugin/package.json",
+    "sha256": "b8aaec23b3e52a96b6ce7df3766bb450dff95a2f0980437e5cd1ad15d4b2d959"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/plugin/README.md",
+    "sha256": "fb83800601093ff8f06f8f6c2e6538dd65dd8626aef391b68f49639de5e9ff19"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@dsh-subagent-code-agents/plugin/skills/dsh-code-agents/SKILL.md",
+    "sha256": "563fbfec6faa21865abdf08958cb18e9818f403b53363af989e59878237ca1d5"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@standard-schema/spec/dist/index.cjs",
+    "sha256": "68eba92bc1637688388d7adc1fe5aa748b27c7101ad40123e64135bb5e9ed8e7"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@standard-schema/spec/dist/index.d.cts",
+    "sha256": "bdd14f07b4eca0b4b5203b85b8dbc4d084c749fa590bee5ea613e1641dcd3b29"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@standard-schema/spec/dist/index.d.ts",
+    "sha256": "bdd14f07b4eca0b4b5203b85b8dbc4d084c749fa590bee5ea613e1641dcd3b29"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@standard-schema/spec/dist/index.js",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@standard-schema/spec/LICENSE",
+    "sha256": "653b779005a3a4d64a7288c940f7b9a0e8f0b1e0375f6aa6af9473caf131e564"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@standard-schema/spec/package.json",
+    "sha256": "58e5bd75ddd0684c88b07cd799585cc72a37fd6efb8ab0c936d49e230d5164fb"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/node_modules/@standard-schema/spec/README.md",
+    "sha256": "1abba96482ed100b7b4e61277e7700aa7d1b4e06e433626f39d89cd620e0efa7"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/package.json",
+    "sha256": "6a2269d837aa2f95d55d2d5ab6fdded822b86d8c32cad07d821e65687d310bf8"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/packages/plugin/cordis.patch.yml",
+    "sha256": "80ddb3910778e65862f39278b079c05db517969e5b75db8cb7534c90d7bfec57"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/packages/plugin/lib/auto-tool.d.ts",
+    "sha256": "608532d19f4934065717876bf32e2ae18a3c7dbd212960b63093c0401c39502f"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/packages/plugin/lib/auto-tool.js",
+    "sha256": "d1138a00199e63a7af690c8bece963c75e4a9eb92522648e8faeabed979b98de"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/packages/plugin/lib/index.d.ts",
+    "sha256": "bf48ab7c0a400c9479a40bef38b16910927b7f7131a4f23d5365ffaaedb9de34"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/packages/plugin/lib/index.js",
+    "sha256": "0cf32db7735c47021b974003be6df3649ff0cd8b505df2b1221bdcddc7fa3724"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/packages/plugin/lib/owned-runs.d.ts",
+    "sha256": "535debc1d6e266962b0cb0aaeeacddda69212626da05b6c844404cf7d16cc79a"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/packages/plugin/lib/owned-runs.js",
+    "sha256": "133c2d9a4d866ddafed9df2e639b434d5dad6b0dfa111bc17b66b4475a3b84aa"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/packages/plugin/lib/roles.d.ts",
+    "sha256": "73bed8406968e4d461420f30dc639a569c616d95b5e9dfbe06c91978a85bd5f5"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/packages/plugin/lib/roles.js",
+    "sha256": "e2e9a2b593a7a03b8bd3e0e7a86ab4844318cd249791928d2a4c0aee9a5bf890"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/packages/plugin/lib/run-notifier.d.ts",
+    "sha256": "263e06cc84beae6a1707fa2e971e29c5710ce356d17ce57ec32466415a58bd59"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/packages/plugin/lib/run-notifier.js",
+    "sha256": "96796563c11848c322e4972689bf955833f166960c4f552c5fb9736196cdfd47"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/packages/plugin/lib/skill.d.ts",
+    "sha256": "81e5413d5b47ed22aa40ba7954daa47f40c998dc80af6939802ffdcb61bc9eb6"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/packages/plugin/lib/skill.js",
+    "sha256": "88377e36f6d28a3e492378d5ac6fdad246d2e9c70f5b4b322b696a3f1cf74d63"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/packages/plugin/lib/tool.d.ts",
+    "sha256": "55ea8463d46e53eacd89f3c106ead123f5346b61bb3f777edfcd78f65250faac"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/packages/plugin/lib/tool.js",
+    "sha256": "19951d539bf0bc87d663fb92bd8cf2a8aace0ad73fee217fb0c0a7e78eb389b6"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/packages/plugin/LICENSE",
+    "sha256": "8f042607045e1010027ecec32d54971a4965764f68cf9cc4ca84180f72f37787"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/packages/plugin/README.md",
+    "sha256": "fb83800601093ff8f06f8f6c2e6538dd65dd8626aef391b68f49639de5e9ff19"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/packages/plugin/skills/dsh-code-agents/SKILL.md",
+    "sha256": "563fbfec6faa21865abdf08958cb18e9818f403b53363af989e59878237ca1d5"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/README.md",
+    "sha256": "4f74a439ff3c2502492e4a9c285df4ddce389a6cdb022c1a5bce904b18d9c01f"
+  },
+  {
+    "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/tps/scripts/Tps-Official.mjs",
+    "sha256": "d89ff9eda7375df5943241f425e8a4604543b8402b340641cdfdccd0b36bdbc9"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-desktop-compat/cordis.patch.yml",
+    "sha256": "28e1b992cb792ba4666d4025de04304316e442787e8b0214050a9bcfc64bf2e3"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-desktop-compat/lib/contract.js",
+    "sha256": "96575ae95e7b73a3be367ebc3d9abaf7e3a42331bbc3f6b825401f1424755b9a"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-desktop-compat/lib/discovery.js",
+    "sha256": "16ff8e4a1d284d5af1c84f01ebc767a7a389d32ac733c130a7013d3b6db39ac6"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-desktop-compat/lib/errors.js",
+    "sha256": "c75dfcd7c84bf2c02ca6109c5a364ba491af1997dd840770219022fa9d1b375f"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-desktop-compat/lib/index.js",
+    "sha256": "9f734a56067727dbfef6718b49157b2e9734d43cc9fca766f85df09df344f1f3"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-desktop-compat/package.json",
+    "sha256": "7c66c6d4262008a750c06769a0578a1fd4505e8bcc44af5eae53f8ae3b8bbbdf"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-desktop-compat/README.md",
+    "sha256": "7e5885d33c0478c99dacd734aa17ff0675f6446b6b8010e0b17a76a6d2f16aaa"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/bin/dsh-model-gateway.mjs",
+    "sha256": "c06f7c430d0437445502ade706cfbd6e5924473b5a8a681b8e9dbd9481f64245"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/bin/dsh-remote-artifact-installer.mjs",
+    "sha256": "8455b9af19d16a8c41872fadd5a8f2d61680bffcf75e1ca7a92106a98a6bbc37"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/bin/dsh-remote-dsh-installer.mjs",
+    "sha256": "f5d23ece2077d55e34dd4c1c8cb0d3c3fcb747960ad60e9a4eebdc8111162f01"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/bin/dsh-remote-host-installer.mjs",
+    "sha256": "cdaa80878996244af8124e62f792648956dcea31e9b4c49cfe070dd36ee4ecc4"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/bin/dsh-remote-host.mjs",
+    "sha256": "76cbeb9a59a4254d8d87dd1321092c51ee0449e099f96e7d7442ce4866d7f67b"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/cordis.patch.yml",
+    "sha256": "ec9d1d6b3f518d892ebf891a03fc7ed0b0043e8a6fed2cd1e4e4a712d1b9d5ea"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/docs/control-skill-acceptance.md",
+    "sha256": "49f216c6ff224017de5af42e6a0c04f6993cfa767d19bd7758f6ceb9afac8e00"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/docs/dsh-0.1.1-rc.2-acceptance.md",
+    "sha256": "557ce99bd4428a1adc90318db9962021886df91e7125756a5b57b6d0f9f2bd49"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/docs/install-and-development.md",
+    "sha256": "a1ccf07c0d71806a2df57d22dc698bdf1b0f71050a1b5e806d45f96e794a00c8"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/docs/lan212-real-host-acceptance.md",
+    "sha256": "46e535cf557edd7a5301984f32ff4989aa6577f8f3983797ad66db1033a64d38"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/docs/protocol-contract.md",
+    "sha256": "b3c64a24da0b711496d73828afc156d533f358b8af1e924a43edf3c85ec02e21"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/docs/stage-a-acceptance.md",
+    "sha256": "974086e3d403c4f99f5013412412308eb4fe617ebe03023d6d3b729982c9bee3"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/docs/stage-b-acceptance.md",
+    "sha256": "086c09cf09313a178e94f881a12dc89bae26d18bc12933a3251333ea436e38da"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/docs/stage-c-acceptance.md",
+    "sha256": "4cb68b1d03de40a9df526281329a033a95951a5ca37ced0b8a696bb54735f3a6"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/bootstrap.mjs",
+    "sha256": "2d3c2b5bf048c150137b0a7e6f525516883c35e60ce9f9caf2811fbd004c582e"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/connector-identity.mjs",
+    "sha256": "02c26b3056ea91164f1c9d72610dda7c42148a67cdd89801c98c8a18463731db"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/connector.mjs",
+    "sha256": "aa10dd0df7be37dd342196d586b75adb14d3cd90bce94747843e688adad66e26"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/control-artifacts.mjs",
+    "sha256": "e7f5f750df4d4247ad7499fb92eb0b6c537226d3e6c01286f7b25e2a9b122130"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/desired-state-registry.mjs",
+    "sha256": "9de428d9d2364fb71cfe8926b3a500862e660e963c3f05fef16ff657f0c70d06"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/desired-state.mjs",
+    "sha256": "726c87b61ed3fb1ae709e9ea0efa102c794089f075b3a8faf35e8fbf225dfcf9"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/dsh-host-bootstrap.mjs",
+    "sha256": "0ddfd7c7d1f4dd5469b74648f791413f636b270bd474923454d283032a298852"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/dsh-http-client.mjs",
+    "sha256": "2acb8e7f8dcf3e7f01701d866e8b8779c47c8d2cc536177982552457c25da65a"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/dsh-plugin.mjs",
+    "sha256": "a5b1ad671227c2c1dd23ca6ce2354a8cee14a1ad51763afa8a32285d61ff87ce"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/errors.mjs",
+    "sha256": "6a7c85320e767d1a259e738fabf07f451e512b3817d0df44224ee9d4a42bf6e6"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/gateway.mjs",
+    "sha256": "98b54a7d07cd715b088973fa705113437fe9138883eefd37c02427ab0ac016d7"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/host-registry.mjs",
+    "sha256": "89ecf915c5dd52cb3f9be5a85b14086b6fed9b8d4faa1d6b35a3a9b0ee0969b2"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/index.mjs",
+    "sha256": "d1950f0ff87131ee53433e300fd4e8c22350034e0a6363e52e33d1b1721a0d27"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/installer-policy.mjs",
+    "sha256": "437422acf9810fa390b4050d3d42aa5568f8ef49a6a31a333a82c754eb505901"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/managed-host.mjs",
+    "sha256": "4fa97663ed686ab64f4df20a476cff2637bbea6a7a73693185f0aa93f70c328c"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/path-safety.mjs",
+    "sha256": "429dc2c58d11f1f4380dd37414cff74d4c60fbc882fffc987237e077495f672f"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/plugin-sync.mjs",
+    "sha256": "ebe052d5a8f86aeaee51736d716ba8dac858968ca9acbdbfcfcdbbe0cfcefa03"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/protocol.mjs",
+    "sha256": "a6e2c6d4879c667f7155b4453877646a1cc251269456d5d17a6ac29d3150c58b"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/remote-artifact-installer.mjs",
+    "sha256": "770d47fed64a1b98237151bc87a44368a5a1d1dae04a25aea8d8078b9f3a0044"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/remote-host.mjs",
+    "sha256": "787c3ca56ffc8f57ee673b112a069cf67737a5e89d2c1eae9f7a42deb869291e"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/remote-project-controller.mjs",
+    "sha256": "b9b7a19d2c4225cb652ae807a032878040f9e9b10f58f1c3a0664e4978232366"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/runtime-manager-service.mjs",
+    "sha256": "15bf500fba301906b3d576ea87723b1c1dd868b155dba829a61537a4cd10f60c"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/runtime-manager.mjs",
+    "sha256": "fe6c15e62a2c4be63f8fe4a5d46e1a07253ba30e1b998dda7093b54f2a065842"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/runtime-requirement.mjs",
+    "sha256": "701d987742760831a19f97d169ef796eb27427a84e6687371fc47916a380eddf"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/session-control-port.mjs",
+    "sha256": "8669b183d78302f63a776a7b1d02cd33998e665cf999e68e828373999a47b274"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/skill.mjs",
+    "sha256": "232f9b62edbcb1ac1927c6ada62338fd1706940292b726019e70023b484baade"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/ssh-discovery.mjs",
+    "sha256": "216b860505af40618642a1dd9d82871a08db11ec91b28a4609350ac149e62d37"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/ssh.mjs",
+    "sha256": "1ed0bc7f79a9d0ef574984ce0f011dfe07b987eb32d7d963dca224b03181d6c1"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/lib/state-store.mjs",
+    "sha256": "8bd7a11f199afba507deed89a06187a2fb3980b88d41bddfb654b99b65dc7b32"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/LICENSE",
+    "sha256": "5b3a6b601a03d1f036ac840ed1059e3734f94aaf2f814d0264bcd2bd82e11e95"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/package.json",
+    "sha256": "c024b975311cafda112753f2d19fa6488ed4ee333922dd32c60c727487348882"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/README.md",
+    "sha256": "edd23ba60900273929b8ea24d5c7b88c5f81bc31db1bb35425b5a6e5df9e0dc8"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/skills/dsh-remote-project/SKILL.md",
+    "sha256": "ebed44d15f473f25f928494562d9463fda8bf75a5cb5eac04acfb09b64a60ecf"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/cordis.patch.yml",
+    "sha256": "ea5e32f94b07ad623013a710c2fa41669d347d515ca104875cb615c3c6172356"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/lib/execution-policy-service.js",
+    "sha256": "e5196673250814bdca8eb8f9d1b39e85c15adae72dbc0d0a51a340f2b4c5ef3f"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/lib/index.js",
+    "sha256": "571cc97544056cd1903d28722a45b237e6fc6de7587fe4a6eed7b8861fdcf8a3"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/lib/operation-notifier.js",
+    "sha256": "eefa7d210f35bba08ab1beaf22b503a256cbea1eb95702991d9de455e3febf9c"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/lib/permission-preset.js",
+    "sha256": "1e5d5e45c38f8331751b041a9c29fcd30ccab9d6424d175a9879a79894efc6ae"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/lib/persistence-compat.js",
+    "sha256": "ece2cc17314463beed13696e9430b24d7fff09e60e8e47e7701c847b5cbcedc1"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/lib/remote-manifest.js",
+    "sha256": "deb7fa87127a46c93b0b7ba186a9ee531b676e63452d8c08533de3239114f6c6"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/lib/remote-project-bridge.js",
+    "sha256": "f48dce7933d2daf44277f64ffd76a84689e4a6563bc8e4c08156511cf5e1f130"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/lib/schedule-migration.js",
+    "sha256": "21a30f687b6b06ee12f1203b68d9bee0b14e50cd0b42dc64b8ecfcd87a15001c"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/lib/security.js",
+    "sha256": "d853ee77bcbcdcfcc8390569672c23eeaf0f43ce37e615ab14c445fc558ce713"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/lib/session-events.js",
+    "sha256": "03382454623549f04a565b022067054a7ac9c3152347306e89eeb2096ec0f56d"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/lib/skill.js",
+    "sha256": "556a601fca394310431e144a5cf46b013452e777120ba1d84b80a4b78a96a122"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/lib/state-store.js",
+    "sha256": "2a242fafb78a76a72d43f851b2791fe514c566416a811fea3cf224b937b2745a"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/LICENSE",
+    "sha256": "1126322e2cc8d165adc4c792eeb195717de2bcc7b39be1ce77959d78e87ef685"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/package.json",
+    "sha256": "27dc10b9518b45bfff2395de9cc71b1d8067d1a6124d30ad75f3cfad5efdb86a"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/README.md",
+    "sha256": "596f89b1a08b772f93d0825978d5555982b22646a32560ec369b1a726423b81d"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/scripts/Migrate-Schedules.mjs",
+    "sha256": "22a3620f594921636bc468ae95fc0e2f032484248c836d09aa26866e9722d172"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/scripts/official-test-runtime.mjs",
+    "sha256": "f4b654ade6ec921200250fd95b33e223a37e97a56bc2d5a29999576989b4a884"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/scripts/pack-check.mjs",
+    "sha256": "b0e2f7d68975b8744c522814eae67fdfec5c898126c46abbe20900ece37054ee"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/scripts/run-tests.mjs",
+    "sha256": "af451bf3d1e7805695130123c5994f33f83db677095d675b30dac2b5fe57b5fd"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/scripts/Test-DesktopDevelopment.mjs",
+    "sha256": "32553a35cfa77fb84720dec9a798171ac3ede25df8d702430f67ad25e5dda7c0"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-session-control/skills/dsh-session-control/SKILL.md",
+    "sha256": "e4abed360c93c998e6605b2d55adce5b1a148e8eaf226512bb488960c2f8f933"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-tps-correction/client.js",
+    "sha256": "aeca57c1f34d6b5e24ab5c7acbfd197280c4062f133ee18ef8f04194e744af19"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-tps-correction/contract.json",
+    "sha256": "219bbc607ccd9c147bfe9ac6a6de84b28da6c99978865205adfe83887049700b"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-tps-correction/cordis.patch.yml",
+    "sha256": "90101b82f9058f3ceae4a29dfe5dc6ce456aad823257d4c41536e952d16d9d17"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-tps-correction/index.js",
+    "sha256": "34476b395ce00986f766f17074fdf4a8a695d511f3a0c477180e0140f5e25de0"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-tps-correction/LICENSE.deepseek",
+    "sha256": "ebb4f09972aee8608be255debaf78451a68e95c290f55c240dec2ecfa16ea6be"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-tps-correction/overlay/client.js",
+    "sha256": "0c6ff1ac56879f266e0d67c0d32592cd9239b46c400563bea7568d49ec0c38bd"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-tps-correction/overlay/index.js",
+    "sha256": "7ff301eb00728a2a33da14ff983be7f17f213c9ed1126fc5d7d5927fa184a424"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-tps-correction/overlay/LICENSE",
+    "sha256": "ebb4f09972aee8608be255debaf78451a68e95c290f55c240dec2ecfa16ea6be"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-tps-correction/overlay/package.json",
+    "sha256": "9c2991a8f6f1b6d17c6a9eeb29b59c6d92eb3354e2a1c29e63a428635aff2347"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-tps-correction/package.json",
+    "sha256": "5142f3a6100ffa17c796da98de671d04236546c787e6dee59d1366c48f20169b"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-tps-correction/README.md",
+    "sha256": "5d1b622afe437bb027a6080fa32038e05b9e398326f7dde6fbcf25a87e68bfae"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-tps-correction/stream-estimate.js",
+    "sha256": "6c0828297ab72bf065441c51f2ff3d23df4a67724db10bfa1cec8853c6533cd3"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/work/scripts/Build-Tps021.mjs",
+    "sha256": "55d7590c8ec3a07301529777096866a7573e41c32e31e674787dd840faf826e7"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/work/scripts/Tps-Patch021.mjs",
+    "sha256": "b89a63ba9084b21b01c997eca07f37b83716f49be1512a9063e7e53830260854"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/work/sources/dsh-tps-correction/lib/stream-estimate.js",
+    "sha256": "6c0828297ab72bf065441c51f2ff3d23df4a67724db10bfa1cec8853c6533cd3"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/work/sources/dsh-tps-correction/LICENSE.deepseek",
+    "sha256": "ebb4f09972aee8608be255debaf78451a68e95c290f55c240dec2ecfa16ea6be"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/work/sources/dsh-tps-correction/rc021/index.js",
+    "sha256": "34476b395ce00986f766f17074fdf4a8a695d511f3a0c477180e0140f5e25de0"
+  },
+  {
+    "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/work/sources/dsh-tps-correction/rc021/README.md",
+    "sha256": "5d1b622afe437bb027a6080fa32038e05b9e398326f7dde6fbcf25a87e68bfae"
+  }
+]

@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "runtimeVersion": "0.2.2-rc.1",
+  "origin": {
+    "release": "dsh-desktop-0.2.2-rc.1/upgrade-20261106",
+    "artifactInventorySha256": "39d93feab0a85c048cf3d01863cabcf50892d1f46bb8c953753a69e9642635a5",
+    "statusFile": "candidate.json"
+  },
+  "reproduction": {
+    "command": "node desktop/releases/0.2.2-rc.1.1/Reproduce.mjs <original-app.asar> <fresh-output-directory>",
+    "inputs": "input-files.json",
+    "changedPackagesRebuilt": 4,
+    "originalPackagesVerified": 2,
+    "officialProgramBundled": false,
+    "canonicalSource": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs"
+  },
+  "packages": {
+    "adapted": [
+      "dsh-desktop-compat",
+      "dsh-tps-correction",
+      "dsh-session-control",
+      "dsh-remote-control"
+    ],
+    "reusedOriginal": [
+      "@omdsh-dev/dsh-genui",
+      "dsh-subagent-code-agents"
+    ]
+  },
+  "licenses": {
+    "distribution": "../../../../LICENSE",
+    "officialDerivedTps": "../build-inputs/tps/sources/dsh-tps-correction/LICENSE.deepseek",
+    "originalPackages": "Notices and source metadata retained verbatim inside packages and build-inputs/reused"
+  },
+  "publicInputAdjustment": "Only TPS output-directory safety guard is made portable; no payload change. Package READMEs retain historical wording; current source README, manifest and INSTALL describe this release.",
+  "historicalPublicExamples": [
+    {
+      "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/docs/install-and-development.md",
+      "sha256": "a1ccf07c0d71806a2df57d22dc698bdf1b0f71050a1b5e806d45f96e794a00c8",
+      "identicalTo": "desktop/releases/0.2.1-rc.3.1/build-inputs/dsh-remote-control/docs/install-and-development.md"
+    },
+    {
+      "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/docs/stage-b-acceptance.md",
+      "sha256": "086c09cf09313a178e94f881a12dc89bae26d18bc12933a3251333ea436e38da",
+      "identicalTo": "desktop/releases/0.2.1-rc.3.1/build-inputs/dsh-remote-control/docs/stage-b-acceptance.md"
+    },
+    {
+      "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/docs/stage-c-acceptance.md",
+      "sha256": "4cb68b1d03de40a9df526281329a033a95951a5ca37ced0b8a696bb54735f3a6",
+      "identicalTo": "desktop/releases/0.2.1-rc.3.1/build-inputs/dsh-remote-control/docs/stage-c-acceptance.md"
+    },
+    {
+      "file": "sources/dsh-desktop-0.2.2-rc.1.1/build-inputs/packages/dsh-remote-control/docs/lan212-real-host-acceptance.md",
+      "sha256": "46e535cf557edd7a5301984f32ff4989aa6577f8f3983797ad66db1033a64d38",
+      "identicalTo": "desktop/releases/0.2.1-rc.3.1/build-inputs/dsh-remote-control/docs/lan212-real-host-acceptance.md"
+    },
+    {
+      "file": "desktop/releases/0.2.2-rc.1.1/build-inputs/reused/dsh-subagent-code-agents/README.md",
+      "sha256": "4f74a439ff3c2502492e4a9c285df4ddce389a6cdb022c1a5bce904b18d9c01f",
+      "identicalArchive": "desktop/releases/0.2.1-rc.5.1/packages/dsh-subagent-code-agents-0.2.4-dsh021.1.tgz",
+      "member": "package/README.md"
+    }
+  ],
+  "validation": {
+    "candidateAcceptedByMain": true,
+    "distributionConsumerEvidence": "Reported separately by the main controller after exact frozen-byte consumer gates",
+    "realProviderCalls": 0,
+    "sshCalls": 0,
+    "externalCodingCalls": 0,
+    "nsisWizardValidated": false,
+    "visualUiValidated": false
+  }
+}

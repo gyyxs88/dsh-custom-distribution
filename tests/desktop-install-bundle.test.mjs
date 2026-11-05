@@ -5,6 +5,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { loadRelease, legacyVersion, assetName, renderPowerShell, renderInstaller } from '../desktop/release-contract.mjs';
 
 const repo = fileURLToPath(new URL('../', import.meta.url));
 const bundle = process.env.DSH_INSTALL_TEST_BUNDLE;
@@ -15,10 +16,11 @@ const json = file => JSON.parse(fs.readFileSync(file, 'utf8'));
 test('Desktop assets contain only six fixed packages and reproduce byte for byte', { skip: !(bundle && base) }, () => {
   const output = path.dirname(bundle), manifest = json(path.join(bundle, 'manifest.json'));
   const publish = json(path.join(output, 'publish-assets.json'));
-  assert.equal(publish.releaseTag, 'desktop-v0.2.1-rc.5.1');
+  const selected = loadRelease(process.env.DSH_INSTALL_TEST_VERSION ?? legacyVersion);
+  assert.equal(publish.releaseTag, manifest.releaseTag);
   assert.equal(publish.prerelease, true);
   assert.equal(publish.makeLatest, false);
-  const files = ['dsh-desktop-v0.2.1-rc.5.1-win-x64.zip', 'Install-Desktop.ps1', 'SHA256SUMS.txt', 'publish-assets.json'];
+  const files = [assetName(manifest), 'Install-Desktop.ps1', 'SHA256SUMS.txt', 'publish-assets.json'];
   assert.deepEqual(publish.uploadFiles, files);
   for (const asset of publish.assets) {
     const bytes = fs.readFileSync(path.join(output, asset.file));
@@ -40,17 +42,20 @@ test('Desktop assets contain only six fixed packages and reproduce byte for byte
   // .NET Framework's Windows ZIP writer uses backslashes for member paths.
   const members = JSON.parse(listing.stdout).map(e => ({ ...e, file: e.file.replaceAll('\\', '/') }));
   const expected = [...manifest.packages.map(p => p.file), 'manifest.json', 'scripts/Install-Desktop.ps1', 'desktop/installer.mjs', 'docs/桌面安装发行说明.md', 'README.txt'];
+  if (fs.existsSync(path.join(selected.directory, 'MIGRATION.md'))) expected.push('docs/MIGRATION.md');
   assert.deepEqual(members.map(e => e.file).sort(), expected.sort());
   for (const entry of members) assert.equal(entry.sha256, hash(fs.readFileSync(path.join(bundle, entry.file))), entry.file);
   for (const pkg of manifest.packages) assert.equal(hash(fs.readFileSync(path.join(bundle, pkg.file))), pkg.sha256);
   for (const relative of ['scripts/Install-Desktop.ps1', 'desktop/installer.mjs', 'docs/桌面安装发行说明.md']) {
-    assert.ok(fs.readFileSync(path.join(bundle, relative)).equals(fs.readFileSync(path.join(repo, relative))), relative);
+    const source = fs.readFileSync(relative.endsWith('.md') ? fs.existsSync(path.join(selected.directory, 'INSTALL.md')) ? path.join(selected.directory, 'INSTALL.md') : path.join(repo, 'docs/桌面安装发行说明-0.2.1-rc.5.1.md') : path.join(repo, relative), 'utf8');
+    const expectedSource = relative.endsWith('.ps1') ? renderPowerShell(source, manifest, selected.manifestSha256) : relative.endsWith('.mjs') ? renderInstaller(source, selected.manifestSha256) : source;
+    assert.equal(fs.readFileSync(path.join(bundle, relative), 'utf8'), expectedSource, relative);
     assert.doesNotMatch(fs.readFileSync(path.join(bundle, relative), 'utf8'), /[CD]:[\\/](?:Users|Project|assistant|DSH)(?:[\\/]|\b)/i);
   }
-  assert.ok(fs.readFileSync(path.join(bundle, 'manifest.json')).equals(fs.readFileSync(path.join(repo, 'desktop/releases/0.2.1-rc.5.1/manifest.json'))));
+  assert.ok(fs.readFileSync(path.join(bundle, 'manifest.json')).equals(fs.readFileSync(path.join(selected.directory, 'manifest.json'))));
   const rebuilt = path.join(base, 'asset-rebuild-' + Date.now());
-  const build = spawnSync(process.execPath, [path.join(repo, 'scripts/Build-DesktopBundle.mjs'), rebuilt], { encoding: 'utf8', windowsHide: true });
+  const build = spawnSync(process.execPath, [path.join(repo, 'scripts/Build-DesktopBundle.mjs'), rebuilt, path.join(selected.directory, 'packages'), manifest.releaseTag.replace(/^desktop-v/, '')], { encoding: 'utf8', windowsHide: true });
   assert.equal(build.status, 0, build.stdout + build.stderr);
   for (const file of files) assert.ok(fs.readFileSync(path.join(output, file)).equals(fs.readFileSync(path.join(rebuilt, file))), file);
-  fs.writeFileSync(path.join(base, 'asset-results.json'), JSON.stringify({ status: 'PASSED', files, exactZipMembers: members, fixedPackageCount: 6, bootstrapDigestPinned: true, utf8Bom: true, reproducible: true, rebuilt, publicMachinePathsFound: false }, null, 2) + '\n');
+  fs.writeFileSync(path.join(base, 'asset-results.json'), JSON.stringify({ status: 'PASSED', files, exactZipMembers: members, fixedPackageCount: manifest.packages.length, bootstrapDigestPinned: true, utf8Bom: true, reproducible: true, rebuilt, publicMachinePathsFound: false }, null, 2) + '\n');
 });
