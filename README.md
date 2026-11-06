@@ -19,7 +19,7 @@
 桌面版固定 runtime `0.2.2-rc.1`、compat `0.2.2-rc.1.2`、TPS `0.2.2-rc.1.1`、Session `0.8.6-dsh022.1`、remote `0.3.4-dsh022.1`；五个未改包复用原 tgz。
 六包与两项精确兼容许可见 [Desktop manifest](desktop/releases/0.2.2-rc.1.2/manifest.json)，
 公开源码、重现方法和验收范围见 [Desktop README](desktop/README.md)。候选与发行消费者检查分别记录；
-本版只修复 Go 安全诊断与重试事实传递；新 bundle 的重现、隔离安装、Host 加载、检查与回退已通过，见 [验收记录](desktop/releases/0.2.2-rc.1.2/ACCEPTANCE.md)。新候选真实 provider、生产加载、NSIS 实际交互向导与 UI 目视未计为通过。
+本版只修复 Go 安全诊断与重试事实传递；新 bundle 的重现、隔离安装、Host 加载、检查与回退已通过，见 [冻结阶段验收记录](desktop/releases/0.2.2-rc.1.2/ACCEPTANCE.md)。发布后本机安装、生产插件激活及合成 Go 请求也已通过，见 [生产验收](docs/DESKTOP-0.2.2-rc.1.2-PRODUCTION.md)。NSIS 实际交互向导与 UI 目视未计为通过。
 
 ## 旧 Web 版安装（v0.5.1）
 

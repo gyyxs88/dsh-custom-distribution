@@ -25,6 +25,8 @@ node scripts/Build-DesktopBundle.mjs <空输出目录> <固定包目录> 0.2.2-r
 
 候选 API/权限/迁移检查、发行安装/Host 门禁和发布后真实公开下载分别验收；不将模拟或重现算作真实 provider、SSH、外部编码、NSIS 向导或 UI 目视通过。
 
+发布后已完成本机正常退出、安装、Verify、重启与生产插件激活核对；已安装 `.2` 的一次最小合成 Go 请求 HTTP 200。见 [独立生产记录](../docs/DESKTOP-0.2.2-rc.1.2-PRODUCTION.md)，不改写冻结候选阶段的验证记录。
+
 ## 历史发行
 
 旧 [rc.5.1 安装说明](../docs/桌面安装发行说明-0.2.1-rc.5.1.md)、[rc.5.1 冻结源](releases/0.2.1-rc.5.1/source/provenance.json)、rc.3.1 原始目录保持不变。
