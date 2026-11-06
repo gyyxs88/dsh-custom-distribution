@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 export const legacyVersion = '0.2.1-rc.5.1';
 export const targetVersion = '0.2.2-rc.1.1';
-const runtimes = { [legacyVersion]: '0.2.1-rc.5', [targetVersion]: '0.2.2-rc.1' };
+const runtimes = { [legacyVersion]: '0.2.1-rc.5', [targetVersion]: '0.2.2-rc.1', '0.2.2-rc.1.2': '0.2.2-rc.1' };
 const pluginNames = ['@omdsh-dev/dsh-genui', 'dsh-desktop-compat', 'dsh-remote-control', 'dsh-session-control', 'dsh-subagent-code-agents', 'dsh-tps-correction'];
 const exactVersion = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/;
 export const digest = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -23,14 +23,14 @@ export function validateManifest(manifest, version) {
   if (!Array.isArray(manifest.bundles) || JSON.stringify([...manifest.bundles].sort()) !== JSON.stringify([...names].sort())) throw Error('Invalid bundle set.');
   const retired = manifest.retiredPackages ?? [];
   if (!Array.isArray(retired) || new Set(retired).size !== retired.length || retired.some(n => !pluginNames.includes(n) || names.includes(n))) throw Error('Invalid retired package set.');
-  if (version === targetVersion && pluginNames.some(n => !names.includes(n) && !retired.includes(n))) throw Error('Every previous plugin needs an explicit retain or retire decision.');
+  if (runtimes[version] === '0.2.2-rc.1' && pluginNames.some(n => !names.includes(n) && !retired.includes(n))) throw Error('Every previous plugin needs an explicit retain or retire decision.');
   if (!manifest.compatibility || typeof manifest.compatibility !== 'object' || Array.isArray(manifest.compatibility)) throw Error('Invalid exact compatibility grants.');
   for (const [key, versions] of Object.entries(manifest.compatibility)) {
     if (!packages.some(p => key === `${p.name}@${p.version}`) || !Array.isArray(versions) || !versions.includes(manifest.runtimeVersion) || new Set(versions).size !== versions.length || versions.some(v => !exactVersion.test(v))) throw Error('Invalid exact compatibility grants.');
   }
   const official = manifest.official?.windowsX64;
   if (!official || official.url !== `https://download.deepseek.com/dsh-desk/bin/win-x64/deepseek-harness-${manifest.runtimeVersion}-win-x64.exe` || !Number.isSafeInteger(official.size) || official.size <= 0 || !/^[A-Za-z0-9+/]{86}==$/.test(official.sha512Base64) || !/^[a-f0-9]{64}$/.test(official.appAsarSha256) || !/^[a-f0-9]{64}$/.test(official.exeSha256)) throw Error('Invalid official program identity.');
-  if (version === targetVersion && (official.size !== 293425336 || official.sha512Base64 !== 'swcK0J6ofGkaAWLRpOes2ca7CWO8vuM5Vp0FRnQ/DG3q+Z+OhvsgLz3hIiSYpRUETY+fEz+Ww86fNa0jiVIifw==')) throw Error('Unexpected official 0.2.2-rc.1 download identity.');
+  if (runtimes[version] === '0.2.2-rc.1' && (official.size !== 293425336 || official.sha512Base64 !== 'swcK0J6ofGkaAWLRpOes2ca7CWO8vuM5Vp0FRnQ/DG3q+Z+OhvsgLz3hIiSYpRUETY+fEz+Ww86fNa0jiVIifw==')) throw Error('Unexpected official 0.2.2-rc.1 download identity.');
   return manifest;
 }
 
@@ -41,7 +41,7 @@ export function loadRelease(version = legacyVersion) {
   if (!fs.existsSync(file)) throw Error(`Frozen release manifest is not available: ${version}. Integrate the accepted candidate first.`);
   const bytes = fs.readFileSync(file);
   const manifest = validateManifest(JSON.parse(bytes), version);
-  if (version === targetVersion && manifest.frozen !== true) throw Error('Frozen release manifest is not available: candidate integration is still preliminary.');
+  if (runtimes[version] === '0.2.2-rc.1' && manifest.frozen !== true) throw Error('Frozen release manifest is not available: candidate integration is still preliminary.');
   return { directory, manifest, manifestSha256: digest(bytes) };
 }
 

@@ -1,0 +1,196 @@
+diff --git a/README.md b/README.md
+index 06e96a3..a40c29e 100644
+--- a/README.md
++++ b/README.md
+@@ -1,16 +1,21 @@
+-# Desktop 0.2.1-rc.2 compatibility supplement
++# Desktop 0.2.2-rc.1 compatibility supplement
+ 
+-External supplemental bundle `0.2.1-rc.2.2` for official DSH `0.2.1-rc.2`.
++External supplemental bundle `0.2.2-rc.1.2` for official DSH `0.2.2-rc.1`.
+ It replaces `dsh-desktop-opencode-session`. Cordis, LLM, pi-ai adapter and native
+ DeepSeek adapter entry sources are gated by exact reviewed version and SHA-256.
+ An upstream change requires review before activation.
+ 
+ The plugin wraps instances, never prototypes or global fetch:
+ 
+-* `PiAiAdapter.streamWithSnapshot` retains captured generations, clones only the
+-  selected Go profile and overwrites both identity headers with the dispatch SID.
+-  Main and prepared/title calls share the boundary. Terminal provider failures
+-  are corrected before the official runtime, persistence and retry hook.
++* The official request-owned header hook overwrites both Go identity headers
++  with the dispatch SID. The official adapter subsequently enforces its own
++  `deepseek-harness` User-Agent. Main and prepared/title calls share the boundary.
++* `PiAiAdapter.streamWithSnapshot` retains captured generations. Only the two Go
++  routes get a request-owned Models view that injects the SDK's supported fetch
++  option. It captures actual HTTP status, validated request ID and Retry-After,
++  plus complete error JSON bounded to 64 KiB, before SDK string truncation.
++  It leaves the snapshot, profiles, global transport and prototypes untouched.
++  Terminal provider failures are corrected before persistence and official retry.
+ * `DeepSeekAdapter.generate` covers native main and prepared calls, including
+   the official account provider. It reads native LlmError status and complete
+   JSON cause before normalization loses those facts. Account token rejection and
+@@ -25,7 +30,7 @@ The plugin wraps instances, never prototypes or global fetch:
+ * `llm.discoverModels` retains live-first discovery in the standard `llm-pi-ai`
+   namespace for providers with an installed catalog, lazy credentials, stored
+   headers and safe static-catalog fallback. Providers without a catalog use the
+-  official live discovery unchanged. Official 0.2.1-rc.2 still chooses the static
++  official live discovery unchanged. Official 0.2.2-rc.1 still chooses the static
+   catalog before a supplied endpoint, and still conflates some 403 failures with
+   invalid API keys; neither gap is retired on the basis of a similar feature name.
+ 
+@@ -38,7 +43,14 @@ OpenRouter in-flight spending budget is transient; permanent balance, credits,
+ budget and spend-limit failures are QUOTA. Ordinary 403 is FORBIDDEN. Generic
+ authentication failure is AUTHENTICATION_FAILED; explicit invalid API keys retain
+ AUTH and the official accurate invalid-key UI. Fixed category summaries exclude
+-provider bodies, URLs, credentials, metadata and causes. Status, safe request ID,
++provider bodies, URLs, credentials, metadata and causes. Go failures append only
++explicitly allowlisted `provider.type`/`provider.code` tokens to the fixed summary:
++the official failure schema discards arbitrary extra properties. Unknown tokens
++are omitted. Unknown HTTP 429 remains unspecified RATE_LIMIT; it does not prove
++quota exhaustion or concurrency. Known insufficient_quota remains QUOTA even if
++the SDK's 4000-character diagnostic truncation would hide its structured token.
++Actual transport Retry-After overrides body metadata; an absent/invalid actual
++header is not replaced by an untrusted JSON field. Status, safe request ID,
+ retry delay, image-offload facts and cancellation are retained when available.
+ 
+ Normal retry remains official: RATE_LIMIT/SERVER/TIMEOUT/TRANSPORT are eligible;
+@@ -49,7 +61,8 @@ added. `network_error` remains TRANSPORT. Previously discarded upstream facts
+ cannot be reconstructed: native SSE can lose structured type/metadata, Responses
+ SSE can retain only type/message, Chat SSE can retain only message, and pi-ai can
+ discard HTTP retry headers/request IDs. Available facts are preserved; absent
+-ones are not invented.
++ones are not invented. The Go transport boundary now closes the HTTP-header loss
++for subsequent requests; it cannot reconstruct discarded historical facts.
+ 
+ Adapter updates attach new official instances. Disposal restores original own
+ descriptors without overwriting a later extension. Already started operations
+@@ -62,7 +75,9 @@ fallback requires a nonempty official catalog and a recognized connection/timeou
+ cause or HTTP 500-599. Authentication, rate limits, malformed replies, invalid
+ URLs/keys and cancellation do not permit fallback.
+ 
+-`scripts/*Desktop.mjs` build a deterministic seven-member TGZ and run real ASAR
+-adapters, native/account providers, Files uploads and official retry hooks against
+-loopback fixtures in isolated Electron Node mode. Production installation follows
+-the main controller's candidate gate and independent official UI acceptance.
++The containing task's `run-offline.cjs`, `run-existing.cjs` and `Build-Package.mjs`
++run the real ASAR adapters, native/account providers, Files uploads and official
++retry hooks against loopback fixtures in isolated Electron Node mode and build a
++deterministic seven-member TGZ. Production installation follows the main
++controller's independent acceptance; this candidate is not installed by these
++scripts.
+diff --git a/lib/errors.js b/lib/errors.js
+index 79989c0..d9cf39a 100644
+--- a/lib/errors.js
++++ b/lib/errors.js
+@@ -10,6 +10,10 @@ const rates = new Set(['rate_limit_error', 'rate_limit_exceeded', 'too_many_requ
+ const invalidKeys = new Set(['invalid_api_key', 'invalid_key', 'invalid_x_api_key']);
+ const permissions = new Set(['permission_error', 'permission_denied', 'access_denied', 'forbidden']);
+ const storageQuotas = new Set(['storage_quota_exceeded', 'storage_limit_exceeded', 'file_count_limit_exceeded', 'too_many_files']);
++// Only reviewed machine tokens may survive the public failure schema. Arbitrary
++// type/code strings can contain credentials or user content just like messages.
++const diagnosticTokens = new Set([...regions, ...quotas, ...rates, ...invalidKeys, ...permissions, ...storageQuotas,
++  'api_error', 'overloaded_error', 'server_error', 'invalid_request_error', 'request_too_large', 'request_too_large_error', 'authentication_error']);
+ const canonicalFailures = new WeakSet();
+ const messages = {
+   REGION_RESTRICTED: '该模型在当前地区不可用，请手动切换其他模型。',
+@@ -108,19 +112,58 @@ function retryAfter(value) {
+ export function correctedFailure(failure, facts, pi = false) {
+   if (canonicalFailures.has(failure)) return failure;
+   const code = codeOf(failure, facts, pi);
+-  const delay = retryAfter(detailOf(facts.raw).metadata?.headers?.['Retry-After'] ?? detailOf(facts.raw).metadata?.headers?.['retry-after']);
+-  const corrected = Object.freeze({ ...(delay === undefined ? {} : { providerRetryAfterMs: delay }), ...safeFacts(failure), ...(facts.status === undefined ? {} : { status: facts.status }),
++  // Once the actual HTTP response was observed, a body field claiming to be a
++  // header cannot substitute for an absent or invalid transport Retry-After.
++  const delay = facts.receivedHttp ? undefined : retryAfter(detailOf(facts.raw).metadata?.headers?.['Retry-After'] ?? detailOf(facts.raw).metadata?.headers?.['retry-after']);
++  const detail = detailOf(facts.raw);
++  const diagnostic = facts.receivedHttp ? ['type', 'code'].flatMap(field => diagnosticTokens.has(token(detail[field])) ? [`provider.${field}=${token(detail[field])}`] : []) : [];
++  // The official failure snapshot drops custom fields; a fixed-token suffix is
++  // the existing schema's safe, durable diagnostic surface, including retries.
++  const summary = messages[code] ?? '模型请求失败，请检查请求与服务商状态后重试。';
++  const corrected = Object.freeze({ ...(delay === undefined ? {} : { providerRetryAfterMs: delay }), ...safeFacts(failure), ...safeFacts(facts),
+     code: code === 'QUOTA' && failure.code === 'ACCOUNT_QUOTA' ? 'ACCOUNT_QUOTA' : code,
+     // Fixed summaries intentionally exclude raw body, metadata, URL and cause.
+-    message: messages[code] ?? '模型请求失败，请检查请求与服务商状态后重试。' });
++    message: summary + (diagnostic.length ? ` [${diagnostic.join('; ')}]` : '') });
+   canonicalFailures.add(corrected);
+   return corrected;
+ }
+ 
+-export function correctedChunk(chunk, provider) {
++export function correctedChunk(chunk, provider, transportFacts) {
+   if (chunk.type !== 'finish' || !['error', 'aborted'].includes(chunk.reason?.kind) || !chunk.reason.failure) return chunk;
+   const failure = chunk.reason.failure;
+-  return { ...chunk, reason: { ...chunk.reason, failure: correctedFailure(failure, piFacts(failure, provider), true) } };
++  const parsed = piFacts(failure, provider);
++  const facts = transportFacts ? { ...parsed, ...transportFacts, raw: transportFacts.raw ?? parsed.raw } : parsed;
++  return { ...chunk, reason: { ...chunk.reason, failure: correctedFailure(failure, facts, true) } };
++}
++
++// A request-owned view over the exact reviewed Models boundary. Do not mutate
++// the immutable prepared snapshot, a provider, a prototype, or global fetch.
++// The SDK's injectable fetch is the last place with actual HTTP status/headers
++// and complete bounded JSON before pi-ai reduces errors to truncated strings.
++export function piDiagnostics(snapshot) {
++  let facts;
++  const models = snapshot.models;
++  return {
++    facts: () => facts,
++    snapshot: { ...snapshot, models: {
++      getModel: (...args) => models.getModel(...args),
++      streamSimple(model, context, options) {
++        const fetch = options.fetch ?? globalThis.fetch;
++        return models.streamSimple(model, context, { ...options, fetch: async (...args) => {
++          const response = await fetch(...args);
++          const delay = retryAfter(response.headers.get('retry-after'));
++          const requestId = response.headers.get('x-request-id') ?? response.headers.get('request-id');
++          facts = { receivedHttp: true, status: response.status,
++            ...(delay === undefined ? {} : { providerRetryAfterMs: delay }), ...(requestId === null ? {} : { requestId }) };
++          if (!response.ok) {
++            try { facts.raw = await errorBody(response); }
++            catch { /* Diagnostics must not replace the original SDK result. */ }
++          }
++          return response;
++        } });
++      },
++    } },
++  };
+ }
+ 
+ export function nativeFacts(error) {
+diff --git a/lib/index.js b/lib/index.js
+index 33b5e54..ee43a80 100644
+--- a/lib/index.js
++++ b/lib/index.js
+@@ -4,7 +4,7 @@ import { DeepSeekAdapter, DeepSeekFilesClient, DeepSeekFileStore } from '@deepse
+ import { createRequire } from 'node:module';
+ import { discover } from './discovery.js';
+ import { assertOfficial } from './contract.js';
+-import { correctedChunk, correctedError, filesClient } from './errors.js';
++import { correctedChunk, correctedError, filesClient, piDiagnostics } from './errors.js';
+ 
+ const require = createRequire(import.meta.url);
+ const versions = ['@deepseek-ai/dsh-llm', '@deepseek-ai/dsh-llm-pi-ai'].map(pkg => require(`${pkg}/package.json`).version);
+@@ -94,8 +94,9 @@ export function apply(ctx) {
+         const self = this;
+         return (async function* () {
+           if (!(snapshot?.profiles instanceof Map) || !snapshot.models) throw new LlmError('Unsupported rc.2 snapshot', 'UNSUPPORTED_ADAPTER');
++          const diagnostics = routes.has(options.provider) ? piDiagnostics(snapshot) : undefined;
+           try {
+-            for await (const chunk of original.call(self, options, snapshot)) yield correctedChunk(chunk, options.provider);
++            for await (const chunk of original.call(self, options, diagnostics?.snapshot ?? snapshot)) yield correctedChunk(chunk, options.provider, diagnostics?.facts());
+           } catch (error) { throw correctedError(error, options.signal); }
+         })();
+       });
+diff --git a/package.json b/package.json
+index c679d6d..48fa001 100644
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "dsh-desktop-compat",
+-  "version": "0.2.2-rc.1.1",
++  "version": "0.2.2-rc.1.2",
+   "private": true,
+   "type": "module",
+   "main": "lib/index.js",

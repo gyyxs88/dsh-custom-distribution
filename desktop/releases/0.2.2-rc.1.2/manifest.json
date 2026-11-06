@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "releaseTag": "desktop-v0.2.2-rc.1.2",
+  "runtimeVersion": "0.2.2-rc.1",
+  "status": "FROZEN_CANDIDATE",
+  "frozen": true,
+  "official": {
+    "windowsX64": {
+      "url": "https://download.deepseek.com/dsh-desk/bin/win-x64/deepseek-harness-0.2.2-rc.1-win-x64.exe",
+      "size": 293425336,
+      "sha512Base64": "swcK0J6ofGkaAWLRpOes2ca7CWO8vuM5Vp0FRnQ/DG3q+Z+OhvsgLz3hIiSYpRUETY+fEz+Ww86fNa0jiVIifw==",
+      "appAsarSha256": "5fa8a6b21bceb8f3e99e30efa2270efd0cc773a11e42aa0488f804a64b34e637",
+      "exeSha256": "bad50d18a3cf42621ac03aeaf1dc527ee20384ca4c0b7eee64512954ddb9a76e"
+    }
+  },
+  "packages": [
+    {
+      "name": "@omdsh-dev/dsh-genui",
+      "version": "0.9.1-dsh021.3",
+      "file": "packages/omdsh-dev-dsh-genui-0.9.1-dsh021.3.tgz",
+      "sha256": "c13187a35da2519b89fbe69b4ff4cd7e285c257785114257145aee21003a2ad7"
+    },
+    {
+      "name": "dsh-desktop-compat",
+      "version": "0.2.2-rc.1.2",
+      "file": "packages/dsh-desktop-compat-0.2.2-rc.1.2.tgz",
+      "sha256": "719ec9c31fdb567a7b636e2dff4788fb643925ed648303c2186922445348cc2d"
+    },
+    {
+      "name": "dsh-remote-control",
+      "version": "0.3.4-dsh022.1",
+      "file": "packages/dsh-remote-control-0.3.4-dsh022.1.tgz",
+      "sha256": "52d8fc2919f844c139dfbefbf8a7b1ed065f339e79b5243b55b91166f7936224"
+    },
+    {
+      "name": "dsh-session-control",
+      "version": "0.8.6-dsh022.1",
+      "file": "packages/dsh-session-control-0.8.6-dsh022.1.tgz",
+      "sha256": "e176ff7163ce2b54038e45a34cfe166cdcaae614eeabe2797e5cf9d4924af13e"
+    },
+    {
+      "name": "dsh-subagent-code-agents",
+      "version": "0.2.4-dsh021.1",
+      "file": "packages/dsh-subagent-code-agents-0.2.4-dsh021.1.tgz",
+      "sha256": "8f2923e4d76a9b6c8af58b75e912f0aa12a0f4933da778d996816c731e33632b"
+    },
+    {
+      "name": "dsh-tps-correction",
+      "version": "0.2.2-rc.1.1",
+      "file": "packages/dsh-tps-correction-0.2.2-rc.1.1.tgz",
+      "sha256": "6b3e3ba90dccc4416fe1c2f4134317ed188d72ed46e191a35b3224e6534e882e"
+    }
+  ],
+  "compatibility": {
+    "@omdsh-dev/dsh-genui@0.9.1-dsh021.3": [
+      "0.2.2-rc.1"
+    ],
+    "dsh-subagent-code-agents@0.2.4-dsh021.1": [
+      "0.2.2-rc.1"
+    ]
+  },
+  "bundles": [
+    "dsh-session-control",
+    "dsh-remote-control",
+    "dsh-subagent-code-agents",
+    "@omdsh-dev/dsh-genui",
+    "dsh-desktop-compat",
+    "dsh-tps-correction"
+  ],
+  "retiredPackages": [],
+  "hostChecks": {
+    "modules": [
+      "dsh-session-control",
+      "dsh-remote-control/plugin",
+      "dsh-subagent-code-agents",
+      "@omdsh-dev/dsh-genui",
+      "dsh-desktop-compat"
+    ],
+    "entrySuffixes": [
+      "tps-correction-021",
+      "tps-trajectory-021"
+    ]
+  },
+  "preStartGate": "Existing histories require complete cold backup and offline Schedule migration with unresolved=[] before first 0.2.2-rc.1 Host start; see INSTALL.md.",
+  "validation": {
+    "scope": "Offline source and targeted checks only; bundle consumer acceptance, deployment and publication are owned by the main controller.",
+    "realProviderCalls": 0,
+    "sshCalls": 0,
+    "externalCodingCalls": 0,
+    "realProviderUsageValidated": false,
+    "nsisWizardValidated": false,
+    "visualUiValidated": false,
+    "targetedChecks": 22,
+    "inheritedCompatChecks": 108,
+    "inheritedErrorChecks": 29,
+    "reusedPackages": 5,
+    "bundleConsumerValidated": false
+  },
+  "baseRelease": "desktop-v0.2.2-rc.1.1"
+}
