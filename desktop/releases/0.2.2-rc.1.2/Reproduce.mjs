@@ -12,9 +12,11 @@ function files(directory, prefix = '') {
     entry.isDirectory() ? files(path.join(directory, entry.name), prefix + entry.name + '/') : [{ name: prefix + entry.name, data: fs.readFileSync(path.join(directory, entry.name)) }]);
 }
 // Accepted seven-member USTAR ordering, zero metadata, level-9 gzip.
-export function packSource(directory) {
+export function packSource(directory, order) {
   const parts = [], oct = (n,l) => n.toString(8).padStart(l-1, '0') + '\0';
-  for (const { name, data } of files(directory)) {
+  const source = files(directory);
+  if (order) source.sort((a, b) => order(a.name, b.name));
+  for (const { name, data } of source) {
     const full = 'package/' + name;
     if (Buffer.byteLength(full) > 100) throw Error('Tar path too long');
     const header = Buffer.alloc(512);

@@ -64,6 +64,11 @@ function privateDir(dir) {
 // Do not infer new-runtime grants from a previous release's exceptions.
 const expectedGrants = Object.keys(manifest.compatibility);
 const retired = manifest.retiredPackages ?? [];
+const previousReleaseTags = ['desktop-v0.2.1-rc.3.1'];
+if (manifest.releaseTag !== 'desktop-v0.2.1-rc.5.1') previousReleaseTags.push('desktop-v0.2.1-rc.5.1');
+const legacyAgentTeamBundle = '@deepseek-ai/dsh-experimental-agent-team-profile';
+const usesBuiltInAgentTeam = manifest.runtimeVersion === '0.2.2-rc.3';
+if (usesBuiltInAgentTeam) previousReleaseTags.push('desktop-v0.2.2-rc.1.1', 'desktop-v0.2.2-rc.1.2');
 const managedNames = [...manifest.packages.map(p => p.name), ...retired];
 for (const pkg of manifest.packages) {
   if (hash(path.join(bundle, pkg.file)) !== pkg.sha256) throw Error(`Package checksum mismatch: ${pkg.name}`);
@@ -151,7 +156,7 @@ try {
         console.log(JSON.stringify({ ...inspect(), status: 'ALREADY_INSTALLED', backupId: current.backupId }));
         process.exitCode = 0;
         alreadyInstalled = true;
-      } else if ((manifest.releaseTag === 'desktop-v0.2.1-rc.5.1' ? ['desktop-v0.2.1-rc.3.1'] : ['desktop-v0.2.1-rc.3.1', 'desktop-v0.2.1-rc.5.1']).includes(current.releaseTag) && current.status === 'INSTALLED') {
+      } else if (previousReleaseTags.includes(current.releaseTag) && current.status === 'INSTALLED') {
         // Preserve the previous distribution receipt and managed bytes as part of
         // this installation's backup, so plugin rollback can restore the pair.
         const metadata = read(packageFile);
@@ -220,6 +225,8 @@ try {
           after.dsh.profile.bundles = after.dsh.profile.bundles.filter(n => n !== name);
         }
         for (const p of manifest.packages) after.dependencies[p.name] = desiredSpec(p);
+        // The newer official runtime registers AgentTeam from the base bundle.
+        if (usesBuiltInAgentTeam) after.dsh.profile.bundles = after.dsh.profile.bundles.filter(n => n !== legacyAgentTeamBundle);
         for (const name of manifest.bundles) if (!after.dsh.profile.bundles.includes(name)) after.dsh.profile.bundles.push(name);
         write(packageFile, after);
         // Same official locked, atomic API as the accepted Merge-Compatibility.mjs.
@@ -262,7 +269,7 @@ try {
       const added = manifest.bundles.filter(n => !receipt.before.dsh?.profile?.bundles?.includes(n));
       current.dsh.profile.bundles = current.dsh.profile.bundles.filter(n => !added.includes(n));
       const originalBundles = receipt.before.dsh?.profile?.bundles ?? [];
-      for (const name of originalBundles.filter(n => retired.includes(n))) {
+      for (const name of originalBundles.filter(n => retired.includes(n) || (usesBuiltInAgentTeam && n === legacyAgentTeamBundle))) {
         if (current.dsh.profile.bundles.includes(name)) continue;
         const originalIndex = originalBundles.indexOf(name);
         const next = originalBundles.slice(originalIndex + 1).find(n => current.dsh.profile.bundles.includes(n));

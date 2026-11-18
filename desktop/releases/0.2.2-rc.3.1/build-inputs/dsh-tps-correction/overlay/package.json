@@ -1,0 +1,30 @@
+{
+  "name": "@deepseek-ai/dsh-client-ui-trajectory",
+  "description": "External TPS overlay for the official trajectory client",
+  "version": "0.2.2-rc.3",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json"
+  },
+  "license": "MIT",
+  "dsh": {
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-api-session-controller",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-renderer",
+        "@deepseek-ai/dsh-client-ui-session"
+      ],
+      "platform": "web"
+    }
+  },
+  "dshLocalPatch": {
+    "id": "tps-receipt-rc3.1",
+    "baseVersion": "0.2.2-rc.3",
+    "sourceSha256": "1ecf2b126f8cd60deec659314a43194dbc51fb622078027f663a1d4fe5895bbf"
+  }
+}

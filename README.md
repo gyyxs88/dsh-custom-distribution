@@ -4,22 +4,16 @@
 
 > 本项目不是 DeepSeek 官方发行版。DeepSeek Harness 和各组件仍受各自许可证约束。
 
-## 安装 Desktop 0.2.2-rc.1（桌面版入口）
+## 安装 Desktop 0.2.2-rc.3（Windows x64）
 
-首次安装或从旧桌面版升级：先正常退出 Desktop，下载
-[Install-Desktop.ps1](https://github.com/gyyxs88/dsh-custom-distribution/releases/download/desktop-v0.2.2-rc.1.2/Install-Desktop.ps1)，
-右键“使用 PowerShell 运行”。无需管理员、Node/npm 或重新检查插件适配。
-脚本复用精确官方 0.2.2-rc.1；缺失或版本不符时，校验固定官方签名安装器后打开安装向导。
-向导完成时取消立即启动。已有历史须先完成一致性冷备和旧 Schedule 离线迁移/对账，要求 unresolved=[]，再首次打开桌面；安装器不自动迁移历史。
+先正常退出 Desktop 及托盘，已有历史请先冷备并核对定时任务。下载
+[Install-Desktop.ps1](https://github.com/gyyxs88/dsh-custom-distribution/releases/download/desktop-v0.2.2-rc.3.1/Install-Desktop.ps1)
+并在 PowerShell 中运行。需要安装官方运行时时，脚本核验官方签名安装器后打开向导。向导结束时取消立即启动。
 
-固定 [Desktop prerelease](https://github.com/gyyxs88/dsh-custom-distribution/releases/tag/desktop-v0.2.2-rc.1.2)
-提供六包 ZIP、安装/检查/回退入口；现有用户配置、会话、provider 与凭据保留。
-此入口与 GitHub Latest 的旧 Web v0.5.1 分开。详情见 [桌面安装发行说明](desktop/releases/0.2.2-rc.1.2/INSTALL.md)。
+桌面预发行版 [desktop-v0.2.2-rc.3.1](https://github.com/gyyxs88/dsh-custom-distribution/releases/tag/desktop-v0.2.2-rc.3.1)
+提供六包 ZIP、安装、检查和插件回退入口。首次迁移旧历史的用户请按 [安装说明](desktop/releases/0.2.2-rc.3.1/INSTALL.md) 操作。
 
-桌面版固定 runtime `0.2.2-rc.1`、compat `0.2.2-rc.1.2`、TPS `0.2.2-rc.1.1`、Session `0.8.6-dsh022.1`、remote `0.3.4-dsh022.1`；五个未改包复用原 tgz。
-六包与两项精确兼容许可见 [Desktop manifest](desktop/releases/0.2.2-rc.1.2/manifest.json)，
-公开源码、重现方法和验收范围见 [Desktop README](desktop/README.md)。候选与发行消费者检查分别记录；
-本版只修复 Go 安全诊断与重试事实传递；新 bundle 的重现、隔离安装、Host 加载、检查与回退已通过，见 [冻结阶段验收记录](desktop/releases/0.2.2-rc.1.2/ACCEPTANCE.md)。发布后本机安装、生产插件激活及合成 Go 请求也已通过，见 [生产验收](docs/DESKTOP-0.2.2-rc.1.2-PRODUCTION.md)。NSIS 实际交互向导与 UI 目视未计为通过。
+兼容层和 TPS 升级至 `0.2.2-rc.3.1`，其余四个插件沿用上一发行的原始包。版本、摘要与重现方法见 [Desktop 发行说明](desktop/README.md)。
 
 ## 旧 Web 版安装（v0.5.1）
 

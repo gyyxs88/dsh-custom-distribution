@@ -1,4 +1,15 @@
-# Desktop 0.2.2-rc.1 安装与发行
+# Desktop 安装与发行
+
+当前 Windows x64 预发行版为 [desktop-v0.2.2-rc.3.1](https://github.com/gyyxs88/dsh-custom-distribution/releases/tag/desktop-v0.2.2-rc.3.1)。它固定官方 Desktop `0.2.2-rc.3`、compat 和 TPS `0.2.2-rc.3.1` 以及四个复用包。见 [安装](releases/0.2.2-rc.3.1/INSTALL.md)、[迁移与回退](releases/0.2.2-rc.3.1/MIGRATION.md)、[manifest](releases/0.2.2-rc.3.1/manifest.json) 和 [验收](releases/0.2.2-rc.3.1/ACCEPTANCE.md)。
+
+维护者可用以下命令核对官方 ASAR、重打两份冻结包、核对四份复用包，并生成发行资产。
+
+```text
+node desktop/releases/0.2.2-rc.3.1/Reproduce.mjs <官方rc.3的app.asar> <全新固定包目录>
+node scripts/Build-DesktopBundle.mjs <全新发行输出目录> <固定包目录> 0.2.2-rc.3.1
+```
+
+## 历史发行 Desktop 0.2.2-rc.1
 
 本次补丁 tag 为 [desktop-v0.2.2-rc.1.2](https://github.com/gyyxs88/dsh-custom-distribution/releases/tag/desktop-v0.2.2-rc.1.2)，独立 prerelease，不改旧 Web Latest v0.5.1。安装资产与摘要见该 Release。
 
