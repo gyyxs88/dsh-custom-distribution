@@ -4,16 +4,16 @@
 
 > 本项目不是 DeepSeek 官方发行版。DeepSeek Harness 和各组件仍受各自许可证约束。
 
-## 安装 Desktop 0.2.2-rc.3（Windows x64）
+## 安装 Desktop 0.2.2-rc.5（Windows x64）
 
 先正常退出 Desktop 及托盘，已有历史请先冷备并核对定时任务。下载
-[Install-Desktop.ps1](https://github.com/gyyxs88/dsh-custom-distribution/releases/download/desktop-v0.2.2-rc.3.1/Install-Desktop.ps1)
+[Install-Desktop.ps1](https://github.com/gyyxs88/dsh-custom-distribution/releases/download/desktop-v0.2.2-rc.5.1/Install-Desktop.ps1)
 并在 PowerShell 中运行。需要安装官方运行时时，脚本核验官方签名安装器后打开向导。向导结束时取消立即启动。
 
-桌面预发行版 [desktop-v0.2.2-rc.3.1](https://github.com/gyyxs88/dsh-custom-distribution/releases/tag/desktop-v0.2.2-rc.3.1)
-提供六包 ZIP、安装、检查和插件回退入口。首次迁移旧历史的用户请按 [安装说明](desktop/releases/0.2.2-rc.3.1/INSTALL.md) 操作。
+桌面预发行版 [desktop-v0.2.2-rc.5.1](https://github.com/gyyxs88/dsh-custom-distribution/releases/tag/desktop-v0.2.2-rc.5.1)
+提供六包 ZIP、安装、检查和插件回退入口。首次迁移旧历史的用户请按 [安装说明](desktop/releases/0.2.2-rc.5.1/INSTALL.md) 操作。
 
-兼容层和 TPS 升级至 `0.2.2-rc.3.1`，其余四个插件沿用上一发行的原始包。版本、摘要与重现方法见 [Desktop 发行说明](desktop/README.md)。
+兼容层和 TPS 升级至 `0.2.2-rc.5.1`，其余四个插件沿用上一发行的原始包。版本、摘要与重现方法见 [Desktop 发行说明](desktop/README.md)。
 
 ## 旧 Web 版安装（v0.5.1）
 

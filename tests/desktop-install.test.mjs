@@ -168,7 +168,8 @@ test('Pinned release metadata, exact grants and failed-install restoration', { s
 
 test('Previous distribution upgrades and restores old bytes and receipt', { skip: !enabled }, () => {
   const upgradingRc1 = runtimeVersion === '0.2.2-rc.3';
-  const oldRelease = path.join(repo, 'desktop/releases', upgradingRc1 ? '0.2.2-rc.1.2' : '0.2.1-rc.3.1');
+  const previousVersions = { '0.2.2-rc.3': '0.2.2-rc.1.2', '0.2.2-rc.5': '0.2.2-rc.3.1' };
+  const oldRelease = path.join(repo, 'desktop/releases', previousVersions[runtimeVersion] ?? '0.2.1-rc.3.1');
   const old = json(path.join(oldRelease, 'manifest.json'));
   const tree = file => fs.statSync(file).isDirectory() ? Object.fromEntries(fs.readdirSync(file).sort().map(name => [name, tree(path.join(file, name))])) : digest(file);
   for (const shell of ['powershell.exe', 'pwsh.exe']) {
@@ -211,7 +212,7 @@ test('Previous distribution upgrades and restores old bytes and receipt', { skip
     write(path.join(profile, 'package.json'), JSON.stringify(metadata));
     invoke('Rollback');
     assert.deepEqual(json(path.join(store, 'current.json')), oldReceipt);
-    if (upgradingRc1) assert.deepEqual(json(path.join(profile, 'package.json')).dsh.profile.bundles, after.dsh.profile.bundles);
+    assert.deepEqual(json(path.join(profile, 'package.json')).dsh.profile.bundles, after.dsh.profile.bundles);
     assert.equal(json(path.join(profile, 'package.json')).later, 'retain this setting');
     for (const p of old.packages) {
       assert.deepEqual(tree(path.join(profile, 'node_modules', p.name)), oldReceipt.installedTrees[p.name]);

@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 export const legacyVersion = '0.2.1-rc.5.1';
 export const targetVersion = '0.2.2-rc.1.1';
-const runtimes = { [legacyVersion]: '0.2.1-rc.5', [targetVersion]: '0.2.2-rc.1', '0.2.2-rc.1.2': '0.2.2-rc.1', '0.2.2-rc.3.1': '0.2.2-rc.3' };
+const runtimes = { [legacyVersion]: '0.2.1-rc.5', [targetVersion]: '0.2.2-rc.1', '0.2.2-rc.1.2': '0.2.2-rc.1', '0.2.2-rc.3.1': '0.2.2-rc.3', '0.2.2-rc.5.1': '0.2.2-rc.5' };
 const pluginNames = ['@omdsh-dev/dsh-genui', 'dsh-desktop-compat', 'dsh-remote-control', 'dsh-session-control', 'dsh-subagent-code-agents', 'dsh-tps-correction'];
 const exactVersion = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/;
 export const digest = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -29,9 +29,12 @@ export function validateManifest(manifest, version) {
     if (!packages.some(p => key === `${p.name}@${p.version}`) || !Array.isArray(versions) || !versions.includes(manifest.runtimeVersion) || new Set(versions).size !== versions.length || versions.some(v => !exactVersion.test(v))) throw Error('Invalid exact compatibility grants.');
   }
   const official = manifest.official?.windowsX64;
-  if (!official || official.url !== `https://download.deepseek.com/dsh-desk/bin/win-x64/deepseek-harness-${manifest.runtimeVersion}-win-x64.exe` || !Number.isSafeInteger(official.size) || official.size <= 0 || !/^[A-Za-z0-9+/]{86}==$/.test(official.sha512Base64) || !/^[a-f0-9]{64}$/.test(official.appAsarSha256) || !/^[a-f0-9]{64}$/.test(official.exeSha256)) throw Error('Invalid official program identity.');
+  const channelPath = manifest.runtimeVersion === '0.2.2-rc.5' ? 'stable/' : '';
+  const officialUrl = `https://download.deepseek.com/dsh-desk/bin/win-x64/${channelPath}deepseek-harness-${manifest.runtimeVersion}-win-x64.exe`;
+  if (!official || official.url !== officialUrl || !Number.isSafeInteger(official.size) || official.size <= 0 || !/^[A-Za-z0-9+/]{86}==$/.test(official.sha512Base64) || !/^[a-f0-9]{64}$/.test(official.appAsarSha256) || !/^[a-f0-9]{64}$/.test(official.exeSha256)) throw Error('Invalid official program identity.');
   if (runtimes[version] === '0.2.2-rc.1' && (official.size !== 293425336 || official.sha512Base64 !== 'swcK0J6ofGkaAWLRpOes2ca7CWO8vuM5Vp0FRnQ/DG3q+Z+OhvsgLz3hIiSYpRUETY+fEz+Ww86fNa0jiVIifw==')) throw Error('Unexpected official 0.2.2-rc.1 download identity.');
   if (runtimes[version] === '0.2.2-rc.3' && (official.size !== 299595752 || official.sha512Base64 !== 'GiJf8kx+C7eoiZ0xQSYBcTyh5xmXQl+vh63U6uSm963McK1AkMgB8PydzuekWdUY7hyURvhVMHANM4pn+tCKzQ==')) throw Error('Unexpected official 0.2.2-rc.3 download identity.');
+  if (runtimes[version] === '0.2.2-rc.5' && (official.size !== 299594368 || official.sha512Base64 !== 'fuoQRNZstCSpgmXpmrUrEtx4+dQ0VJg0zkBtMBFqP8E772upeG6Wx3aR+3D2mD57QGCqa+S7u8h5l1x1l6SxIg==')) throw Error('Unexpected official 0.2.2-rc.5 stable download identity.');
   return manifest;
 }
 

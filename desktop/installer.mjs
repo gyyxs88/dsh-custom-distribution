@@ -67,8 +67,9 @@ const retired = manifest.retiredPackages ?? [];
 const previousReleaseTags = ['desktop-v0.2.1-rc.3.1'];
 if (manifest.releaseTag !== 'desktop-v0.2.1-rc.5.1') previousReleaseTags.push('desktop-v0.2.1-rc.5.1');
 const legacyAgentTeamBundle = '@deepseek-ai/dsh-experimental-agent-team-profile';
-const usesBuiltInAgentTeam = manifest.runtimeVersion === '0.2.2-rc.3';
+const usesBuiltInAgentTeam = ['0.2.2-rc.3', '0.2.2-rc.5'].includes(manifest.runtimeVersion);
 if (usesBuiltInAgentTeam) previousReleaseTags.push('desktop-v0.2.2-rc.1.1', 'desktop-v0.2.2-rc.1.2');
+if (manifest.runtimeVersion === '0.2.2-rc.5') previousReleaseTags.push('desktop-v0.2.2-rc.3.1');
 const managedNames = [...manifest.packages.map(p => p.name), ...retired];
 for (const pkg of manifest.packages) {
   if (hash(path.join(bundle, pkg.file)) !== pkg.sha256) throw Error(`Package checksum mismatch: ${pkg.name}`);

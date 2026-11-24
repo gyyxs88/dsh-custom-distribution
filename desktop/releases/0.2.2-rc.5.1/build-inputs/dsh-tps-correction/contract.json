@@ -1,0 +1,44 @@
+{
+  "target": "0.2.2-rc.5",
+  "archiveSha256": "83056cd15d2bd3d42c076362dfb07d2c4b920d579f1c374680dd34bbf2a2877d",
+  "official": [
+    {
+      "name": "@deepseek-ai/dsh",
+      "version": "0.2.2-rc.5"
+    },
+    {
+      "name": "@deepseek-ai/cordis",
+      "version": "4.1.0"
+    },
+    {
+      "name": "zod",
+      "version": "4.6.6"
+    },
+    {
+      "name": "@deepseek-ai/dsh-client-ui-chat",
+      "version": "0.2.2-rc.5",
+      "files": {
+        "lib/client.js": "8f2ed1c092f54fa720424c65fbf18b838d12edc6e73f4fa1e212a1b688934105"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-client-ui-trajectory",
+      "version": "0.2.2-rc.5",
+      "files": {
+        "lib/index.js": "7ff301eb00728a2a33da14ff983be7f17f213c9ed1126fc5d7d5927fa184a424",
+        "lib/client.js": "1ecf2b126f8cd60deec659314a43194dbc51fb622078027f663a1d4fe5895bbf"
+      }
+    }
+  ],
+  "asarModified": false,
+  "trajectory": {
+    "delivery": "external-loader-overlay",
+    "clientSha256": "7a1d24740dbee8e07f81ddca8e4a95509226180a338091e472767238f0006274"
+  },
+  "projection": "tpsCorrectionV2",
+  "activitySlot": {
+    "name": "conversation.composer.dock",
+    "id": "activity",
+    "priority": -100
+  }
+}
